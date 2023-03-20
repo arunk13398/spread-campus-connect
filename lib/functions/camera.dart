@@ -175,7 +175,7 @@ class _CameraState extends State<Camera> {
                       ),
                     ));
                     description.clear();
-                    finish(context);
+                    // finish(context);
                   });
                 },
                 // _reference.add(dataToSend);

@@ -35,92 +35,72 @@ class _FeedPageState extends State<FeedPage> {
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
-    return Scaffold(
-      backgroundColor: MyColors.Blackcolor,
-      appBar: AppBar(
-        toolbarHeight: 100,
-        flexibleSpace: Container(
-          // color:Colors.red,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 40.0, left: 10, right: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                          "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                          // list[index].imageUrl,
-                          height: 45,
-                          width: 45,
-                          fit: BoxFit.cover,
-                        )),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10.0),
-                      child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            UserName,
-                            style: TextStyle(
-                                color: MyColors.Whitecolor,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            "College name",
-                            style:
-                                TextStyle(color: Colors.white60, fontSize: 14),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Spacer(),
-                    Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(5.0),
-                          child: Icon(
-                            Icons.notifications_none,
-                            size: 30,
-                            color: MyColors.Whitecolor,
-                          ),
-                        ),
-                        Positioned(
-                          left: 15,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
-                              color: Colors.red,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          toolbarHeight: 80,
+          flexibleSpace: Container(
+            color:Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2.0, left: 10, right: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10.0),
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              UserName,
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
                             ),
-                            height: 25,
-                            width: 25,
-                            child: Center(child: Text("5")),
-                          ),
+                            Text(
+                              "College name",
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 14),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 15, bottom: 5, top: 10),
-                  child: Text("Trending",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 30,
-                          color: Colors.white)),
-                ),
-              ],
+                      ),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(top:5.0),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Image.network(
+                              "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
+                              // list[index].imageUrl,
+                              height: 40,
+                              width: 40,
+                              fit: BoxFit.cover,
+                            )),
+                      ),
+
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20, bottom: 5, top: 0),
+                    child: Text("Trending",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 30,
+                            color: Colors.black)),
+                  ),
+                ],
+              ),
             ),
           ),
+          // backgroundColor: Colors.transparent,
         ),
-        backgroundColor: Colors.transparent,
-      ),
-      body: SafeArea(
-        child: Container(
+        body: Container(
           // color:Colors.red,
           // height: height/1.46,
           child: ListView.builder(
@@ -169,7 +149,7 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   @override
-  Widget FeedAdaptor(int index) {
+  Widget FeedAdaptor1(int index) {
     // int index  in function
     return Column(
       children: [
@@ -348,6 +328,179 @@ class _FeedPageState extends State<FeedPage> {
               ),
             ),
           ),
+        ),
+
+        // SizedBox(height: 20,),
+      ],
+    );
+  }
+
+  Widget FeedAdaptor(int index) {
+    // int index  in function
+    return Column(
+      children: [
+        Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 5.0,top:10),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: width / 1.1,
+                        child: Row(
+                          children: [
+                            SizedBox(width:15),
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(60),
+                                child: Image.network(
+                                  "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
+                                  // list[index].imageUrl,
+                                  height: 45,
+                                  width: 45,
+                                  fit: BoxFit.cover,
+                                )),
+                            SizedBox(
+                              width: width / 1.8,
+                              child: Column(
+                                mainAxisAlignment:
+                                MainAxisAlignment.start,
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 5),
+                                    child: Text("User name",
+                                        // list[index].username,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        textAlign: TextAlign.start),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 5),
+                                    child: Text(
+                                      "Student",
+                                      // list[index].username
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.black),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 10.0, right: 5),
+                              child: Text(
+                                "1 mint ago",
+                                // list[index].username
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      Padding(
+                        padding:
+                        const EdgeInsets.only(left: 8.0, right: 5,top:10,bottom:5),
+                        child: SizedBox(
+                          width: width / 1.2,
+                          child: Text(list[index].description,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              textAlign: TextAlign.start),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: CachedNetworkImage(
+                  // height: 250,
+                  width: double.infinity,
+                  fit: BoxFit.fill,
+                  imageUrl: list[index].imageUrl,
+                  placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(
+                        color: MyColors.Greencolor,
+                      )),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding:  EdgeInsets.only(left: 5.0,top:5,bottom: 10),
+              child: Row(
+                children: [
+                  SizedBox(width:20),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      border:Border.all(color: Colors.grey.shade300,width: 1,)
+                    ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
+                        child: Row(
+                          children: [
+                            Icon(Icons.ac_unit_rounded),
+                            SizedBox(width: 2,),
+                            Text(
+                              "12",
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      )),
+                  SizedBox(width:10),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      border:Border.all(color: Colors.grey.shade300,width: 1,)
+                    ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
+                        child: Row(
+                          children: [
+                            Icon(Icons.ac_unit_rounded),
+                            SizedBox(width: 2,),
+                            Text(
+                              "12",
+                              style:
+                              TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      )),
+
+
+
+                ],
+              ),
+            ),
+
+          ],
         ),
 
         // SizedBox(height: 20,),
