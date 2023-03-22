@@ -70,16 +70,16 @@ class _EditProfileState extends State<EditProfile> {
                           width:width/2,
                           child: TextFormField(
                             decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
+                              border:  OutlineInputBorder(),
                               labelText: 'First name',
                               hintText: 'First name',
                               prefixIcon: Icon(Icons.person_outlined,
                                   size: 20,
-                                  color: MyColors.theme2),
+                                  color: Colors.blue.shade300),
                               filled: true,
                               fillColor: Colors.white,
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color:  MyColors.theme2, width: 1.2),
+                                borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
                               ),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color:  Colors.green, width: 1.2),
@@ -98,7 +98,7 @@ class _EditProfileState extends State<EditProfile> {
                               filled: true,
                               fillColor: Colors.white,
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color:  MyColors.theme2, width: 1.2),
+                                borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
                               ),
                               focusedBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color:  Colors.green, width: 1.2),
@@ -119,11 +119,11 @@ class _EditProfileState extends State<EditProfile> {
                       hintText: '+91 mobile number',
                       prefixIcon: Icon(Icons.call,
                           size: 20,
-                          color: MyColors.theme2),
+                          color: Colors.blue.shade300),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color:  MyColors.theme2, width: 1.2),
+                        borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color:  Colors.green, width: 1.2),
@@ -141,11 +141,11 @@ class _EditProfileState extends State<EditProfile> {
                       hintText: 'College',
                       prefixIcon: Icon(Icons.location_on_outlined,
                           size: 20,
-                          color: MyColors.theme2),
+                          color: Colors.blue.shade300),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color:  MyColors.theme2, width: 1.2),
+                        borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color:  Colors.green, width: 1.2),
@@ -162,11 +162,11 @@ class _EditProfileState extends State<EditProfile> {
                       hintText: 'Semester',
                       prefixIcon: Icon(Icons.signpost_outlined,
                           size: 20,
-                          color: MyColors.theme2),
+                          color: Colors.blue.shade300),
                       filled: true,
                       fillColor: Colors.white,
                       enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color:  MyColors.theme2, width: 1.2),
+                        borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color:  Colors.green, width: 1.2),
@@ -183,7 +183,7 @@ class _EditProfileState extends State<EditProfile> {
                         onPressed: () {
                         },
                         textColor: Colors.white,
-                        color: MyColors.theme3,
+                        color: Colors.blue,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         child: const Text(
@@ -195,7 +195,7 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 5,),
                   child: CheckboxListTile(
-                    activeColor: MyColors.theme2,
+                    activeColor: Colors.blue,
                     title: Text("Change to the page?",style: TextStyle(color: MyColors.theme1,fontSize: 14),),
                     value: _isChecked,
                     onChanged: (val) {
@@ -207,7 +207,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left:15,right: 15),
-                  child: Text("wait until the admin verification page have publish notifcation to others",style: TextStyle(color: MyColors.theme1,fontSize: 16),textAlign: TextAlign.center),
+                  child: Text("wait until the admin verification, page have more than features and responsibilities to others",style: TextStyle(color: MyColors.theme1,fontSize: 16),textAlign: TextAlign.center),
                 ),
               ],
             ),

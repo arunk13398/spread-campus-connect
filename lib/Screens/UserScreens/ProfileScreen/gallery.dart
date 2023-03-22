@@ -1,0 +1,141 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:miniq/Contraints/user_preference.dart';
+import 'package:miniq/Model/feed_model.dart';
+import 'package:miniq/Screens/UserScreens/ProfileScreen/edit_profile.dart';
+import 'package:miniq/Theme/theme.dart';
+
+class Gallery extends StatefulWidget {
+  const Gallery({Key? key}) : super(key: key);
+
+  @override
+  State<Gallery> createState() => _GalleryState();
+}
+
+class _GalleryState extends State<Gallery> {
+  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  List<FeedModel> list = [];
+  var size, height, width;
+  String numberId = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+    load();
+    getData();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
+    return Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Container(
+                height: height / 1.3,
+                child: GridView.builder(
+                    itemCount: list.length,
+                    gridDelegate:
+                    SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 150,
+                      mainAxisSpacing: 10.0,
+                      crossAxisSpacing: 10,
+                      childAspectRatio: 1,
+                    ),
+                    itemBuilder: (BuildContext context, int index) =>
+                        galleryAdaptor(index))),
+          )
+        ));
+  }
+
+  getData() async {
+    numberId = (await getString(UserPreferences.USER_NUMBER));
+    mRootReference
+        .child("UsersList")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .child("Profile")
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("ajfbsgdbfdv ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        data = data["Name"];
+        setState(() {});
+      }
+    });
+  }
+
+  load() async {
+    mRootReference.child("Feeds").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      list.clear();
+      data.forEach((key, value) {
+        list.add(FeedModel(
+          id: key,
+          // username: value['Name'],
+          description: value['Description'],
+          imageUrl: value['ImageUrl'],
+        ));
+      });
+      setState(() {});
+    });
+  }
+
+  Widget galleryAdaptor(int index) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: CachedNetworkImage(
+        width: double.infinity,
+        fit: BoxFit.fill,
+        imageUrl: list[index].imageUrl,
+        placeholder: (context, url) => Center(
+            child: CircularProgressIndicator(
+              color: Colors.red,
+            )),
+      ),
+    );
+  }
+}
+
+class SuggestAdaptor extends StatelessWidget {
+  const SuggestAdaptor({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Card(
+          elevation: 5,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22.0),
+              side: BorderSide(color: MyColors.theme1, width: 2)),
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(22),
+              child: Image.network(
+                "https://th.bing.com/th/id/OIP.R4gEjzGdxIEBZ42eafUHfgAAAA?pid=ImgDet&rs=1",
+                height: 50,
+                width: 60,
+                fit: BoxFit.fill,
+              )),
+        ),
+        // SizedBox(
+        //   width: 70,
+        //   child: Text("aravind",
+        //       style: TextStyle(color: Colors.white),
+        //       maxLines: 1,
+        //       textAlign: TextAlign.center,
+        //       overflow: TextOverflow.ellipsis),
+        // ),
+        // SizedBox(
+        //   width: 5,
+        // ),
+      ],
+    );
+  }
+}

@@ -25,99 +25,115 @@ class _UserRegistrationState extends State<UserRegistration> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: name,
-              inputFormatters: [
-                // FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-              ],
-              // controller: value.contactPerson,
-              textInputAction: TextInputAction.next,
-              keyboardType: TextInputType.name,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Name',
-                hintText: 'Name',
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              autofocus: false,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              enabled: false,
-              controller: number,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-              ],
-              // controller: value.contactPerson,
-              textInputAction: TextInputAction.next,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Contact Number',
-                hintText: 'Enter Contact Number',
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              autofocus: false,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextFormField(
-              controller: college,
-              inputFormatters: [
-                // FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-              ],
-              // controller: value.contactPerson,
-              textInputAction: TextInputAction.next,
-              keyboardType: TextInputType.name,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'College',
-                hintText: 'College',
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              autofocus: false,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left:15.0,right: 15,top: 20,bottom: 20),
-            child: Container(
-              height: 50,
-              child: MaterialButton(
-                color: MyColors.theme3,
-                minWidth: double.infinity,
-                onPressed: () async {
-                  await addCustomer().then((value) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      backgroundColor: Colors.white,
-                      content: Text(
-                        "Successful",
-                        style: TextStyle(color: Colors.black),
+      backgroundColor: Colors.white,
+      body:SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: Column(
+                children: [
+                  Padding(
+                      padding: EdgeInsets.only(top: 16.0,bottom: 00),
+                      child: Image(
+                        image: AssetImage('assets/r5.png'),
+                        height: 250.0,
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: name,
+                      inputFormatters: [
+                        // FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                      ],
+                      // controller: value.contactPerson,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Name',
+                        hintText: 'Name',
+                        filled: true,
+                        fillColor: Colors.white,
                       ),
-                    ));
-                    finish(context);
-                  });
-                },
-                child: const Text("Register",style: TextStyle(color: Colors.white,fontSize: 20)),
+                      autofocus: false,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      enabled: false,
+                      controller: number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                      ],
+                      // controller: value.contactPerson,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Contact Number',
+                        hintText: 'Enter Contact Number',
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      autofocus: false,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: college,
+                      inputFormatters: [
+                        // FilteringTextInputFormatter.allow(RegExp('[0-9]'))
+                      ],
+                      // controller: value.contactPerson,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.name,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'College',
+                        hintText: 'College',
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      autofocus: false,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.only(left:15.0,right: 15,top: 20,bottom: 20),
+              child: Container(
+                height: 50,
+                child: MaterialButton(
+                  color: Colors.blue,
+                  minWidth: double.infinity,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  onPressed: () async {
+                    await addCustomer().then((value) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        backgroundColor: Colors.white,
+                        content: Text(
+                          "Successful",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ));
+                      finish(context);
+                    });
+                  },
+                  child: const Text("Register",style: TextStyle(color: Colors.white,fontSize: 20)),
+                ),
+              ),
+            ),
+          ],
+        ),
       )
     );
   }
 
   Future<void> addCustomer() async {
-
 
     HashMap<String, dynamic> data = HashMap<String, dynamic>();
     String id = widget.number;

@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
     height = size.height;
     width = size.width;
     return Scaffold(
-        backgroundColor: MyColors.LightBlackcolor,
+        backgroundColor: Colors.white,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(

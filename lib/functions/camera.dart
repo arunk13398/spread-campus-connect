@@ -38,131 +38,154 @@ class _CameraState extends State<Camera> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: MyColors.Blackcolor,
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 10.0, top: 20, bottom: 10),
-              child: Text("Uplord Image",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: MyColors.Whitecolor)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15, top: 5, bottom: 5),
-              child: TextFormField(
-                style: TextStyle(color: Colors.white),
-                controller: description,
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: 'Enter the description',
-                  hintText: 'description',
-                  prefixIcon:
-                      Icon(Icons.image, size: 20, color: MyColors.Orangecolor),
-                  filled: true,
-                  fillColor: MyColors.LightBlackcolor,
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide:
-                        BorderSide(color: MyColors.Orangecolor, width: 1.2),
+            Expanded(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10.0, top: 20, bottom: 10),
+                    child: Text("Uplord Image",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
                   ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green, width: 1.2),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: description,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'Enter discription',
+                        hintText: 'Enter discription',
+                        filled: true,
+                        fillColor: Colors.white,
+                        labelStyle: TextStyle(color: Colors.black),
+                        hintStyle: TextStyle(color: Colors.blue),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          borderSide: BorderSide(
+                              color: Colors.black, width: 1.2),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          borderSide: BorderSide(
+                              color: MyColors.LightBlackcolor, width: 1.6),
+                        ),
+                      ),
+                    ),
+                  ),
+
+
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10, right: 10, top: 10, bottom: 10),
+                      child: InkWell(
+                        onTap: () {
+                          cameraAccess();
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(60),
+                                color: Colors.blue.shade200,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Icon(
+                                  Icons.camera_alt_outlined,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "Upload from camera",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            )
+                          ],
+                        ),
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(
+                          left: 10, right: 10, top: 10, bottom: 10),
+                      child: InkWell(
+                        onTap: () {
+                          galleryAccess();
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(60),
+                                color:Colors.blue.shade200,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Icon(
+                                  Icons.image_outlined,
+                                  color: Colors.white,
+                                  size: 25,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "Upload from gallery",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
+                            )
+                          ],
+                        ),
+                      )),
+
+                  // Padding(
+                  //   padding: const EdgeInsets.all(15.0),
+                  //   child: MaterialButton(
+                  //     minWidth: double.infinity,
+                  //     height: 50,
+                  //     color: MyColors.theme3,
+                  //     shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(10.0)),
+                  //     child:Text("Uploard Image",style: TextStyle(color: Colors.white),),
+                  //     onPressed: (){
+                  //       showmodelBottomsheet();
+                  //     },
+                  //   ),
+                  // )
+                ],
               ),
             ),
-
             Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, right: 10, top: 10, bottom: 10),
-                child: InkWell(
-                  onTap: () {
-                    cameraAccess();
-                  },
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(60),
-                          color: MyColors.LightBlackcolor,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            color: Colors.white,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "Upload from camera",
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: MyColors.Whitecolor),
-                      )
-                    ],
-                  ),
-                )),
-            Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, right: 10, top: 10, bottom: 10),
-                child: InkWell(
-                  onTap: () {
-                    galleryAccess();
-                  },
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(60),
-                          color: MyColors.LightBlackcolor,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Icon(
-                            Icons.image_outlined,
-                            color: Colors.white,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "Upload from gallery",
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: MyColors.Whitecolor),
-                      )
-                    ],
-                  ),
-                )),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 80),
+              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
               child: MaterialButton(
-                color: MyColors.Orangecolor,
+                color: Colors.blue,
                 minWidth: double.infinity,
                 height: 50,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0)),
                 child: Text(
                   "submit",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18,color: Colors.white),
                 ),
 
                 onPressed: () async {
@@ -181,20 +204,6 @@ class _CameraState extends State<Camera> {
                 // _reference.add(dataToSend);
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.all(15.0),
-            //   child: MaterialButton(
-            //     minWidth: double.infinity,
-            //     height: 50,
-            //     color: MyColors.theme3,
-            //     shape: RoundedRectangleBorder(
-            //         borderRadius: BorderRadius.circular(10.0)),
-            //     child:Text("Uploard Image",style: TextStyle(color: Colors.white),),
-            //     onPressed: (){
-            //       showmodelBottomsheet();
-            //     },
-            //   ),
-            // )
           ],
         ),
       ),

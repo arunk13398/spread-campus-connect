@@ -6,6 +6,7 @@ import 'package:miniq/Contraints/user_preference.dart';
 import 'package:miniq/Model/feed_model.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/comment_view.dart';
 import 'package:miniq/Theme/theme.dart';
+import 'package:miniq/functions/camera.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
@@ -22,12 +23,20 @@ class _FeedPageState extends State<FeedPage> {
   bool isLiked = false;
   var size, height, width;
 
-  @override
-  void initState() {
-    // TODO: implement initState
+
+  var top=0.0;
+  late ScrollController _scrollController;
+
+  @override void initState() {
     load();
     getData();
     super.initState();
+    _scrollController =  ScrollController();
+    _scrollController.addListener(() {
+      setState(() {
+
+      });
+    });
   }
 
   @override
@@ -35,82 +44,213 @@ class _FeedPageState extends State<FeedPage> {
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          toolbarHeight: 80,
-          flexibleSpace: Container(
-            color:Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 2.0, left: 10, right: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Column(
-                          // mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              UserName,
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
+    return Scaffold(
+      backgroundColor: Colors.white,
+        body: Stack(
+          children: [
+            SafeArea(
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: [
+                  SliverAppBar(backgroundColor: Colors.white,
+                      pinned: true,
+                      expandedHeight: 200,
+                      flexibleSpace: LayoutBuilder(builder: (ctx,cons){
+                        top=cons.biggest.height;
+                        return FlexibleSpaceBar(
+                          centerTitle: true,
+                          title: AnimatedOpacity(
+                            opacity: top <=100?1.0:0.0,
+                            duration: Duration(milliseconds: 300),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top:0.0),
+                              child: Row(children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left:15.0),
+                                  child: Text("Trending Feeds",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 30,
+                                          color: Colors.black)),
+                                ),
+                                Spacer(),
+                                InkWell(
+                                  onTap: (){
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Camera()));
+                                  },
+                                  child: Container(
+                                      height: 40,
+                                      width: 40,
+                                      decoration: BoxDecoration(color:Colors.blue,
+                                        borderRadius: BorderRadius.circular(60),
+                                      ),
+                                      child:Icon(Icons.add,color: Colors.white,)
+                                  ),
+                                ),
+                                SizedBox(width: 10,),
+                                // ClipRRect(
+                                //     borderRadius: BorderRadius.circular(100),
+                                //     child: Image.network(
+                                //       "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
+                                //       // list[index].imageUrl,
+                                //       height: 40,
+                                //       width: 40,
+                                //       fit: BoxFit.cover,
+                                //     )),
+                                // SizedBox(width:12),
+                              ],),
                             ),
-                            Text(
-                              "College name",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.only(top:5.0),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.network(
-                              "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                              // list[index].imageUrl,
-                              height: 40,
-                              width: 40,
-                              fit: BoxFit.cover,
-                            )),
-                      ),
+                          ),
 
-                    ],
+
+
+
+                          background: Container(
+                            color: Colors.transparent,
+                            child: Container(
+                              color:Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(left: 10.0),
+                                          child:
+
+                                          Column(
+                                            // mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                UserName,
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.bold),
+                                              ),
+                                              Text(
+                                                "College name",
+                                                style:
+                                                TextStyle(color: Colors.grey, fontSize: 14),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 10, bottom: 5, top: 20),
+                                      child: Text("Trending Feeds",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 40,
+                                              color: Colors.black)),
+                                    ),
+                                    SizedBox(height: 30,),
+                                    Container(
+                                      height: 40,
+                                      width: height/1,
+                                      child: ListView(
+                                        scrollDirection: Axis.horizontal,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(left:5.0,right:5),
+                                            child: Container(
+                                              // width: 30,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(30),
+                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left:10.0,right:10,top:10,bottom:10),
+                                                  child: Center(child: Text("All",style: TextStyle(fontWeight: FontWeight.bold),)),
+                                                )),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left:5.0,right:5),
+                                            child: Container(
+                                              // width: 30,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(30),
+                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
+                                                  child: Center(child: Text("Students",style: TextStyle(fontWeight: FontWeight.bold),)),
+                                                )),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left:5.0,right:5),
+                                            child: Container(
+                                              // width: 30,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(30),
+                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
+                                                  child: Center(child: Text("Employees",style: TextStyle(fontWeight: FontWeight.bold),)),
+                                                )),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left:5.0,right:5),
+                                            child: Container(
+                                              // width: 30,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(30),
+                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
+                                                  child: Center(child: Text("Events",style: TextStyle(fontWeight: FontWeight.bold),)),
+                                                )),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(left:5.0,right:5),
+                                            child: Container(
+                                              // width: 30,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(30),
+                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
+                                                ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
+                                                  child: Center(child: Text("Other college",style: TextStyle(fontWeight: FontWeight.bold),)),
+                                                )),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },)
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, bottom: 5, top: 0),
-                    child: Text("Trending",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                            color: Colors.black)),
-                  ),
+                  SliverToBoxAdapter(
+                    child: ListView.builder(
+                      primary: false,
+                      shrinkWrap: true,
+                      itemCount: list.length,
+                      itemBuilder: (BuildContext context, int index)=> FeedAdaptor(index)
+                    ),
+                  )
                 ],
               ),
             ),
-          ),
-          // backgroundColor: Colors.transparent,
-        ),
-        body: Container(
-          // color:Colors.red,
-          // height: height/1.46,
-          child: ListView.builder(
-            itemCount: list.length,
-            itemBuilder: (BuildContext context, int index) {
-              return FeedAdaptor(index);
-            },
-          ),
-        ),
-      ),
+            _buildfab(),
+          ],
+        )
     );
   }
 
@@ -391,7 +531,7 @@ class _FeedPageState extends State<FeedPage> {
                                       // list[index].username
                                       style: TextStyle(
                                           fontSize: 15,
-                                          color: Colors.black),
+                                          color: Colors.grey),
                                     ),
                                   ),
 
@@ -463,7 +603,16 @@ class _FeedPageState extends State<FeedPage> {
                         padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
                         child: Row(
                           children: [
-                            Icon(Icons.ac_unit_rounded),
+                            InkWell(
+                              onTap: (){
+                                setState(() {
+                                  isLiked = !isLiked;
+                                });
+                              },
+                              child: Icon(Icons.favorite, color: MyColors.Blackcolor, size: 26,
+                              )
+                                  ),
+
                             SizedBox(width: 2,),
                             Text(
                               "12",
@@ -474,24 +623,44 @@ class _FeedPageState extends State<FeedPage> {
                         ),
                       )),
                   SizedBox(width:10),
+                  InkWell(
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  CommentViewScreen(
+                                      feedModel: list[index])));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border:Border.all(color: Colors.grey.shade300,width: 1,)
+                      ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
+                          child: Row(
+                            children: [
+                              Icon(Icons.chat_bubble_outline),
+                              SizedBox(width: 2,),
+                              Text(
+                                "12",
+                                style:
+                                TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
+                  SizedBox(width:10),
                   Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border:Border.all(color: Colors.grey.shade300,width: 1,)
-                    ),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          border:Border.all(color: Colors.grey.shade300,width: 1,)
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                        child: Row(
-                          children: [
-                            Icon(Icons.ac_unit_rounded),
-                            SizedBox(width: 2,),
-                            Text(
-                              "12",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
+                        child: Icon(Icons.more_horiz),
                       )),
 
 
@@ -506,6 +675,68 @@ class _FeedPageState extends State<FeedPage> {
         // SizedBox(height: 20,),
       ],
     );
+  }
+
+  Widget _buildfab(){
+    final double defaultMargin=200;
+    final double defaultStart=180;
+    final double defaultEnd=defaultStart/2;
+
+    double top =defaultMargin;
+    double scale = 1.0;
+
+    if(_scrollController.hasClients){
+      double offset = _scrollController.offset;
+      top-=offset;
+      if(offset<defaultMargin-defaultStart){
+        scale =1.0;
+      }else if(offset<defaultStart-defaultEnd){
+        scale =(defaultMargin-defaultEnd-offset)/defaultEnd;
+      }else{
+        scale=0.0;
+      }
+    }
+
+    return Positioned(
+        top: 41,
+        right: 10,
+        child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()..scale(scale),
+            child: Row(
+              children: [
+                SizedBox(height: 40,
+                    child: InkWell(
+                      onTap: (){
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    Camera()));
+                      },
+                      child: Container(
+                          height: 40,
+                          width: 40,
+                          decoration: BoxDecoration(color:Colors.blue,
+                            borderRadius: BorderRadius.circular(60),
+                          ),
+                          child:Icon(Icons.add,color: Colors.white,)
+                      ),
+                    ),),
+                SizedBox(width: 10,),
+                Container(height: 40,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: Image.network(
+                          "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
+                          // list[index].imageUrl,
+                          height: 40,
+                          width: 40,
+                          fit: BoxFit.cover,
+                        )),),
+              ],
+            )));
+
   }
 }
 

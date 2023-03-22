@@ -26,14 +26,14 @@ class _SplashScreenState extends State<SplashScreen> {
     checkLogin(context);
     return Scaffold(
       // backgroundColor: MyColors.main1,
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children:  [
             Container(
               child:Image(
-                image: AssetImage('assets/letterwhitenewcolor.png'),
+                image: AssetImage('assets/letterblacknewcolor.png'),
                 height: 270.0,
                 width: 270.0,),
             ),
@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if(await getBool(UserPreferences.IS_LOGIN)??false){
       if(await getString(UserPreferences.ACCESS_CODE)=="1"){
         Future.delayed(const Duration(milliseconds: 3000), () {
-          callTo( TestPage(), context);
+          callTo( BottomNavigation(), context);
         });
       }
       else if(await getString(UserPreferences.ACCESS_CODE)=="2"){

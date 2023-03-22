@@ -76,8 +76,11 @@ flutter:
     - assets/Images/
 #    - assets/Images/phone.png
 #    - assets/Images/otp-icon.png
-    - assets/logowhitenewcolor.png
-    - assets/letterwhitenewcolor.png
+    - assets/logoblacknewcolor.png
+    - assets/letterblacknewcolor.png
+    - assets/r1.png
+    - assets/r3.png
+    - assets/r5.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

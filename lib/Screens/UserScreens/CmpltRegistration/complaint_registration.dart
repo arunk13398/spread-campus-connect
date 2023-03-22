@@ -1,6 +1,13 @@
+import 'dart:collection';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:miniq/Theme/theme.dart';
+
+import '../../../Contraints/user_preference.dart';
+import '../../../functions/functions.dart';
+import '../../bottom_navigation.dart';
 
 class ComplaintRegistration extends StatefulWidget {
   const ComplaintRegistration({Key? key}) : super(key: key);
@@ -10,13 +17,38 @@ class ComplaintRegistration extends StatefulWidget {
 }
 
 class _ComplaintRegistrationState extends State<ComplaintRegistration> {
+  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+
+  String numberId = '';
+  String UserName = '';
+
+  TextEditingController RegName = TextEditingController();
+  TextEditingController RegMobNumber = TextEditingController();
+  TextEditingController RegClgNo = TextEditingController();
+  TextEditingController RegAdmNumber = TextEditingController();
+  TextEditingController RegTo = TextEditingController();
+  TextEditingController RegSubject = TextEditingController();
+  TextEditingController RegCmptText = TextEditingController();
+
+
+  @override void initState() {
+    // load();
+    getData();
+    super.initState();
+    // _scrollController =  ScrollController();
+    // _scrollController.addListener(() {
+    //   setState(() {
+    //
+    //   });
+    // });
+  }
   // var size,height,width;
   @override
   Widget build(BuildContext context) {
     // size = MediaQuery.of(context).size;
     // height = size.height;width = size.width;
     return Scaffold(
-        backgroundColor: MyColors.Blackcolor,
+        backgroundColor: Colors.white,
         // appBar: AppBar(
         //    backgroundColor: MyColors.theme1,
         //   title: Text("Register form"),
@@ -37,7 +69,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
-                          color: MyColors.Orangecolor),
+                          color: Colors.blue),
                     ),
                   ),
                 ),
@@ -47,15 +79,16 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    style: TextStyle(color: MyColors.Whitecolor),
+                    controller: RegName,
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'Name',
-                      labelStyle: TextStyle(color: MyColors.Whitecolor),
-                      hintStyle: TextStyle(color: MyColors.Orangecolor),
+                      labelStyle: TextStyle(color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.blue),
                       hintText: 'Name',
                       filled: true,
-                      fillColor: MyColors.LightBlackcolor,
+                      fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -69,18 +102,22 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     ),
                   ),
                 ),
+
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    style: TextStyle(color: MyColors.Whitecolor),
+                    controller: RegMobNumber,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'Mobile number',
-                      labelStyle: TextStyle(color: MyColors.Whitecolor),
-                      hintStyle: TextStyle(color: MyColors.Orangecolor),
+                      labelStyle: TextStyle(color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.blue),
                       hintText: 'Mobile number',
                       filled: true,
-                      fillColor: MyColors.LightBlackcolor,
+                      fillColor: Colors.white,
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -94,22 +131,25 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     ),
                   ),
                 ),
+
+
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    style: TextStyle(color: MyColors.Whitecolor),
+                    controller: RegClgNo,
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'College register number',
                       hintText: 'College register number',
                       filled: true,
-                      fillColor: MyColors.LightBlackcolor,
-                      labelStyle: TextStyle(color: MyColors.Whitecolor),
-                      hintStyle: TextStyle(color: MyColors.Orangecolor),
+                      fillColor: Colors.white,
+                      labelStyle: TextStyle(color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.blue),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.2),
+                            color: Colors.black, width: 1.2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -122,15 +162,16 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    style: TextStyle(color: MyColors.Whitecolor),
+                    controller: RegAdmNumber,
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'College admission number',
                       hintText: 'College admission number',
                       filled: true,
-                      fillColor: MyColors.LightBlackcolor,
-                      labelStyle: TextStyle(color: MyColors.Whitecolor),
-                      hintStyle: TextStyle(color: MyColors.Orangecolor),
+                      fillColor: Colors.white,
+                      labelStyle: TextStyle(color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.blue),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -147,15 +188,16 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    style: TextStyle(color: MyColors.Whitecolor),
+                    controller: RegTo,
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'To',
                       hintText: 'To',
                       filled: true,
-                      fillColor: MyColors.LightBlackcolor,
-                      labelStyle: TextStyle(color: MyColors.Whitecolor),
-                      hintStyle: TextStyle(color: MyColors.Orangecolor),
+                      fillColor: Colors.white,
+                      labelStyle: TextStyle(color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.blue),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -172,15 +214,16 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    style: TextStyle(color: MyColors.Whitecolor),
+                    controller: RegSubject,
+                    style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'Subject',
                       hintText: 'Subject',
                       filled: true,
-                      fillColor: MyColors.LightBlackcolor,
-                      labelStyle: TextStyle(color: MyColors.Whitecolor),
-                      hintStyle: TextStyle(color: MyColors.Orangecolor),
+                      fillColor: Colors.white,
+                      labelStyle: TextStyle(color: Colors.black),
+                      hintStyle: TextStyle(color: Colors.blue),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -204,7 +247,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: MyColors.Orangecolor),
+                          color: Colors.blue),
                       softWrap: false,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -216,15 +259,16 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                   child: Container(
                     height: 150,
                     child: TextFormField(
-                      style: TextStyle(color: MyColors.Whitecolor),
+                      controller: RegCmptText,
+                      style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         labelText: 'Subject',
                         hintText: 'Subject',
                         filled: true,
-                        fillColor: MyColors.LightBlackcolor,
-                        labelStyle: TextStyle(color: MyColors.Whitecolor),
-                        hintStyle: TextStyle(color: MyColors.Orangecolor),
+                        fillColor: Colors.white,
+                        labelStyle: TextStyle(color: Colors.black),
+                        hintStyle: TextStyle(color: Colors.blue),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           borderSide: BorderSide(
@@ -240,27 +284,36 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     ),
                   ),
                 ),
+
+
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: MaterialButton(
-                        onPressed: () {
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => HomeScreenBuyer()));
+                        onPressed: () async {
+                          await Testing().then((value) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              backgroundColor: MyColors.Greencolor,
+                              content: Text(
+                                "Successful",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ));
+                            ClearData();
+                            // finish(context);
+                          });
                         },
                         textColor: Colors.white,
-                        color: MyColors.Orangecolor,
+                        color: Colors.blue,
                         minWidth: double.infinity,
                         height: 60,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         child: const Text(
-                          "Submit Review",
+                          "Submit Complaint",
                           style: TextStyle(
-                              fontSize: 18, color: MyColors.Blackcolor),
+                              fontSize: 18, color: Colors.white),
                         )),
                   ),
                 ),
@@ -269,4 +322,66 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
           ),
         ));
   }
+
+  getData() async {
+    numberId = (await getString(UserPreferences.USER_NUMBER));
+    UserName = (await getString(UserPreferences.USER_Name));
+    mRootReference
+        .child("UsersList")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .child("Profile")
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("ajfbsgdbfdv ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        UserName = data["Name"];
+        setState(() {});
+      }
+    });
+  }
+
+  ClearData(){
+     RegName.clear();
+     RegMobNumber.clear();
+     RegClgNo.clear();
+     RegAdmNumber.clear();
+     RegTo.clear();
+     RegSubject.clear();
+     RegCmptText.clear();
+
+  }
+
+
+
+
+  Future<void> Testing() async {
+    HashMap<String, dynamic> data = HashMap<String, dynamic>();
+
+    String id1 = DateTime.now().millisecondsSinceEpoch.toString();
+    // print("gggggggg"+imageUrl);
+    // String id = numberId;
+    data["Id"] = numberId;
+    data["Name"] = RegName.text;
+    data["MobileNumber"] = RegMobNumber.text;
+    data["RegisterNo"] = RegClgNo.text;
+    data["AdmissionNo"] = RegAdmNumber.text;
+    data["To"] = RegTo.text;
+    data["Subject"] = RegSubject.text;
+    data["Complaint"] = RegCmptText.text;
+
+    // data["UserName"] = username;
+    data["Date"] = DateTime.now().toString();
+    data["Time"] = DateTime.now().millisecondsSinceEpoch.toString();
+
+    await mRootReference.child("Complaints").child(id1)
+    // .child('Details')
+        // .push();
+        .update(data);
+
+    // await
+    // referenceRoot.child("Test")
+    //     .child("Images").push().update(data);
+  }
 }
+

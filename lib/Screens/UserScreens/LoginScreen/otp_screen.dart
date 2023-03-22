@@ -32,6 +32,7 @@ class _OTPScreenState extends State<OTPScreen> {
   Widget build(BuildContext context) {
 
     return  Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       body:!isLoading? Column(
         children: <Widget>[
@@ -60,17 +61,16 @@ class _OTPScreenState extends State<OTPScreen> {
                 child: Text(
                   "",
                   style: TextStyle(
-                      fontSize: 15.0, fontWeight: FontWeight.bold, color: Colors.greenAccent),
+                      fontSize: 15.0, fontWeight: FontWeight.bold, color: Colors.blue),
                   textAlign: TextAlign.center,),
               ),
 
               Padding(
                 padding: EdgeInsets.only(top: 16.0,bottom: 00),
                 child: Image(
-                  image: AssetImage('assets/Image/otp-icon.png'),
-                  height: 150.0,
-                  width: 150.0,),
-              )
+                  image: AssetImage('assets/r3.png'),
+                  height: 250.0,
+              )),
             ],
           ),
           const Spacer(flex: 1,),
@@ -84,10 +84,10 @@ class _OTPScreenState extends State<OTPScreen> {
                 autoFocus: true,
                 controller: currController,
                 currentCode: "",
-                decoration: const BoxLooseDecoration(
+                decoration:  BoxLooseDecoration(
                     textStyle: TextStyle(color: Colors.black),
                     radius: Radius.circular(5),
-                    strokeColorBuilder: FixedColorBuilder(Colors.greenAccent)),
+                    strokeColorBuilder: FixedColorBuilder(Colors.blue.shade200)),
                 onCodeChanged: (pin) {
                   if (pin!.length == 6) {
                     matchOtp(context);

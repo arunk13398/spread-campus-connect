@@ -39,7 +39,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
     height = size.height;
     width = size.width;
     return Scaffold(
-        backgroundColor: MyColors.Blackcolor,
+        backgroundColor: Colors.grey.shade300,
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
@@ -188,6 +188,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
                   ),
                 ),
                 Container(
+                  color:Colors.grey.shade300,
                   height: height / 2.8,
                   child: ListView.builder(
                     itemCount: commentList.length,
@@ -238,7 +239,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
                       ),
                     ),
                     MaterialButton(
-                        color: MyColors.Orangecolor,
+                        color: Colors.blue,
                         height: 50,
                         minWidth: width / 5.5,
                         shape: RoundedRectangleBorder(
@@ -337,7 +338,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
               children: [
                 Text(
                   commentList[index].username,
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                 ),
                 SizedBox(
                   height: 5,
@@ -345,7 +346,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
                 Text(
                   commentList[index].description,
                   style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 18),
                 ),

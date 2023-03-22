@@ -1,7 +1,8 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:miniq/Theme/theme.dart';
+import 'package:miniq/Screens/UserScreens/NotificationScreen/publish_notification.dart';
+
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({Key? key}) : super(key: key);
@@ -14,51 +15,49 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: MyColors.Blackcolor,
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top:10.0,left:10),
+                child: Text("Notifications",style:TextStyle(color:Colors.blue)),
+              ),
+              InkWell(
+                onTap: (){
+                  Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PublishNotification()));
+                },
+                child: Container(
+                    height: 40,
+                    decoration: BoxDecoration(color:Colors.blue,
+                      borderRadius: BorderRadius.circular(60),
+                    ),
+                    child:Row(
+                      children: [
+                        SizedBox(width: 10,),
+                        Icon(Icons.notifications_none,color: Colors.white,),
+                        Padding(
+                          padding: const EdgeInsets.only(left:6.0,right:10),
+                          child: Text("Publish",style:TextStyle(fontSize: 15,)),
+                        )
+                      ],
+                    )
+                ),
+              ),
+            ],
+          ),
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 15, top: 10.0, bottom: 10),
-                  child: Text("Notifications",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 25,
-                          color: Colors.white)),
-                ),
                 TextNotificationAdaptor(),
-                TextNotificationAdaptor(),
-                TextNotificationAdaptor(),
-                // Align(
-                //   alignment: Alignment.bottomCenter,
-                //   child: Padding(
-                //     padding: const EdgeInsets.only(
-                //         left: 15.0, right: 15, top: 10, bottom: 10),
-                //     child: MaterialButton(
-                //         onPressed: () {
-                //           // Navigator.push(
-                //           //     context,
-                //           //     MaterialPageRoute(
-                //           //         builder: (context) => HomeScreenBuyer()));
-                //         },
-                //         textColor: Colors.white,
-                //         color: MyColors.Orangecolor,
-                //         minWidth: double.infinity,
-                //         height: 60,
-                //         shape: RoundedRectangleBorder(
-                //             borderRadius: BorderRadius.circular(10.0)),
-                //         child: const Text(
-                //           "Publish notification",
-                //           style: TextStyle(
-                //               fontSize: 18,
-                //               color: MyColors.Blackcolor,
-                //               fontWeight: FontWeight.bold),
-                //         )),
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -74,7 +73,7 @@ class TextNotificationAdaptor extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 10.0, right: 10, top: 5, bottom: 5),
       child: Card(
-        color: MyColors.LightBlackcolor,
+        color: Colors.white,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
         child: Container(
@@ -103,7 +102,7 @@ class TextNotificationAdaptor extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: Colors.black,
                             ),
                           ),
                           SizedBox(
@@ -113,7 +112,7 @@ class TextNotificationAdaptor extends StatelessWidget {
                             "Section infomation",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: MyColors.Orangecolor,
+                              color: Colors.blue,
                               fontSize: 16,
                             ),
                           ),
@@ -129,7 +128,7 @@ class TextNotificationAdaptor extends StatelessWidget {
                     theme: const ExpandableThemeData(
                       expandIcon: CupertinoIcons.arrow_down_right_arrow_up_left,
                       iconSize: 22,
-                      iconColor: MyColors.Greencolor,
+                      iconColor: Colors.blue,
                       headerAlignment: ExpandablePanelHeaderAlignment.center,
                       tapBodyToCollapse: true,
                     ),
@@ -140,11 +139,11 @@ class TextNotificationAdaptor extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white),
+                              color: Colors.black),
                         )),
                     collapsed: Text(
                         "College notifications are showed in here sh jd djsh dsh sd jv svh jh sd sdj sj j sd sdj sd sdjs s sdjv sdj sd sdvj sdj sdj ja   hs jsj  v dsj sj js vsdj sd s sdm dj j saa ssg gdvvvd fsfs sy as asc vss z sv sgsg gs vg vgd v vskv svs vjsaisshjs j vsdv s dseyk dv  s nsd sd v djsh sdj sdj vds jsv sdjv sdj vsdjh vsdh sd vjs js vjs sdj djs hdsjh vsjh svdh j dvhjshsd sd sd hsd ghsdsdh  sdh sdh sjh sdvhsddgs ysgdvsdvdv bsdnvb bd znvb xbnbn xvvsd hjs sdn sd  vds sd sd shjuheuhj ev hs shjs d dv sdv sj sdjvdj dds v d sdjh dshjsd sd sdhj dshsj shjd sdjh sdhj sd vdh sds hdv hdh dvh jds dv hsdh vsuu ev ue udsvhds hd hsdh sdhjdsjsddsh ds ds sd jhsd jsdsd nsdj  veue h jhe ehj eh d sddsj dshjsdh vdhj dvhjds vdhsdjh vehhuekgfg g dg ds hjsdhdsd hsdh dsjh djhsd sdjh sdhj sdjdh sdhjsuheu heu hjdsh jh dsh s",
-                        style: TextStyle(fontSize: 16, color: Colors.white),
+                        style: TextStyle(fontSize: 16, color: Colors.black),
                         textAlign: TextAlign.justify,
                         softWrap: false,
                         maxLines: 2,
@@ -153,7 +152,7 @@ class TextNotificationAdaptor extends StatelessWidget {
                       children: [
                         Text(
                             "College sh jd djsh dsh sd jv svh jh sd sdj sj j sd sdj sd sdjs s sdjv sdj sd sdvj sdj sdj ja   hs jsj  v dsj sj js vsdj sd s sdm dj j saa ssg gdvvvd fsfs sy as asc vss z sv sgsg gs vg vgd v vskv svs vjsaisshjs j vsdv s dseyk dv  s nsd sd v djsh sdj sdj vds jsv sdjv sdj vsdjh vsdh sd vjs js vjs sdj djs hdsjh vsjh svdh j dvhjshsd sd sd hsd ghsdsdh  sdh sdh sjh sdvhsddgs ysgdvsdvdv bsdnvb bd znvb xbnbn xvvsd hjs sdn sd  vds sd sd shjuheuhj ev hs shjs d dv sdv sj sdjvdj dds v d sdjh dshjsd sd sdhj dshsj shjd sdjh sdhj sd vdh sds hdv hdh dvh jds dv hsdh vsuu ev ue udsvhds hd hsdh sdhjdsjsddsh ds ds sd jhsd jsdsd nsdj  veue h jhe ehj eh d sddsj dshjsdh vdhj dvhjds vdhsdjh vehhuekgfg g dg ds hjsdhdsd hsdh dsjh djhsd sdjh sdhj sdjdh sdhjsuheu heu hjdsh jh dsh s",
-                            style: TextStyle(fontSize: 16, color: Colors.white),
+                            style: TextStyle(fontSize: 16, color: Colors.black),
                             textAlign: TextAlign.justify,
                             softWrap: false,
                             maxLines: 50,
@@ -163,13 +162,13 @@ class TextNotificationAdaptor extends StatelessWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: MyColors.Yellowcolor,
+                              color: Colors.blue,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Text("Pdf View",
                                   style: TextStyle(
-                                      color: Colors.black,
+                                      color: Colors.white,
                                       fontWeight: FontWeight.bold)),
                             ),
                           ),
