@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/FeedPage.dart';
 import 'package:miniq/Screens/UserScreens/NotificationScreen/notification_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../demo_test.dart';
 import '../test.dart';
 import 'UserScreens/CmpltRegistration/complaint_list.dart';
 import 'UserScreens/ProfileScreen/dashboard_profile.dart';
@@ -74,10 +75,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
               ),
             ),
           ),
-          // BottomNavigationBarItem(
-          //   label: "testing",
-          //   icon: Icon(Icons.bug_report_outlined),
-          // ),
+          BottomNavigationBarItem(
+            label: "testing",
+            icon: Icon(Icons.bug_report_outlined),
+          ),
         ],
       ),
     );

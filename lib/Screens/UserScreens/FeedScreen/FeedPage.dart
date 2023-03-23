@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chip_list/chip_list.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,18 @@ class _FeedPageState extends State<FeedPage> {
   String UserName = '';
   bool isLiked = false;
   var size, height, width;
+
+  final List<String> _menuItems = [
+    'All',
+    'Students',
+    'Teachers',
+    'Non Teaching-Staff',
+    'Events',
+    'Events',
+    'Other college',
+  ];
+
+  int _currentIndex = 0;
 
 
   var top=0.0;
@@ -154,79 +167,19 @@ class _FeedPageState extends State<FeedPage> {
                                               color: Colors.black)),
                                     ),
                                     SizedBox(height: 30,),
-                                    Container(
-                                      height: 40,
-                                      width: height/1,
-                                      child: ListView(
-                                        scrollDirection: Axis.horizontal,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(left:5.0,right:5),
-                                            child: Container(
-                                              // width: 30,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(30),
-                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(left:10.0,right:10,top:10,bottom:10),
-                                                  child: Center(child: Text("All",style: TextStyle(fontWeight: FontWeight.bold),)),
-                                                )),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left:5.0,right:5),
-                                            child: Container(
-                                              // width: 30,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(30),
-                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
-                                                  child: Center(child: Text("Students",style: TextStyle(fontWeight: FontWeight.bold),)),
-                                                )),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left:5.0,right:5),
-                                            child: Container(
-                                              // width: 30,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(30),
-                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
-                                                  child: Center(child: Text("Employees",style: TextStyle(fontWeight: FontWeight.bold),)),
-                                                )),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left:5.0,right:5),
-                                            child: Container(
-                                              // width: 30,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(30),
-                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
-                                                  child: Center(child: Text("Events",style: TextStyle(fontWeight: FontWeight.bold),)),
-                                                )),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(left:5.0,right:5),
-                                            child: Container(
-                                              // width: 30,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(30),
-                                                    border:Border.all(color: Colors.grey.shade300,width: 1,)
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
-                                                  child: Center(child: Text("Other college",style: TextStyle(fontWeight: FontWeight.bold),)),
-                                                )),
-                                          ),
-                                        ],
-                                      ),
+                                    // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
+                                    ChipList(
+                                      listOfChipNames: _menuItems,
+                                      activeBgColorList: [Theme.of(context).primaryColor],
+                                      inactiveBgColorList: const [Colors.white],
+                                      activeTextColorList: const [Colors.white],
+                                      inactiveTextColorList: [Colors.black],
+                                      listOfChipIndicesCurrentlySeclected: [_currentIndex],
+                                      inactiveBorderColorList:  [Colors.grey.shade300],
+                                      extraOnToggle: (val) {
+                                        _currentIndex = val;
+                                        setState(() {});
+                                      },
                                     ),
 
                                   ],

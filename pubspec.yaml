@@ -42,6 +42,7 @@ dependencies:
   sms_autofill: ^2.2.0
   shared_preferences: ^2.0.17
   floating_frosted_bottom_bar: ^0.0.1
+  chip_list: ^2.4.3+8
 #  tflite: ^1.1.2
 
 
