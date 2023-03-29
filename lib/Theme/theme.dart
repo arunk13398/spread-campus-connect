@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 class MyColors {
+  static const trans =Color(0x7EFFFFFF);
+
+
   static const Color1 =Color(0xFF13153B);
   static const Color2 =Color(0xFF6D0963);
   static const Color3 =Color(0xFFF23470);

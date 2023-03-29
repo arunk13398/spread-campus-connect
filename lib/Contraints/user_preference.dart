@@ -10,6 +10,7 @@ class UserPreferences{
     static const String USER_TYPE = "USER_TYPE";
     static const String NAME = "NAME";
     static const String CODE = "CODE";
+    static const String COLLEGE = "COLLEGE";
 
 }
 setString(String key,String value) async {
@@ -23,11 +24,11 @@ setInt(String key,int value) async {
 setDouble(String key,double value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setDouble(key, value);
-}setBool(String key,bool value) async {
+}
+setBool(String key,bool value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool(key, value);
 }
-
 getString(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? stringValue = prefs.getString(key);

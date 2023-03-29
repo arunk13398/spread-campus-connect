@@ -2,11 +2,13 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/FeedPage.dart';
-import 'package:miniq/Screens/UserScreens/NotificationScreen/notification_page.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:miniq/Screens/test_page.dart';
 import '../demo_test.dart';
 import '../test.dart';
 import 'UserScreens/CmpltRegistration/complaint_list.dart';
+import 'UserScreens/LoginScreen/user_registration.dart';
+import 'UserScreens/NotificationScreen/notification_list.dart';
 import 'UserScreens/ProfileScreen/dashboard_profile.dart';
 
 class BottomNavigation extends StatefulWidget {
@@ -26,10 +28,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
   int _currentIndex=0;
   List _screens=[
     FeedPage(),
-    NotificationPage(),
+    NotificationList(),
     ComplaintList(),
     ProfileDashboard(),
-    TestDemo()];
+    TestDemo(),
+    // TestPage()
+    ];
 
   void _updateIndex(int value) {
     setState(() {

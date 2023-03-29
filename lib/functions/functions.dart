@@ -89,6 +89,31 @@ alertDialog(BuildContext context,String title,String content) {
   );
 }
 
+optionDialog(BuildContext context,String title,String content) {
+
+  AlertDialog alert = AlertDialog(
+    title:  Text(title),
+    content:  Text(content),
+    actions: [
+      TextButton(
+        child: const Text("Ok"),
+        onPressed: () {
+          // Navigator.of(context).pop();
+        },
+      ),
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+
 // Future<void> makePhoneCall(String phoneNumber) async {
 //   final Uri launchUri = Uri(
 //     scheme: 'tel',
@@ -188,6 +213,23 @@ void showLoaderDialog(BuildContext context){
       ),
     ),
   );
-
 }
 
+// getDataF1() async {
+//   numberId = (await getString(UserPreferences.USER_NUMBER));
+//   UserName = (await getString(UserPreferences.USER_Name));
+//   College = (await getString(UserPreferences.COLLEGE));
+//   mRootReference
+//       .child("AccessControl")
+//       .child(await getString(UserPreferences.USER_NUMBER))
+//       .once()
+//       .then((value) {
+//     if (value.snapshot.exists) {
+//       print("efgh ${value.snapshot.value}");
+//       Map<dynamic, dynamic> data = value.snapshot.value as Map;
+//       College = data["College"];
+//       Designation = data["Designation"];
+//       setState(() {});
+//     }
+//   });
+// }

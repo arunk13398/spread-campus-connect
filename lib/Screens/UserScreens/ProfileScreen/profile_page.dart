@@ -71,12 +71,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   ),
-                  Text("Gecwyd",
-                      style:
-                          TextStyle(fontSize: 16, color: MyColors.Whitecolor)),
-                  SizedBox(
-                    height: 5,
-                  ),
+                  Text("Gecwyd", style: TextStyle(fontSize: 16, color: MyColors.Whitecolor)),
+                  SizedBox(height: 5,),
                   Text("Third year",
                       style:
                           TextStyle(fontSize: 16, color: MyColors.Whitecolor)),

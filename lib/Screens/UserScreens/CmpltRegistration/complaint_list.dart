@@ -36,6 +36,18 @@ class _ComplaintListState extends State<ComplaintList> {
       body: SafeArea(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left:10.0,top:15,bottom:20),
+              child: Align(alignment: Alignment.topLeft,
+                child: Text(
+                  "Registered Complaints",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.blue),
+                ),
+              ),
+            ),
             Expanded(
               child: Container(
                 // height: 120,
@@ -60,9 +72,9 @@ class _ComplaintListState extends State<ComplaintList> {
                 minWidth: double.infinity,
                 height: 50,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)
+                    borderRadius: BorderRadius.circular(10)
                 ),
-                child: Text("Register Complaint",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 18),),
+                child: Text("Register new Complaint",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 18),),
               ),
             ),
             // Padding(

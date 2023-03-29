@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:floating_frosted_bottom_bar/floating_frosted_bottom_bar.dart';
 import 'package:miniq/Screens/UserScreens/CmpltRegistration/complaint_registration.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/FeedPage.dart';
-import 'package:miniq/Screens/UserScreens/NotificationScreen/notification_page.dart';
+import 'package:miniq/Screens/UserScreens/NotificationScreen/notification_list.dart';
 import 'package:miniq/Screens/UserScreens/ProfileScreen/profile_page.dart';
 import 'package:miniq/Theme/theme.dart';
 import 'package:miniq/functions/camera.dart';
+
+import '../demo_test.dart';
+import '../test.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({
@@ -98,11 +101,11 @@ class _TestPageState extends State<TestPage>
           dragStartBehavior: DragStartBehavior.down,
           physics: const BouncingScrollPhysics(),
           children: [
-            FeedPage(),
-            NotificationPage(),
-            Camera(),
-            ComplaintRegistration(),
-            ProfilePage(),
+            // TestPageDemo(),
+            DemoTest(),
+            TestDemo(),
+            // ComplaintRegistration(),
+            // ProfilePage(),
           ],
         ),
       ),

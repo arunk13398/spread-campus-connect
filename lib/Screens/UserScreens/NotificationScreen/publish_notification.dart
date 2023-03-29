@@ -1,6 +1,13 @@
-import 'package:flutter/material.dart';
+import 'dart:collection';
 
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import '../../../Contraints/user_preference.dart';
 import '../../../Theme/theme.dart';
+import '../../../functions/functions.dart';
+import '../../bottom_navigation.dart';
+import 'notification_list.dart';
 
 class PublishNotification extends StatefulWidget {
   const PublishNotification({Key? key}) : super(key: key);
@@ -11,153 +18,444 @@ class PublishNotification extends StatefulWidget {
 
 class _PublishNotificationState extends State<PublishNotification> {
   @override
+  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  String numberId = '';
+  String UserName = '';
+  // String UserName1 = '';
+  String College = '';
+  String Designation = '';
+
+
+
+  TextEditingController _content = TextEditingController();
+  TextEditingController _subject = TextEditingController();
+
+
+  String _designationDpValue = 'Student';
+  String _academicDpValue = '1stYear';
+  String _collegeDpValue = 'GECWayanad';
+  String _studentValue ='Student';
+
+  var _usersList = ['Student', 'Teacher', 'NonTeachingStaff', 'OtherEmployees', 'Alumni', 'Others','General',];
+  var _academicYear = ['1stYear','2stYear', '3stYear', '4stYear','General',];
+  var _college = ['GECWayanad', 'GECIdukki','GECPalakkad','GECKannur','GECThrissor','GECThiruvananthapuram','Others'];
+
+
+  void initState(){
+
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed){
+      if(!isAllowed){
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
+    getDataD1();
+    super.initState();
+  }
+
+  triggerNotification(){
+    AwesomeNotifications().createNotification(
+        content: NotificationContent(
+            id: 10,
+            channelKey: 'basic_channel',
+          body: _content.text,
+            title: _subject.text
+        ));
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return  Scaffold(
         body:SafeArea(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Notification pubish form",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.blue),
-                  ),
+          child:
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 20,
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  style: TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'Publisher name',
-                    labelStyle: TextStyle(color: Colors.black),
-                    hintStyle: TextStyle(color: Colors.blue),
-                    hintText: 'Publisher name',
-                    filled: true,
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.2),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.6),
+                const Padding(
+                  padding: EdgeInsets.only(left: 10.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Notification pubish form",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.blue),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  style: TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'designation',
-                    labelStyle: TextStyle(color: Colors.black),
-                    hintStyle: TextStyle(color: Colors.blue),
-                    hintText: 'designation',
-                    filled: true,
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.2),
+                const SizedBox(height: 10,),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: TextFormField(
+                //     // controller: _userName,
+                //      enabled: false,
+                //     // initialValue: UserName,
+                //     controller: widget.UserName,
+                //     style: TextStyle(color: Colors.black),
+                //     decoration: InputDecoration(
+                //       border: const OutlineInputBorder(),
+                //       labelText: 'Publisher name',
+                //       labelStyle: TextStyle(color: Colors.black),
+                //       hintStyle: TextStyle(color: Colors.blue),
+                //       hintText: 'Publisher name',
+                //       filled: true,
+                //       fillColor: Colors.white,
+                //       enabledBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //         borderSide: BorderSide(
+                //             color: MyColors.LightBlackcolor, width: 1.2),
+                //       ),
+                //       focusedBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //         borderSide: BorderSide(
+                //             color: MyColors.LightBlackcolor, width: 1.6),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+                Padding(
+                  padding: const EdgeInsets.only(left:8.0,),
+                  child: Align(alignment: Alignment.topLeft,
+                      child: Text("User name",style:TextStyle(color:Colors.blue))),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    padding: EdgeInsets.only(left:10,top:15),
+                    height: 50,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        width: 1,
+                        color: Colors.grey.shade300
+                      )
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.6),
-                    ),
+                    child:Text(UserName,style:TextStyle()),
                   ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.only(left:8.0,),
+                  child: Align(alignment: Alignment.topLeft,
+                      child: Text("Designation",style:TextStyle(color:Colors.blue))),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    padding: EdgeInsets.only(left:10,top:15),
+                    height: 50,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                            width: 1,
+                            color: Colors.grey.shade300
+                        )
+                    ),
+                    child:Text(Designation,style:TextStyle()),
+                  ),
+                ),
 
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  style: TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'To',
-                    hintText: 'To',
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelStyle: TextStyle(color: Colors.black),
-                    hintStyle: TextStyle(color: Colors.blue),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.2),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: TextFormField(
+                //     enabled: false,
+                //     initialValue: College,
+                //     style: TextStyle(color: Colors.black),
+                //     decoration: InputDecoration(
+                //       border: const OutlineInputBorder(),
+                //       labelText: 'Publisher designation',
+                //       labelStyle: TextStyle(color: Colors.black),
+                //       hintStyle: TextStyle(color: Colors.blue),
+                //       hintText: 'Publisher designation',
+                //       filled: true,
+                //       fillColor: Colors.white,
+                //       enabledBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //         borderSide: BorderSide(
+                //             color: MyColors.LightBlackcolor, width: 1.2),
+                //       ),
+                //       focusedBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //         borderSide: BorderSide(
+                //             color: MyColors.LightBlackcolor, width: 1.6),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
+                Padding(
+                  padding: const EdgeInsets.only(left:10.0),
+                  child: Align(alignment:Alignment.topLeft, child: Text("To",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18,))),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: double.infinity,
+                    height: 60,
+                    decoration:BoxDecoration(
+                        color:Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(
+                            color: Colors.black38,
+                            width: 1
+                        )
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.6),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton(
+                        // Initial Value
+                        value: _collegeDpValue,
+                        iconEnabledColor: Colors.black,
+                        borderRadius: BorderRadius.circular(10),
+                        // Down Arrow Icon
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        // Array list of items
+                        items: _college.map((String items) {
+                          return DropdownMenuItem(
+                            value: items,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0,right:10),
+                              child: Text(items),
+                            ),
+                          );
+                        }).toList(),
+                        // After selecting the desired option,it will
+                        // change button value to selected value
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _collegeDpValue = newValue!;
+                          });
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  style: TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'Subject',
-                    hintText: 'Subject',
-                    filled: true,
-                    fillColor: Colors.white,
-                    labelStyle: TextStyle(color: Colors.black),
-                    hintStyle: TextStyle(color: Colors.blue),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.2),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                      borderSide: BorderSide(
-                          color: MyColors.LightBlackcolor, width: 1.6),
-                    ),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(width:5,),
+                      Text("Select your designation ",style: TextStyle(color: Colors.black,fontSize: 16,)),
+                      Spacer(),
+                      Container(
+                        width: 200,
+                        height: 40,
+                        decoration:BoxDecoration(
+                            color:Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                color: Colors.black38,
+                                width: 1
+                            )
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            // Initial Value
+                            value: _designationDpValue,
+                            iconEnabledColor: Colors.black,
+                            borderRadius: BorderRadius.circular(10),
+                            // Down Arrow Icon
+                            icon: const Icon(Icons.keyboard_arrow_down),
+                            // Array list of items
+                            items: _usersList.map((String items) {
+                              return DropdownMenuItem(
+                                value: items,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:10.0,right:10),
+                                  child: Text(items),
+                                ),
+                              );
+                            }).toList(),
+                            // After selecting the desired option,it will
+                            // change button value to selected value
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _designationDpValue = newValue!;
+                                print("asdfghjkl ${_designationDpValue}");
+                                print("asdfghjkl ${_studentValue}");
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 5,),
+                    ],
                   ),
                 ),
-              ),
-              Padding(
-                padding:
-                const EdgeInsets.only(left: 10.0, top: 20, bottom: 10),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Notification content",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Colors.blue),
-                    softWrap: false,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                _designationDpValue==_studentValue?
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(width:5,),
+                          Text("Select acadamic year ",style: TextStyle(color: Colors.black,fontSize: 16,)),
+                          Spacer(),
+                          Container(
+                            width: 200,
+                            height: 40,
+                            decoration:BoxDecoration(
+                                color:Colors.white,
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(
+                                    color: Colors.black38,
+                                    width: 1
+                                )
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton(
+                                // Initial Value
+                                value: _academicDpValue,
+                                iconEnabledColor: Colors.black,
+                                borderRadius: BorderRadius.circular(10),
+                                // Down Arrow Icon
+                                icon: const Icon(Icons.keyboard_arrow_down),
+                                // Array list of items
+                                items: _academicYear.map((String items) {
+                                  return DropdownMenuItem(
+                                    value: items,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left:10.0,right:10),
+                                      child: Text(items),
+                                    ),
+                                  );
+                                }).toList(),
+                                // After selecting the desired option,it will
+                                // change button value to selected value
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _academicDpValue = newValue!;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 5,),
+                        ],
+                      ),
+                      SizedBox(height: 15,),
+
+                      // _academicDpValue== _allDpValue?Container():
+                      // Column(children: [
+                      //   Row(
+                      //     children: [
+                      //       SizedBox(width: 5,),
+                      //       Text("Choose Course",style: TextStyle(color: Colors.black,fontSize: 16,)),
+                      //       Spacer(),
+                      //       Text("Select Department",style: TextStyle(color: Colors.black,fontSize: 16,)),
+                      //       SizedBox(width: 10,),
+                      //     ],
+                      //   ),
+                      //   SizedBox(height: 15,),
+                      //   Row(
+                      //     mainAxisAlignment: MainAxisAlignment.center,
+                      //     children: [
+                      //       SizedBox(width:5,),
+                      //       // Text("Select your designation ",style: TextStyle(color: Colors.black,fontSize: 16,)),
+                      //       Container(
+                      //         width: 150,
+                      //         height: 40,
+                      //         decoration:BoxDecoration(
+                      //             color:Colors.white,
+                      //             borderRadius: BorderRadius.circular(5),
+                      //             border: Border.all(
+                      //                 color: Colors.black38,
+                      //                 width: 1
+                      //             )
+                      //         ),
+                      //         child: DropdownButtonHideUnderline(
+                      //           child: DropdownButton(
+                      //             // Initial Value
+                      //             value: _courseDpValue,
+                      //             iconEnabledColor: Colors.black,
+                      //             borderRadius: BorderRadius.circular(10),
+                      //             // Down Arrow Icon
+                      //             icon: const Icon(Icons.keyboard_arrow_down),
+                      //             // Array list of items
+                      //             items: _course.map((String items) {
+                      //               return DropdownMenuItem(
+                      //                 value: items,
+                      //                 child: Padding(
+                      //                   padding: const EdgeInsets.only(left:10.0,right:10),
+                      //                   child: Text(items),
+                      //                 ),
+                      //               );
+                      //             }).toList(),
+                      //             // After selecting the desired option,it will
+                      //             // change button value to selected value
+                      //             onChanged: (String? newValue) {
+                      //               setState(() {
+                      //                 _courseDpValue = newValue!;
+                      //                 print("asdfghjkl ${_courseDpValue}");
+                      //                 print("asdfghjkl ${_studentValue}");
+                      //               });
+                      //             },
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       Spacer(),
+                      //       Container(
+                      //         width: 150,
+                      //         height: 40,
+                      //         decoration:BoxDecoration(
+                      //             color:Colors.white,
+                      //             borderRadius: BorderRadius.circular(5),
+                      //             border: Border.all(
+                      //                 color: Colors.black38,
+                      //                 width: 1
+                      //             )
+                      //         ),
+                      //         child: DropdownButtonHideUnderline(
+                      //           child: DropdownButton(
+                      //             // Initial Value
+                      //             value: _departmentDpValue,
+                      //             iconEnabledColor: Colors.black,
+                      //             borderRadius: BorderRadius.circular(10),
+                      //             // Down Arrow Icon
+                      //             icon: const Icon(Icons.keyboard_arrow_down),
+                      //             // Array list of items
+                      //             items: _department.map((String items) {
+                      //               return DropdownMenuItem(
+                      //                 value: items,
+                      //                 child: Padding(
+                      //                   padding: const EdgeInsets.only(left:10.0,right:10),
+                      //                   child: Text(items),
+                      //                 ),
+                      //               );
+                      //             }).toList(),
+                      //             // After selecting the desired option,it will
+                      //             // change button value to selected value
+                      //             onChanged: (String? newValue) {
+                      //               setState(() {
+                      //                 _departmentDpValue = newValue!;
+                      //                 print("asdfghjkl ${_departmentDpValue}");
+                      //                 print("asdfghjkl ${_studentValue}");
+                      //               });
+                      //             },
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       SizedBox(width: 5,),
+                      //     ],
+                      //   ),
+                      // ],)
+                    ],
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: 150,
+                ):Container(),
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    controller: _subject,
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
@@ -178,37 +476,158 @@ class _PublishNotificationState extends State<PublishNotification> {
                             color: MyColors.LightBlackcolor, width: 1.6),
                       ),
                     ),
-                    maxLines: 100,
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: MaterialButton(
-                      onPressed: () {
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => HomeScreenBuyer()));
-                      },
-                      textColor: Colors.white,
-                      color: Colors.blue,
-                      minWidth: double.infinity,
-                      height: 60,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0)),
-                      child: const Text(
-                        "Submit Review",
-                        style: TextStyle(
-                            fontSize: 18, color: Colors.white),
-                      )),
+                Padding(
+                  padding:
+                  const EdgeInsets.only(left: 10.0, top: 20, bottom: 10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Notification content",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.blue),
+                      softWrap: false,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 150,
+                    child: TextFormField(
+                      controller: _content,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: 'Notification Content',
+                        hintText: 'Notification Content',
+                        filled: true,
+                        fillColor: Colors.white,
+                        labelStyle: TextStyle(color: Colors.black),
+                        hintStyle: TextStyle(color: Colors.blue),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          borderSide: BorderSide(
+                              color: MyColors.LightBlackcolor, width: 1.2),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          borderSide: BorderSide(
+                              color: MyColors.LightBlackcolor, width: 1.6),
+                        ),
+                      ),
+                      maxLines: 100,
+                    ),
+                  ),
+                ),
+
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: MaterialButton(
+                        // onPressed:
+                        // //triggerNotification,
+                        //     () {
+                        //       print("asdfghjkl ${numberId}");
+                        //       print("asdfghjkl ${UserName}");
+                        //       print("asdfghjkl ${College}");
+                        //       // print("asdfghjkl ${UserName1}");
+                        //       print("asdfghjkl ${Designation}");
+                        // },
+                        onPressed: () async {
+                          await PublishNotification().then((value) {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              backgroundColor: MyColors.Greencolor,
+                              content: Text(
+                                "Successful",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ));
+                            triggerNotification();
+                            // description.clear();
+                            // finish(context);
+                          });
+                        },
+
+                        textColor: Colors.white,
+                        color: Colors.blue,
+                        minWidth: double.infinity,
+                        height: 60,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0)),
+                        child: const Text(
+                          "Submit Review",
+                          style: TextStyle(
+                              fontSize: 18, color: Colors.white),
+                        )),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
     );
+  }
+
+
+  getDataD1() async {
+    // numberId = (await getString(UserPreferences.USER_NUMBER));
+    // UserName = (await getString(UserPreferences.USER_Name));
+    // College = (await getString(UserPreferences.COLLEGE));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("efgh ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserName = data["Name"];
+        setState(() {});
+      }
+    });
+  }
+
+
+  Future<void> PublishNotification() async {
+    String id1 = DateTime.now().millisecondsSinceEpoch.toString();
+    HashMap<String, dynamic> data = HashMap<String, dynamic>();
+
+    data["Id"] =  DateTime.now().toString();
+    data["Name"] = UserName;
+    data["designation"] = Designation;
+    data["College"] = College;
+    data["Subject"] = _subject.text;
+    data["NotificationContent"] = _content.text;
+
+
+
+    // HashMap<String, dynamic> access = HashMap<String, dynamic>();
+    // access["Name"] = name.text;
+    // access["Phone"] = id;
+    // access["AcessCode"] = '1';
+    // access["AcessName"] = 'Users';
+    // access["College"] =_collegeDpValue;
+    // access["Designation"] =_designationDpValue;
+    //
+
+    if(_designationDpValue==_studentValue){
+      await mRootReference.child("Notification").child(College).child(_designationDpValue).child(_academicDpValue).child(id1).update(data);
+    }
+    else {
+      await mRootReference.child("Notification").child(College).child(_designationDpValue).child(id1).update(data);
+    }
+
+    // await mRootReference.child("AccessControl").child(id).update(access);
+    Future.delayed(const Duration(seconds: 1), () {
+      finishAccountCreation( NotificationList(), context);
+    });
   }
 }

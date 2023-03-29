@@ -25,13 +25,28 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
   String username = '';
   var size, height, width;
   @override
-  void initState() {
-    // TODO: implement initState
+
+
+  int _currentIndex = 0;
+
+
+  var top=0.0;
+  late ScrollController _scrollController;
+
+  @override void initState() {
     loadComment();
     // getData();
     getData1();
     super.initState();
+    _scrollController =  ScrollController();
+    _scrollController.addListener(() {
+      setState(() {
+
+      });
+    });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +55,120 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
     width = size.width;
     return Scaffold(
         backgroundColor: Colors.grey.shade300,
-        body: SafeArea(
-          child: SingleChildScrollView(
+        body:
+        SafeArea(
+          child:
+          // CustomScrollView(
+          //   controller: _scrollController,
+          //   slivers: [
+          //     SliverAppBar(backgroundColor: Colors.white,
+          //         pinned: true,
+          //         expandedHeight: 390,
+          //         flexibleSpace: LayoutBuilder(builder: (ctx,cons){
+          //           top=cons.biggest.height;
+          //           return FlexibleSpaceBar(
+          //             centerTitle: true,
+          //             title: AnimatedOpacity(
+          //               opacity: top <=100?1.0:0.0,
+          //               duration: Duration(milliseconds: 300),
+          //               child: Padding(
+          //                 padding: const EdgeInsets.only(top:0.0),
+          //                 child: Row(children: [
+          //                   Padding(
+          //                     padding: const EdgeInsets.only(left:15.0),
+          //                     child: Text("Comments",
+          //                         style: TextStyle(
+          //                             fontWeight: FontWeight.bold,
+          //                             fontSize: 30,
+          //                             color: Colors.black)),
+          //                   ),
+          //                   Spacer(),
+          //                   InkWell(
+          //                     onTap: (){
+          //                       // Navigator.push(
+          //                       //     context,
+          //                       //     MaterialPageRoute(
+          //                       //         builder: (context) =>
+          //                       //             Camera()));
+          //                     },
+          //                     child: Container(
+          //                         height: 40,
+          //                         width: 40,
+          //                         decoration: BoxDecoration(color:Colors.blue,
+          //                           borderRadius: BorderRadius.circular(60),
+          //                         ),
+          //                         child:Icon(Icons.add,color: Colors.white,)
+          //                     ),
+          //                   ),
+          //                   SizedBox(width: 10,),
+          //                   // ClipRRect(
+          //                   //     borderRadius: BorderRadius.circular(100),
+          //                   //     child: Image.network(
+          //                   //       "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
+          //                   //       // list[index].imageUrl,
+          //                   //       height: 40,
+          //                   //       width: 40,
+          //                   //       fit: BoxFit.cover,
+          //                   //     )),
+          //                   // SizedBox(width:12),
+          //                 ],),
+          //               ),
+          //             ),
+          //
+          //
+          //
+          //
+          //             background: Container(
+          //               color: Colors.transparent,
+          //               child: Container(
+          //                 color:Colors.white,
+          //                 child: Column(
+          //                   crossAxisAlignment: CrossAxisAlignment.start,
+          //                   children: [
+          //                   CachedNetworkImage(
+          //                     height: height/2.2,
+          //                     width: double.infinity,
+          //                     fit: BoxFit.fill,
+          //                     imageUrl: widget.feedModel.imageUrl,
+          //                     placeholder: (context, url) => Center(
+          //                         child: CircularProgressIndicator(
+          //                           color: Colors.red,
+          //                         )),
+          //                   ),
+          //
+          //                     // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
+          //                     // ChipList(
+          //                     //   listOfChipNames: _menuItems,
+          //                     //   activeBgColorList: [Theme.of(context).primaryColor],
+          //                     //   inactiveBgColorList: const [Colors.white],
+          //                     //   activeTextColorList: const [Colors.white],
+          //                     //   inactiveTextColorList: [Colors.black],
+          //                     //   listOfChipIndicesCurrentlySeclected: [_currentIndex],
+          //                     //   inactiveBorderColorList:  [Colors.blue.shade200],
+          //                     //   extraOnToggle: (val) {
+          //                     //     _currentIndex = val;
+          //                     //     setState(() {});
+          //                     //   },
+          //                     // ),
+          //
+          //                   ],
+          //                 ),
+          //               ),
+          //             ),
+          //           );
+          //         },)
+          //     ),
+          //     SliverToBoxAdapter(
+          //       child: ListView.builder(
+          //           primary: false,
+          //           shrinkWrap: true,
+          //           itemCount: commentList.length,
+          //           itemBuilder: (BuildContext context, int index)=> CommentAdaptor(index)
+          //       ),
+          //     )
+          //   ],
+          // ),
+          SingleChildScrollView(
             child: Column(
               children: [
                 Container(
@@ -362,5 +489,67 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildfab(){
+    final double defaultMargin=200;
+    final double defaultStart=180;
+    final double defaultEnd=defaultStart/2;
+
+    double top =defaultMargin;
+    double scale = 1.0;
+
+    if(_scrollController.hasClients){
+      double offset = _scrollController.offset;
+      top-=offset;
+      if(offset<defaultMargin-defaultStart){
+        scale =1.0;
+      }else if(offset<defaultStart-defaultEnd){
+        scale =(defaultMargin-defaultEnd-offset)/defaultEnd;
+      }else{
+        scale=0.0;
+      }
+    }
+
+    return Positioned(
+        top: 41,
+        right: 10,
+        child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()..scale(scale),
+            child: Row(
+              children: [
+                SizedBox(height: 40,
+                  child: InkWell(
+                    onTap: (){
+                    //   Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) =>
+                    //               Camera()));
+                    },
+                    child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(color:Colors.blue,
+                          borderRadius: BorderRadius.circular(60),
+                        ),
+                        child:Icon(Icons.add,color: Colors.white,)
+                    ),
+                  ),),
+                SizedBox(width: 10,),
+                Container(height: 40,
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Image.network(
+                        "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
+                        // list[index].imageUrl,
+                        height: 40,
+                        width: 40,
+                        fit: BoxFit.cover,
+                      )),),
+              ],
+            )));
+
   }
 }

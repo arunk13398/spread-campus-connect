@@ -21,6 +21,7 @@ class Camera extends StatefulWidget {
 }
 
 class _CameraState extends State<Camera> {
+
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   GlobalKey key = GlobalKey();
 
@@ -153,10 +154,21 @@ class _CameraState extends State<Camera> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
-                            )
+                            ),
+
+                            // imageUrl != ""
+                            //     ? Container(
+                            //   padding: EdgeInsets.symmetric(horizontal: 15),
+                            //   child: Image.file(File(imageUrl)),
+                            // )
+                            //     : Container(),
                           ],
                         ),
                       )),
+                  // Container(
+                  //   padding: EdgeInsets.symmetric(horizontal: 15),
+                  //   child: Image.file(File(imageUrl)),
+                  // )
 
                   // Padding(
                   //   padding: const EdgeInsets.all(15.0),

@@ -106,6 +106,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
+                    maxLength: 10,
                     controller: RegMobNumber,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
@@ -292,7 +293,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     padding: const EdgeInsets.all(10.0),
                     child: MaterialButton(
                         onPressed: () async {
-                          await Testing().then((value) {
+                          await AddComplaint().then((value) {
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               backgroundColor: MyColors.Greencolor,
                               content: Text(
@@ -355,7 +356,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
 
 
 
-  Future<void> Testing() async {
+  Future<void> AddComplaint() async {
     HashMap<String, dynamic> data = HashMap<String, dynamic>();
 
     String id1 = DateTime.now().millisecondsSinceEpoch.toString();

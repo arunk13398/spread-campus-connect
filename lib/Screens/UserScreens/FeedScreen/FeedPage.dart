@@ -21,17 +21,18 @@ class _FeedPageState extends State<FeedPage> {
   List<FeedModel> list = [];
   String numberId = '';
   String UserName = '';
+  String UserName1 = '';
+  String College = '';
+  String Designation = '';
   bool isLiked = false;
   var size, height, width;
 
   final List<String> _menuItems = [
     'All',
-    'Students',
-    'Teachers',
-    'Non Teaching-Staff',
-    'Events',
-    'Events',
-    'Other college',
+    'Connections',
+    'Club',
+    'Event',
+    'Other',
   ];
 
   int _currentIndex = 0;
@@ -42,6 +43,7 @@ class _FeedPageState extends State<FeedPage> {
 
   @override void initState() {
     load();
+    getDataF1();
     getData();
     super.initState();
     _scrollController =  ScrollController();
@@ -72,6 +74,7 @@ class _FeedPageState extends State<FeedPage> {
                         top=cons.biggest.height;
                         return FlexibleSpaceBar(
                           centerTitle: true,
+
                           title: AnimatedOpacity(
                             opacity: top <=100?1.0:0.0,
                             duration: Duration(milliseconds: 300),
@@ -149,7 +152,7 @@ class _FeedPageState extends State<FeedPage> {
                                                     fontWeight: FontWeight.bold),
                                               ),
                                               Text(
-                                                "College name",
+                                                College,
                                                 style:
                                                 TextStyle(color: Colors.grey, fontSize: 14),
                                               ),
@@ -175,7 +178,7 @@ class _FeedPageState extends State<FeedPage> {
                                       activeTextColorList: const [Colors.white],
                                       inactiveTextColorList: [Colors.black],
                                       listOfChipIndicesCurrentlySeclected: [_currentIndex],
-                                      inactiveBorderColorList:  [Colors.grey.shade300],
+                                      inactiveBorderColorList:  [Colors.blue.shade200],
                                       extraOnToggle: (val) {
                                         _currentIndex = val;
                                         setState(() {});
@@ -206,23 +209,47 @@ class _FeedPageState extends State<FeedPage> {
         )
     );
   }
-
-  getData() async {
+  getDataF1() async {
     numberId = (await getString(UserPreferences.USER_NUMBER));
     UserName = (await getString(UserPreferences.USER_Name));
+    // College = (await getString(UserPreferences.COLLEGE));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("efgh ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        setState(() {});
+      }
+    });
+  }
+
+  getData() async {
+    // numberId = (await getString(UserPreferences.USER_NUMBER));
+    // UserName = (await getString(UserPreferences.USER_Name));
+    // College = (await getString(UserPreferences.COLLEGE));
+    String id=College;
+    String id1=Designation;
     mRootReference
         .child("UsersList")
+        .child(id)
         .child(await getString(UserPreferences.USER_NUMBER))
+        .child(id1)
         .child("Profile")
         .once()
         .then((value) {
       if (value.snapshot.exists) {
-        print("ajfbsgdbfdv ${value.snapshot.value}");
+        print("abcd ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        UserName = data["Name"];
+        UserName1 = data["Course"];
         setState(() {});
       }
     });
+
   }
 
   load() async {
@@ -242,191 +269,6 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   @override
-  Widget FeedAdaptor1(int index) {
-    // int index  in function
-    return Column(
-      children: [
-        Padding(
-          padding:
-              const EdgeInsets.only(left: 10.0, right: 10, top: 6, bottom: 6),
-          child: Card(
-            color: MyColors.LightBlackcolor,
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                children: [
-                  Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: CachedNetworkImage(
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.fill,
-                          imageUrl: list[index].imageUrl,
-                          placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(
-                            color: MyColors.Greencolor,
-                          )),
-                        ),
-                      ),
-                      Positioned(
-                        top: height / 5.3,
-                        left: width / 1.6,
-                        child: Container(
-                          width: 79,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              color: MyColors.Orangecolor,
-                              borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(25),
-                              )),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            // crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                // color:Colors.red,
-                                width: 37,
-                                height: 40,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isLiked = !isLiked;
-                                    });
-                                  },
-                                  icon: isLiked
-                                      ? Icon(
-                                          Icons.favorite,
-                                          color: MyColors.Blackcolor,
-                                          size: 26,
-                                        )
-                                      : Icon(Icons.favorite_border,
-                                          color: MyColors.Blackcolor, size: 26),
-                                ),
-                              ),
-                              Text(
-                                "192",
-                                style: TextStyle(
-                                    color: MyColors.Blackcolor,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 5.0),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              width: width / 1.25,
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                                        // list[index].imageUrl,
-                                        height: 35,
-                                        width: 35,
-                                        fit: BoxFit.cover,
-                                      )),
-                                  SizedBox(
-                                    width: width / 1.6,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10.0, right: 5),
-                                          child: Text("User name",
-                                              // list[index].username,
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: MyColors.Whitecolor),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
-                                              textAlign: TextAlign.start),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10.0, right: 5),
-                                          child: Text(
-                                            "3 min ago",
-                                            // list[index].username
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                color: Colors.white60),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Spacer(),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CommentViewScreen(
-                                                      feedModel: list[index])));
-                                    },
-                                    child: Icon(Icons.chat_bubble_outline,
-                                        size: 27, color: MyColors.Greencolor),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 5.0, right: 5),
-                              child: SizedBox(
-                                width: width / 1.3,
-                                child: Text(list[index].description,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: MyColors.Whitecolor),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 3,
-                                    textAlign: TextAlign.start),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        // SizedBox(height: 20,),
-      ],
-    );
-  }
 
   Widget FeedAdaptor(int index) {
     // int index  in function
@@ -606,15 +448,24 @@ class _FeedPageState extends State<FeedPage> {
                         )),
                   ),
                   SizedBox(width:10),
-                  Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          border:Border.all(color: Colors.grey.shade300,width: 1,)
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                        child: Icon(Icons.more_horiz),
-                      )),
+                  InkWell(
+                    onTap: (){
+                      print("number asdfghjkl ${numberId}");
+                      print("username uyresru ${UserName}");
+                      print("collge mjkbdbfkbs ${College}");
+                      print("usrename1 idhfui ${UserName1}");
+                      print("desig dwerx ${Designation}");
+                    },
+                    child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            border:Border.all(color: Colors.grey.shade300,width: 1,)
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
+                          child: Icon(Icons.more_horiz),
+                        )),
+                  ),
 
 
 

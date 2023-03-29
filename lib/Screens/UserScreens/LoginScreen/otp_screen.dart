@@ -177,7 +177,6 @@ class _OTPScreenState extends State<OTPScreen> {
             Future.delayed(const Duration(milliseconds: 1000), () {
               callNextReplacement(  UserRegistration(number: loginPh), context);
             });
-
           }
         });
 
