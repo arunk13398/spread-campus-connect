@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Contraints/user_preference.dart';
@@ -19,10 +20,12 @@ class _ComplaintListState extends State<ComplaintList> {
   var size, height, width;
   String Uid = '';
   String username = '';
+  bool isConnected = false;
   @override
   void initState() {
     // TODO: implement initState
     loadComplaint();
+    checkRealtimeConnection();
     // getData();
     getData();
     super.initState();
@@ -33,6 +36,7 @@ class _ComplaintListState extends State<ComplaintList> {
     height = size.height;
     width = size.width;
     return  Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -57,7 +61,8 @@ class _ComplaintListState extends State<ComplaintList> {
                     return ComplaintListAdaptor(index);
                   },
                 ),
-              ),
+              )
+
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -135,6 +140,23 @@ class _ComplaintListState extends State<ComplaintList> {
         ));
       });
       setState(() {});
+    });
+  }
+
+  void checkRealtimeConnection() {
+    Connectivity().onConnectivityChanged.listen((my_result) {
+      if (my_result == ConnectivityResult.mobile ||
+          my_result == ConnectivityResult.wifi) {
+        print("connected");
+        setState(() {
+          isConnected = true;
+        });
+      } else if (my_result == ConnectivityResult.none) {
+        print("not connected");
+        setState(() {
+          isConnected = false;
+        });
+      }
     });
   }
 

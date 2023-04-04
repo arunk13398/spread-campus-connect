@@ -7,6 +7,8 @@ import 'package:miniq/Contraints/user_preference.dart';
 import 'package:miniq/Screens/UserScreens/LoginScreen/splash_screen.dart';
 import 'package:miniq/functions/sliding_right_route.dart';
 
+import '../Theme/theme.dart';
+
 final List<TextInputFormatter> decimalValidation = [
   FilteringTextInputFormatter.allow(RegExp(r"[0-9.]")),
   TextInputFormatter.withFunction((oldValue, newValue) {
@@ -65,6 +67,8 @@ showAlertDialog(BuildContext context) {
     },
   );
 }
+
+
 alertDialog(BuildContext context,String title,String content) {
 
   AlertDialog alert = AlertDialog(
@@ -214,6 +218,7 @@ void showLoaderDialog(BuildContext context){
     ),
   );
 }
+
 
 // getDataF1() async {
 //   numberId = (await getString(UserPreferences.USER_NUMBER));

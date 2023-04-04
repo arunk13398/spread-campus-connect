@@ -8,6 +8,7 @@ import 'package:miniq/Theme/theme.dart';
 import '../../../Contraints/user_preference.dart';
 import '../../../functions/functions.dart';
 import '../../bottom_navigation.dart';
+import 'complaint_list.dart';
 
 class ComplaintRegistration extends StatefulWidget {
   const ComplaintRegistration({Key? key}) : super(key: key);
@@ -379,6 +380,9 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
     // .child('Details')
         // .push();
         .update(data);
+    Future.delayed(const Duration(seconds: 1), () {
+      finishAccountCreation( ComplaintList(), context);
+    });
 
     // await
     // referenceRoot.child("Test")

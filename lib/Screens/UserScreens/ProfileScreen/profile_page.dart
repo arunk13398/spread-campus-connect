@@ -58,30 +58,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: const EdgeInsets.only(top: 8.0, bottom: 5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         Text("Salvin sam",
                             style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: MyColors.Whitecolor)),
-                        Icon(
-                          Icons.school,
-                          color: MyColors.Greencolor,
-                        )
+                        Icon(Icons.school, color: MyColors.Greencolor,)
                       ],
                     ),
                   ),
                   Text("Gecwyd", style: TextStyle(fontSize: 16, color: MyColors.Whitecolor)),
                   SizedBox(height: 5,),
-                  Text("Third year",
-                      style:
-                          TextStyle(fontSize: 16, color: MyColors.Whitecolor)),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  Text("Third year", style: TextStyle(fontSize: 16, color: MyColors.Whitecolor)),
+                  SizedBox(height: 10,),
                   SizedBox(width: 10),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  Padding(padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -224,9 +216,11 @@ class _ProfilePageState extends State<ProfilePage> {
       data.forEach((key, value) {
         list.add(FeedModel(
           id: key,
-          // username: value['Name'],
+          userName: value['UserName'],
+          desigUser: value['Designation'],
           description: value['Description'],
           imageUrl: value['ImageUrl'],
+          UpdatedTime: value['ImageUrlTime'],
         ));
       });
       setState(() {});

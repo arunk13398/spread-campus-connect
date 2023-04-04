@@ -152,6 +152,8 @@ class _OTPScreenState extends State<OTPScreen> {
             if(loginData["AcessCode"].toString()=="1"){
               setBool(UserPreferences.IS_LOGIN,true);
               setString(UserPreferences.ACCESS_CODE,loginData["AcessCode"].toString());
+              setString(UserPreferences.COLLEGE,loginData["College"].toString());
+              setString(UserPreferences.DESIGNATION,loginData["Designation"].toString());
               setString(UserPreferences.USER_NUMBER,dataSnapshot.snapshot.key.toString());
               setString(UserPreferences.USER_Name,loginData["Name"].toString());
               setString(UserPreferences.USER_TYPE,loginData["AcessName"].toString());
@@ -165,6 +167,8 @@ class _OTPScreenState extends State<OTPScreen> {
               setBool(UserPreferences.IS_LOGIN,true);
               setString(UserPreferences.ACCESS_CODE,loginData["AcessCode"].toString());
               setString(UserPreferences.USER_NUMBER,dataSnapshot.snapshot.key.toString());
+              setString(UserPreferences.COLLEGE,loginData["College"].toString());
+              setString(UserPreferences.DESIGNATION,loginData["Designation"].toString());
               setString(UserPreferences.USER_Name,loginData["Name"].toString());
               setString(UserPreferences.USER_TYPE,loginData["AcessName"].toString());
               alertDialog(context,"Welcome ${loginData["Name"]}","You are successfully logged in");

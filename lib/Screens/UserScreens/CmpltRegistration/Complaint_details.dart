@@ -13,6 +13,34 @@ class ComplaintDetails extends StatefulWidget {
 
 class _ComplaintDetailsState extends State<ComplaintDetails> {
   var size,height,width;
+
+  List<Step> stepList() => [
+    Step(
+      isActive: _currentStep==0,
+      title: Text('Step1'),
+      subtitle: Text('Processing'),
+      label: Container(child:Text("hello")),
+      content: Center(child: Text(''),),
+    ),
+    Step(
+      isActive: _currentStep==1,
+      title: Text('Step2'),
+      subtitle: Text('Processing'),
+      label: ColoredBox(color: Colors.tealAccent),
+      content: Center(child: Text('bbbbb'),),
+    ),
+    Step(
+      isActive: _currentStep==2,
+      title: Text('Step3'),
+      subtitle: Text('Processing'),
+      label: Container(child:Text("kooo")),
+      content: Center(child: Text('ccccc'),),
+    ),
+  ];
+
+  int _currentStep=0;
+
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -107,16 +135,17 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                         Text("https//hsdv jhdjd dj jvh vajd dnv njan "),
                       ],
                     ),
+                    SizedBox(height: 10,),
                     Padding(
                       padding: const EdgeInsets.only(left:5.0,top:3),
                       child: Row(
                         children: [
-                          Text("Status :"),
-                          Text("Progress",style: TextStyle(fontWeight: FontWeight.bold),),
+                          Text("Status :",style: TextStyle(fontSize: 17),),
+                          Text("Progress",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
                         ],
                       ),
                     ),
-                    SizedBox(height: 6,),
+                    SizedBox(height: 10,),
                     Container(
                       // width: 30,
                         decoration: BoxDecoration(
@@ -127,6 +156,32 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                           padding: const EdgeInsets.only(left:20.0,right:20,top:10,bottom:10),
                           child: Text("Contact",style: TextStyle(fontWeight: FontWeight.bold),),
                         )),
+                    SizedBox(height:10),
+                    Text("Track Application Process",style: TextStyle(fontWeight: FontWeight.bold),),
+                    Container(
+                      child: Stepper(
+                        steps: stepList(),
+                        onStepTapped: (int newIndex){
+                          setState(() {
+                            _currentStep = newIndex;
+                          });
+                        },
+                        currentStep: _currentStep,
+                        onStepContinue: (){
+                          if(_currentStep!=2){
+                            setState(() {
+                              _currentStep += 1;
+                            });
+                          }
+                        },onStepCancel: (){
+                        if(_currentStep!=0){
+                          setState(() {
+                            _currentStep -= 1;
+                          });
+                        }
+                      },type: StepperType.vertical,
+                      ),
+                    ),
                   ],
                 ),
                 // MaterialButton(onPressed:(){},

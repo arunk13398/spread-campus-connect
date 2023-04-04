@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:expandable/expandable.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,9 +31,10 @@ class _NotificationListState extends State<NotificationList> {
   void initState(){
     getDataAccess();
     loadNotification();
+    checkRealtimeConnection();
     super.initState();
 }
-
+  bool isConnected = false;
   var size,height,width;
 
   @override
@@ -106,7 +108,8 @@ class _NotificationListState extends State<NotificationList> {
                 ),
               ),
               Expanded(
-                child: Container(
+                child:
+                Container(
                   // height: 120,
                   child: ListView.builder(
                     itemCount: notificationList.length,
@@ -114,12 +117,20 @@ class _NotificationListState extends State<NotificationList> {
                       return NotificationAdaptor(index);
                     },
                   ),
-                ),
+                )
+                // isConnected==true?:Center(child:Column(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   children: [
+                //     Image.asset("assets/wrong.jpg"),
+                //     Text("No Internet")
+                //   ],
+                // ),)
               ),
 
 
 
-              Align(
+              Designation==access?Align(
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.only(bottom:20.0,right:10),
@@ -137,6 +148,7 @@ class _NotificationListState extends State<NotificationList> {
                        Navigator.push(context,
                            MaterialPageRoute(
                                builder: (context) => PublishNotification()));
+                       // Navigator.of(context).deactivate();
                      },
 
                     child: Row(
@@ -145,11 +157,10 @@ class _NotificationListState extends State<NotificationList> {
                         Text("Publish new",style:TextStyle(fontSize: 17,color:Colors.white,fontWeight: FontWeight.bold)),
                       ],
                     ),
-             ),
+                    ),
                   ),
                 ),
-              )
-                  // :Container(),
+              ) :Container(),
               // Padding(
               //   padding: const EdgeInsets.only(bottom:20.0,right:20),
               //   child: Align(
@@ -208,11 +219,14 @@ class _NotificationListState extends State<NotificationList> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(notificationList[index].subject,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                              SizedBox(
+                                width:width/1.5,
+                                child: Text(notificationList[index].subject,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                               SizedBox(
@@ -273,13 +287,13 @@ class _NotificationListState extends State<NotificationList> {
                                   borderRadius: BorderRadius.circular(10),
                                   color: Colors.blue,
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text("Pdf View",
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold)),
-                                ),
+                                // child: Padding(
+                                //   padding: const EdgeInsets.all(10.0),
+                                //   child: Text("Pdf View",
+                                //       style: TextStyle(
+                                //           color: Colors.white,
+                                //           fontWeight: FontWeight.bold)),
+                                // ),
                               ),
                             )
                           ],
@@ -350,6 +364,23 @@ class _NotificationListState extends State<NotificationList> {
         ));
       });
       setState(() {});
+    });
+  }
+
+  void checkRealtimeConnection() {
+    Connectivity().onConnectivityChanged.listen((my_result) {
+      if (my_result == ConnectivityResult.mobile ||
+          my_result == ConnectivityResult.wifi) {
+        print("connected");
+        setState(() {
+          isConnected = true;
+        });
+      } else if (my_result == ConnectivityResult.none) {
+        print("not connected");
+        setState(() {
+          isConnected = false;
+        });
+      }
     });
   }
 

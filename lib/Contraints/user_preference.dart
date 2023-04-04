@@ -11,6 +11,7 @@ class UserPreferences{
     static const String NAME = "NAME";
     static const String CODE = "CODE";
     static const String COLLEGE = "COLLEGE";
+    static const String DESIGNATION = "DESIGNATION";
 
 }
 setString(String key,String value) async {

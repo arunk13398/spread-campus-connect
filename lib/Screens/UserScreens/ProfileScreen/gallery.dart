@@ -72,15 +72,17 @@ class _GalleryState extends State<Gallery> {
   }
 
   load() async {
-    mRootReference.child("Feeds").onValue.listen((event) {
+    mRootReference.child("Feeds").child("Public").onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
       data.forEach((key, value) {
         list.add(FeedModel(
           id: key,
-          // username: value['Name'],
+          userName: value['UserName'],
+          desigUser: value['Designation'],
           description: value['Description'],
           imageUrl: value['ImageUrl'],
+          UpdatedTime: value['ImageUrlTime'],
         ));
       });
       setState(() {});

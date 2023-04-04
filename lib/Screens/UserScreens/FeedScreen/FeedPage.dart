@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chip_list/chip_list.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,12 @@ import 'package:miniq/Model/feed_model.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/comment_view.dart';
 import 'package:miniq/Theme/theme.dart';
 import 'package:miniq/functions/camera.dart';
+import 'package:shimmer/shimmer.dart';
+
+import '../../../functions/functions.dart';
+import '../../bottom_navigation.dart';
+
+
 
 class FeedPage extends StatefulWidget {
   const FeedPage({Key? key}) : super(key: key);
@@ -25,10 +32,11 @@ class _FeedPageState extends State<FeedPage> {
   String College = '';
   String Designation = '';
   bool isLiked = false;
+  bool isConnected = false;
   var size, height, width;
 
   final List<String> _menuItems = [
-    'All',
+    'Public',
     'Connections',
     'Club',
     'Event',
@@ -45,6 +53,7 @@ class _FeedPageState extends State<FeedPage> {
     load();
     getDataF1();
     getData();
+    checkRealtimeConnection();
     super.initState();
     _scrollController =  ScrollController();
     _scrollController.addListener(() {
@@ -59,9 +68,10 @@ class _FeedPageState extends State<FeedPage> {
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
-        body: Stack(
+        body:  Stack(
           children: [
             SafeArea(
               child: CustomScrollView(
@@ -96,7 +106,9 @@ class _FeedPageState extends State<FeedPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                                Camera()));
+                                            // showmodelBottomsheet()
+                                            Camera()
+                                        ));
                                   },
                                   child: Container(
                                       height: 40,
@@ -139,23 +151,16 @@ class _FeedPageState extends State<FeedPage> {
                                         Padding(
                                           padding: const EdgeInsets.only(left: 10.0),
                                           child:
-
                                           Column(
                                             // mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                UserName,
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.bold),
-                                              ),
-                                              Text(
-                                                College,
-                                                style:
-                                                TextStyle(color: Colors.grey, fontSize: 14),
-                                              ),
+                                            children: [Text(UserName, style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.bold),
+                                            ),
+                                              Text(College, style: TextStyle(color: Colors.grey, fontSize: 14),
+                                              )
                                             ],
                                           ),
                                         ),
@@ -172,6 +177,7 @@ class _FeedPageState extends State<FeedPage> {
                                     SizedBox(height: 30,),
                                     // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
                                     ChipList(
+                                      padding: EdgeInsets.all(5),
                                       listOfChipNames: _menuItems,
                                       activeBgColorList: [Theme.of(context).primaryColor],
                                       inactiveBgColorList: const [Colors.white],
@@ -181,7 +187,9 @@ class _FeedPageState extends State<FeedPage> {
                                       inactiveBorderColorList:  [Colors.blue.shade200],
                                       extraOnToggle: (val) {
                                         _currentIndex = val;
-                                        setState(() {});
+                                        setState(() {
+                                          load();
+                                        });
                                       },
                                     ),
 
@@ -194,12 +202,24 @@ class _FeedPageState extends State<FeedPage> {
                       },)
                   ),
                   SliverToBoxAdapter(
-                    child: ListView.builder(
-                      primary: false,
-                      shrinkWrap: true,
-                      itemCount: list.length,
-                      itemBuilder: (BuildContext context, int index)=> FeedAdaptor(index)
-                    ),
+                      child:ListView.builder(
+                          primary: false,
+                          shrinkWrap: true,
+                          itemCount: list.length,
+                          itemBuilder: (BuildContext context, int index)=> FeedAdaptor(index)
+                      )
+
+                      // isConnected==true?ListView.builder(
+                      //     primary: false,
+                      //     shrinkWrap: true,
+                      //     itemCount: list.length,
+                      //     itemBuilder: (BuildContext context, int index)=> FeedAdaptor(index)
+                      // ):
+                      // ListView.builder(
+                      //     primary: false,
+                      //     shrinkWrap: true,
+                      //     itemCount: 3,
+                      //     itemBuilder: (context, index) => getShimmerLoading())
                   )
                 ],
               ),
@@ -207,6 +227,7 @@ class _FeedPageState extends State<FeedPage> {
             _buildfab(),
           ],
         )
+
     );
   }
   getDataF1() async {
@@ -229,9 +250,6 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   getData() async {
-    // numberId = (await getString(UserPreferences.USER_NUMBER));
-    // UserName = (await getString(UserPreferences.USER_Name));
-    // College = (await getString(UserPreferences.COLLEGE));
     String id=College;
     String id1=Designation;
     mRootReference
@@ -253,15 +271,19 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   load() async {
-    mRootReference.child("Feeds").onValue.listen((event) {
+
+    mRootReference.child("Feeds").child(_menuItems[_currentIndex]).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
       data.forEach((key, value) {
         list.add(FeedModel(
           id: key,
-          // username: value['Name'],
+          userName: value['UserName'],
+          desigUser: value['Designation'],
           description: value['Description'],
           imageUrl: value['ImageUrl'],
+          UpdatedTime: value['ImageUrlTime'],
+
         ));
       });
       setState(() {});
@@ -288,15 +310,17 @@ class _FeedPageState extends State<FeedPage> {
                         child: Row(
                           children: [
                             SizedBox(width:15),
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(60),
-                                child: Image.network(
-                                  "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                                  // list[index].imageUrl,
-                                  height: 45,
-                                  width: 45,
-                                  fit: BoxFit.cover,
-                                )),
+                            CachedNetworkImage(
+                              imageUrl: 'https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg',
+                              placeholder: (context, url) =>  CircleAvatar(
+                                backgroundColor: Colors.blue.shade300,
+                                radius: 22,
+                              ),
+                              imageBuilder: (context, image) => CircleAvatar(
+                                backgroundImage: image,
+                                radius: 22,
+                              ),
+                            ),
                             SizedBox(
                               width: width / 1.8,
                               child: Column(
@@ -308,8 +332,8 @@ class _FeedPageState extends State<FeedPage> {
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         left: 10.0, right: 5),
-                                    child: Text("User name",
-                                        // list[index].username,
+                                    child: Text(
+                                         list[index].userName,
                                         style: TextStyle(
                                             fontSize: 20,
                                             fontWeight: FontWeight.bold,
@@ -322,8 +346,7 @@ class _FeedPageState extends State<FeedPage> {
                                     padding: const EdgeInsets.only(
                                         left: 10.0, right: 5),
                                     child: Text(
-                                      "Student",
-                                      // list[index].username
+                                       list[index].desigUser,
                                       style: TextStyle(
                                           fontSize: 15,
                                           color: Colors.grey),
@@ -337,7 +360,7 @@ class _FeedPageState extends State<FeedPage> {
                               padding: const EdgeInsets.only(
                                   left: 10.0, right: 5),
                               child: Text(
-                                "1 mint ago",
+                                "1 min ago",
                                 // list[index].username
                                 style: TextStyle(
                                     fontSize: 15,
@@ -355,8 +378,10 @@ class _FeedPageState extends State<FeedPage> {
                           width: width / 1.2,
                           child: Text(list[index].description,
                               style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black,fontWeight: FontWeight.bold),
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold
+                              ),
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                               textAlign: TextAlign.start),
@@ -369,19 +394,33 @@ class _FeedPageState extends State<FeedPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: CachedNetworkImage(
-                  // height: 250,
-                  width: double.infinity,
-                  fit: BoxFit.fill,
-                  imageUrl: list[index].imageUrl,
-                  placeholder: (context, url) => Center(
-                      child: CircularProgressIndicator(
-                        color: MyColors.Greencolor,
-                      )),
+              child:
+              CachedNetworkImage(
+                imageUrl: list[index].imageUrl,
+                placeholder: (context, url) =>
+                    getShimmerLoading(),
+                imageBuilder: (context, image) => ClipRRect(borderRadius: BorderRadius.circular(8),
+                  child: CachedNetworkImage(
+        // height: 250,
+               width: double.infinity,
+               fit: BoxFit.fill,
+               imageUrl: list[index].imageUrl,
+               placeholder: (context, url) => getShimmerLoading(),),
                 ),
               ),
+              // ClipRRect(
+              //   borderRadius: BorderRadius.circular(20),
+              //   child: CachedNetworkImage(
+              //     // height: 250,
+              //     width: double.infinity,
+              //     fit: BoxFit.fill,
+              //     imageUrl: list[index].imageUrl,
+              //     placeholder: (context, url) => Center(
+              //         child: CircularProgressIndicator(
+              //           color: MyColors.Greencolor,
+              //         )),
+              //   ),
+              // ),
             ),
 
             Padding(
@@ -450,10 +489,6 @@ class _FeedPageState extends State<FeedPage> {
                   SizedBox(width:10),
                   InkWell(
                     onTap: (){
-                      print("number asdfghjkl ${numberId}");
-                      print("username uyresru ${UserName}");
-                      print("collge mjkbdbfkbs ${College}");
-                      print("usrename1 idhfui ${UserName1}");
                       print("desig dwerx ${Designation}");
                     },
                     child: Container(
@@ -466,8 +501,6 @@ class _FeedPageState extends State<FeedPage> {
                           child: Icon(Icons.more_horiz),
                         )),
                   ),
-
-
 
                 ],
               ),
@@ -516,7 +549,9 @@ class _FeedPageState extends State<FeedPage> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    Camera()));
+                                    // showmodelBottomsheet()
+                                    Camera()
+                            ));
                       },
                       child: Container(
                           height: 40,
@@ -528,19 +563,115 @@ class _FeedPageState extends State<FeedPage> {
                       ),
                     ),),
                 SizedBox(width: 10,),
-                Container(height: 40,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: Image.network(
-                          "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                          // list[index].imageUrl,
-                          height: 40,
-                          width: 40,
-                          fit: BoxFit.cover,
-                        )),),
+
+                CachedNetworkImage(
+                  imageUrl: 'https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg',
+                  placeholder: (context, url) =>  CircleAvatar(
+                    backgroundColor: Colors.blue.shade300,
+                    radius: 22,
+                  ),
+                  imageBuilder: (context, image) => CircleAvatar(
+                    backgroundImage: image,
+                    radius: 22,
+                  ),
+                ),
               ],
             )));
 
   }
+
+  void checkRealtimeConnection() {
+    Connectivity().onConnectivityChanged.listen((my_result) {
+      if (my_result == ConnectivityResult.mobile ||
+          my_result == ConnectivityResult.wifi) {
+        print("connected");
+        setState(() {
+          isConnected = true;
+        });
+      } else if (my_result == ConnectivityResult.none) {
+        print("not connected");
+        setState(() {
+          isConnected = false;
+        });
+      }
+    });
+  }
+
+  Shimmer getShimmerLoading(){
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade500,
+      // enabled: _enabled,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48.0,
+                  height: 48.0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(60),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top:10.0,left:10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        // Container(
+                        //   width: double.infinity,
+                        //   height: 8.0,
+                        //   color: Colors.white,
+                        // ),
+
+                        Container(
+                          width: 150,
+                          height: 12.0,
+                          color: Colors.white,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2.0),
+                        ),
+                        Container(
+                          width: 60.0,
+                          height: 12.0,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height:10),
+            Container(
+              width: double.infinity,
+              height: 12.0,
+              color: Colors.white,
+            ),
+            SizedBox(height:10),
+            Container(
+              width: double.infinity,
+              height: 180.0,
+              color: Colors.white,
+            ),
+            SizedBox(height: 5,),
+            Container(
+              width: double.infinity,
+              height: 30.0,
+              color: Colors.white,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 }
 

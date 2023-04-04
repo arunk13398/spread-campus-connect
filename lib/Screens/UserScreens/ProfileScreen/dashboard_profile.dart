@@ -1,8 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:miniq/Screens/UserScreens/ProfileScreen/personal_information.dart';
 import 'package:miniq/Screens/UserScreens/ProfileScreen/profile_page.dart';
 
+import '../../../Contraints/user_preference.dart';
 import '../../../functions/functions.dart';
 import 'edit_profile.dart';
 import 'gallery.dart';
@@ -13,8 +16,21 @@ class ProfileDashboard extends StatefulWidget {
   @override
   State<ProfileDashboard> createState() => _ProfileDashboardState();
 }
-
 class _ProfileDashboardState extends State<ProfileDashboard> {
+
+  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  String numberId='';
+  String UserName='';
+  String College='';
+  String Designation='';
+
+
+  @override
+  void initState() {
+    super.initState();
+    getDataF1();
+
+  }
   var size,height,width;
   @override
   Widget build(BuildContext context) {
@@ -56,8 +72,8 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Arun kenedy",style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                                Text("College name",style: TextStyle(fontSize: 16,color: Colors.grey),),
+                                Text(UserName,style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                                Text(College,style: TextStyle(fontSize: 16,color: Colors.grey),),
                                 SizedBox(height: 5,),
                                 MaterialButton(onPressed: () {
                                   Navigator.push(
@@ -79,16 +95,25 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
 
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: double.infinity,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                border:Border.all(color: Colors.grey.shade300,width: 1,)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                              child: Text("Personal information",style: TextStyle(fontWeight: FontWeight.bold),),
-                            )),
+                        child: InkWell(
+                          onTap:(){
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PersonalInformation(College: College,Designation: Designation,)));
+                          },
+                          child: Container(
+                            width: double.infinity,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(30),
+                                  border:Border.all(color: Colors.grey.shade300,width: 1,)
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
+                                child: Text("Personal information",style: TextStyle(fontWeight: FontWeight.bold),),
+                              )),
+                        ),
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -167,4 +192,26 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       ),
     );
   }
+
+  getDataF1() async {
+    numberId = (await getString(UserPreferences.USER_NUMBER));
+    UserName = (await getString(UserPreferences.USER_Name));
+    // College = (await getString(UserPreferences.COLLEGE));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("efgh ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserName = data["Name"];
+
+        setState(() {});
+      }
+    });
+  }
+
 }

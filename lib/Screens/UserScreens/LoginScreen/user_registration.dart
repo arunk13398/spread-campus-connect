@@ -296,32 +296,35 @@ class _UserRegistrationState extends State<UserRegistration> {
                                 )
                             ),
                             child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                // Initial Value
-                                value: _designationDpValue,
-                                iconEnabledColor: Colors.black,
-                                borderRadius: BorderRadius.circular(10),
-                                // Down Arrow Icon
-                                icon: const Icon(Icons.keyboard_arrow_down),
-                                // Array list of items
-                                items: _usersList.map((String items) {
-                                  return DropdownMenuItem(
-                                    value: items,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left:10.0,right:10),
-                                      child: Text(items),
-                                    ),
-                                  );
-                                }).toList(),
-                                // After selecting the desired option,it will
-                                // change button value to selected value
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _designationDpValue = newValue!;
-                                    print("asdfghjkl ${_designationDpValue}");
-                                    print("asdfghjkl ${_studentValue}");
-                                  });
-                                },
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: DropdownButton(
+                                  // Initial Value
+                                  value: _designationDpValue,
+                                  iconEnabledColor: Colors.black,
+                                  borderRadius: BorderRadius.circular(10),
+                                  // Down Arrow Icon
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  // Array list of items
+                                  items: _usersList.map((String items) {
+                                    return DropdownMenuItem(
+                                      value: items,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left:10.0,right:10),
+                                        child: Text(items),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  // After selecting the desired option,it will
+                                  // change button value to selected value
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _designationDpValue = newValue!;
+                                      print("asdfghjkl ${_designationDpValue}");
+                                      print("asdfghjkl ${_studentValue}");
+                                    });
+                                  },
+                                ),
                               ),
                             ),
                           ),
@@ -662,6 +665,5 @@ class _UserRegistrationState extends State<UserRegistration> {
     Future.delayed(const Duration(seconds: 1), () {
       finishAccountCreation( LoginScreen(), context);
     });
-
   }
 }
