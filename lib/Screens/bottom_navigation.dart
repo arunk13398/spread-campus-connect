@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/FeedPage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:miniq/Screens/test_page.dart';
+import '../Theme/theme.dart';
 import '../demo_test.dart';
 import '../test.dart';
+import 'AdminScreen/admin_dashboard.dart';
 import 'UserScreens/CmpltRegistration/complaint_list.dart';
 import 'UserScreens/LoginScreen/user_registration.dart';
 import 'UserScreens/NotificationScreen/notification_list.dart';
@@ -31,7 +33,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     NotificationList(),
     ComplaintList(),
     ProfileDashboard(),
-    TestDemo(),
+    AdminDashboard()
     // TestPage()
     ];
 
@@ -48,7 +50,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: _updateIndex,
-        selectedItemColor: Colors.blue[700],
+        selectedItemColor: MyColors.Colorgreen3,
+        unselectedItemColor: Colors.grey[500],
         selectedFontSize: 13,
         unselectedFontSize: 13,
         iconSize: 30,

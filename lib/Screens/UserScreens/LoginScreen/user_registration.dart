@@ -588,7 +588,7 @@ class _UserRegistrationState extends State<UserRegistration> {
                   onPressed: () async {
                     await addCustomer().then((value) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        backgroundColor: MyColors.Greencolor,
+                        backgroundColor: Colors.grey,
                         content: Text(
                           "Successful",
                           style: TextStyle(color: Colors.black),

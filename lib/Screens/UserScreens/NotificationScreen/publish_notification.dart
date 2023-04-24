@@ -468,12 +468,12 @@ class _PublishNotificationState extends State<PublishNotification> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.2),
+                            color: Colors.grey, width: 1.2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color: Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -512,12 +512,12 @@ class _PublishNotificationState extends State<PublishNotification> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           borderSide: BorderSide(
-                              color: MyColors.LightBlackcolor, width: 1.2),
+                              color: Colors.grey, width: 1.2),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           borderSide: BorderSide(
-                              color: MyColors.LightBlackcolor, width: 1.6),
+                              color: Colors.grey, width: 1.6),
                         ),
                       ),
                       maxLines: 100,
@@ -542,7 +542,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                         onPressed: () async {
                           await PublishNotification().then((value) {
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              backgroundColor: MyColors.Greencolor,
+                              backgroundColor: Colors.grey,
                               content: Text(
                                 "Successful",
                                 style: TextStyle(color: Colors.black),

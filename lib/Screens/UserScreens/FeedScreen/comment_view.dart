@@ -11,7 +11,7 @@ import 'package:miniq/Theme/theme.dart';
 
 class CommentViewScreen extends StatefulWidget {
   final FeedModel feedModel;
-  CommentViewScreen({Key? key, required this.feedModel}) : super(key: key);
+  CommentViewScreen({Key? key, required this.feedModel,}) : super(key: key);
 
   @override
   State<CommentViewScreen> createState() => _CommentViewScreenState();
@@ -54,352 +54,148 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
     height = size.height;
     width = size.width;
     return Scaffold(
-        backgroundColor: Colors.grey.shade300,
-        body:
-        SafeArea(
-          child:
-          // CustomScrollView(
-          //   controller: _scrollController,
-          //   slivers: [
-          //     SliverAppBar(backgroundColor: Colors.white,
-          //         pinned: true,
-          //         expandedHeight: 390,
-          //         flexibleSpace: LayoutBuilder(builder: (ctx,cons){
-          //           top=cons.biggest.height;
-          //           return FlexibleSpaceBar(
-          //             centerTitle: true,
-          //             title: AnimatedOpacity(
-          //               opacity: top <=100?1.0:0.0,
-          //               duration: Duration(milliseconds: 300),
-          //               child: Padding(
-          //                 padding: const EdgeInsets.only(top:0.0),
-          //                 child: Row(children: [
-          //                   Padding(
-          //                     padding: const EdgeInsets.only(left:15.0),
-          //                     child: Text("Comments",
-          //                         style: TextStyle(
-          //                             fontWeight: FontWeight.bold,
-          //                             fontSize: 30,
-          //                             color: Colors.black)),
-          //                   ),
-          //                   Spacer(),
-          //                   InkWell(
-          //                     onTap: (){
-          //                       // Navigator.push(
-          //                       //     context,
-          //                       //     MaterialPageRoute(
-          //                       //         builder: (context) =>
-          //                       //             Camera()));
-          //                     },
-          //                     child: Container(
-          //                         height: 40,
-          //                         width: 40,
-          //                         decoration: BoxDecoration(color:Colors.blue,
-          //                           borderRadius: BorderRadius.circular(60),
-          //                         ),
-          //                         child:Icon(Icons.add,color: Colors.white,)
-          //                     ),
-          //                   ),
-          //                   SizedBox(width: 10,),
-          //                   // ClipRRect(
-          //                   //     borderRadius: BorderRadius.circular(100),
-          //                   //     child: Image.network(
-          //                   //       "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-          //                   //       // list[index].imageUrl,
-          //                   //       height: 40,
-          //                   //       width: 40,
-          //                   //       fit: BoxFit.cover,
-          //                   //     )),
-          //                   // SizedBox(width:12),
-          //                 ],),
-          //               ),
-          //             ),
-          //
-          //
-          //
-          //
-          //             background: Container(
-          //               color: Colors.transparent,
-          //               child: Container(
-          //                 color:Colors.white,
-          //                 child: Column(
-          //                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                   children: [
-          //                   CachedNetworkImage(
-          //                     height: height/2.2,
-          //                     width: double.infinity,
-          //                     fit: BoxFit.fill,
-          //                     imageUrl: widget.feedModel.imageUrl,
-          //                     placeholder: (context, url) => Center(
-          //                         child: CircularProgressIndicator(
-          //                           color: Colors.red,
-          //                         )),
-          //                   ),
-          //
-          //                     // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
-          //                     // ChipList(
-          //                     //   listOfChipNames: _menuItems,
-          //                     //   activeBgColorList: [Theme.of(context).primaryColor],
-          //                     //   inactiveBgColorList: const [Colors.white],
-          //                     //   activeTextColorList: const [Colors.white],
-          //                     //   inactiveTextColorList: [Colors.black],
-          //                     //   listOfChipIndicesCurrentlySeclected: [_currentIndex],
-          //                     //   inactiveBorderColorList:  [Colors.blue.shade200],
-          //                     //   extraOnToggle: (val) {
-          //                     //     _currentIndex = val;
-          //                     //     setState(() {});
-          //                     //   },
-          //                     // ),
-          //
-          //                   ],
-          //                 ),
-          //               ),
-          //             ),
-          //           );
-          //         },)
-          //     ),
-          //     SliverToBoxAdapter(
-          //       child: ListView.builder(
-          //           primary: false,
-          //           shrinkWrap: true,
-          //           itemCount: commentList.length,
-          //           itemBuilder: (BuildContext context, int index)=> CommentAdaptor(index)
-          //       ),
-          //     )
-          //   ],
-          // ),
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                Container(
-                  height: height / 2,
-                  decoration: BoxDecoration(
-                    color: MyColors.LightBlackcolor,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(30),
-                      bottomRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(30),
-                        child: CachedNetworkImage(
-                          height: height / 3,
-                          width: double.infinity,
-                          fit: BoxFit.fill,
-                          imageUrl: widget.feedModel.imageUrl,
-                          placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(
-                            color: Colors.red,
-                          )),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0, top: 15),
-                        child: Row(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                        child: Image.network(
-                                          "https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0",
-                                          height: 25,
-                                          width: 25,
-                                          fit: BoxFit.cover,
-                                        )),
-                                    SizedBox(
-                                      width: width / 1.7,
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                            left: 10.0, right: 5),
-                                        child: Text(
-                                          "User name",
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ),
-                                    InkWell(
-                                      child: Icon(
-                                        // Icons.favorite_border,
-                                        Icons.favorite,
-                                        size: 27,
-                                        color: MyColors.Greencolor,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 5,
-                                    ),
-                                    Text(
-                                      "192",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    InkWell(
-                                      onTap: () {},
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 5.0, right: 5),
-                                        child: Icon(
-                                          Icons.chat_bubble_outline,
-                                          size: 27,
-                                          color: MyColors.Orangecolor,
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      "192",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 10,
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 5.0, right: 5),
-                                  child: SizedBox(
-                                    width: width / 1.1,
-                                    child: Text(
-                                      // "svavsgva cha chg  as gsa",
-                                      widget.feedModel.description,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                      softWrap: true,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 5,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+      backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              InkWell(onTap: (){
+                print("ajfbsgdbfdv ${commentList.length}");
+              },
+                child: Container(
+                  height: height/2,
+                  child: CachedNetworkImage(
+                    width: double.infinity,
+                    fit: BoxFit.fitWidth,
+                    imageUrl: widget.feedModel.imageUrl,
+                    placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.red,
+                        )),
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 10.0),
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      "Comments",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                  ),
-                ),
-                Container(
-                  color:Colors.grey.shade300,
-                  height: height / 2.8,
-                  child: ListView.builder(
-                    itemCount: commentList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return CommentAdaptor(index);
-                    },
-                  ),
-                ),
-                Row(
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(alignment: Alignment.centerLeft,
+                    child: Text("Comments",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20))),
+              ),
+              Container(
+                height:height/2.7,
+                child:commentList.length==0?Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 10.0, right: 10, top: 5, bottom: 5),
-                      child: SizedBox(
-                        width: width / 1.4,
-                        child: TextFormField(
-                          controller: comment,
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15)),
-                            labelText: 'Comment',
-                            hintText: 'Enter your Comment',
-                            prefixIcon: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.network(
-                                    "https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0",
-                                    height: 10,
-                                    width: 10,
-                                    fit: BoxFit.cover,
-                                  )),
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide(
-                                  color: MyColors.theme3, width: 1.2),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide:
-                                  BorderSide(color: Colors.green, width: 1.2),
+                    Image.asset("assets/wrong.jpg"),
+                    Text("- No Comments -")
+                  ],
+                ):
+                ListView.builder(
+                          itemCount: commentList.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return CommentAdaptor(index);
+                          },
+                        ),
+                      ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width:315,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            controller: comment,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: 'Enter College',
+                              hintText: 'eg: GECWayand',
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color: Colors.blue),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(
+                                    color:Colors.grey, width: 1.6),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    MaterialButton(
-                        color: Colors.blue,
-                        height: 50,
-                        minWidth: width / 5.5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: MaterialButton(
+                          minWidth: 40,
+                          height: 50,
+                          color: Colors.blue,
+                          child: Icon(Icons.arrow_forward_rounded),
+                            onPressed: (){
+                              addComment();
+                              comment.clear();
+
+                            }
                         ),
-                        onPressed: () {
-                          addComment();
-                          comment.clear();
-                        },
-                        child: Icon(
-                          Icons.send,
-                          size: 30,
-                        ))
-                  ],
-                ),
-              ],
-            ),
+                      )
+                    ],
+                  ),
+
+            ],
           ),
-        ));
+        )
+
+        // Stack(
+        //   children: [
+        //
+        //   CachedNetworkImage(
+        //            width: double.infinity,
+        //            fit: BoxFit.fitWidth,
+        //            imageUrl: widget.feedModel.imageUrl,
+        //            placeholder: (context, url) => Center(
+        //            child: CircularProgressIndicator(
+        //                 color: Colors.red,
+        //            )),
+        //         ),
+        //
+        //   DraggableScrollableSheet(
+        //   expand: true,
+        //   initialChildSize: 0.6,
+        //   minChildSize: 0.6,
+        //   maxChildSize: 1,
+        //   builder: (context,controller) {
+        //     return Container(
+        //       color:Colors.white,
+        //       child: ListView.builder(
+        //         controller: controller,
+        //         itemCount: commentList.length,
+        //         itemBuilder: (BuildContext context, int index) {
+        //           return CommentAdaptor(index);
+        //         },
+        //       ),
+        //
+        //     );
+        //   },),
+        //   ],
+        //     )
+
+    );
   }
+
+
+
 
   Future<void> addComment() async {
     HashMap<String, dynamic> data = HashMap<String, dynamic>();
     String id = widget.feedModel.id;
     String id1 = DateTime.now().millisecondsSinceEpoch.toString();
-    ;
     // print("gggggggg"+imageUrl);
     data["Description"] = comment.text;
     data["UserName"] = username;
     data["Date"] = DateTime.now().toString();
     data["Time"] = DateTime.now().millisecondsSinceEpoch.toString();
 
-    await mRootReference.child('Comments').child(id1).update(data);
+    await mRootReference.child('Feeds').child('Public').child(id).child('Comments').child(id1).update(data);
 
     // await
     // referenceRoot.child("Test")
@@ -416,6 +212,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
         .then((value) {
       if (value.snapshot.exists) {
         print("ajfbsgdbfdv ${value.snapshot.value}");
+
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
         username = data["Name"];
         setState(() {});
@@ -424,7 +221,8 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
   }
 
   loadComment() {
-    mRootReference.child("Comments").onValue.listen((event) {
+    String id = widget.feedModel.id;
+    mRootReference.child('Feeds').child('Public').child(id).child('Comments').onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       commentList.clear();
       data.forEach((key, value) {
@@ -441,7 +239,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
 
   Widget CommentAdaptor(int index) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10.0, left: 6, right: 6),
+      padding: const EdgeInsets.only(left: 6, right: 6),
       child: Row(
         children: [
           Card(
@@ -489,67 +287,5 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildfab(){
-    final double defaultMargin=200;
-    final double defaultStart=180;
-    final double defaultEnd=defaultStart/2;
-
-    double top =defaultMargin;
-    double scale = 1.0;
-
-    if(_scrollController.hasClients){
-      double offset = _scrollController.offset;
-      top-=offset;
-      if(offset<defaultMargin-defaultStart){
-        scale =1.0;
-      }else if(offset<defaultStart-defaultEnd){
-        scale =(defaultMargin-defaultEnd-offset)/defaultEnd;
-      }else{
-        scale=0.0;
-      }
-    }
-
-    return Positioned(
-        top: 41,
-        right: 10,
-        child: Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.identity()..scale(scale),
-            child: Row(
-              children: [
-                SizedBox(height: 40,
-                  child: InkWell(
-                    onTap: (){
-                    //   Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (context) =>
-                    //               Camera()));
-                    },
-                    child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(color:Colors.blue,
-                          borderRadius: BorderRadius.circular(60),
-                        ),
-                        child:Icon(Icons.add,color: Colors.white,)
-                    ),
-                  ),),
-                SizedBox(width: 10,),
-                Container(height: 40,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: Image.network(
-                        "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                        // list[index].imageUrl,
-                        height: 40,
-                        width: 40,
-                        fit: BoxFit.cover,
-                      )),),
-              ],
-            )));
-
   }
 }

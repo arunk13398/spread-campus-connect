@@ -46,7 +46,7 @@ dependencies:
   awesome_notifications: ^0.7.4+1
   connectivity_plus: ^3.0.3
   shimmer: ^2.0.0
-
+  like_button: ^2.0.5
 
 
 #  ----------not using currently ------

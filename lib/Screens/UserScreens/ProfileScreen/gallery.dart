@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:miniq/Contraints/user_preference.dart';
@@ -33,7 +34,7 @@ class _GalleryState extends State<Gallery> {
     height = size.height;
     width = size.width;
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey[200],
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -90,16 +91,40 @@ class _GalleryState extends State<Gallery> {
   }
 
   Widget galleryAdaptor(int index) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(5),
-      child: CachedNetworkImage(
-        width: double.infinity,
-        fit: BoxFit.fill,
-        imageUrl: list[index].imageUrl,
-        placeholder: (context, url) => Center(
-            child: CircularProgressIndicator(
-              color: Colors.red,
-            )),
+    return InkWell(
+      onLongPress: (){
+        print("abcd ${list[index].id}");
+        AlertDialog(
+          title: const Text("Remove"),
+          content: const Text("Are you sure to Remove"),
+          actions: [
+            TextButton(
+              child: const Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Yes"),
+              onPressed: () {
+                mRootReference.child("Feeds").child("Public").child(list[index].id).remove();
+                list.removeAt(index);
+              },
+            ),
+          ],
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: CachedNetworkImage(
+          width: double.infinity,
+          fit: BoxFit.fill,
+          imageUrl: list[index].imageUrl,
+          placeholder: (context, url) => Center(
+              child: CircularProgressIndicator(
+                color: Colors.red,
+              )),
+        ),
       ),
     );
   }
@@ -116,7 +141,7 @@ class SuggestAdaptor extends StatelessWidget {
           elevation: 5,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(22.0),
-              side: BorderSide(color: MyColors.theme1, width: 2)),
+              side: BorderSide( color: Colors.grey, width: 2)),
           child: ClipRRect(
               borderRadius: BorderRadius.circular(22),
               child: Image.network(
@@ -126,17 +151,6 @@ class SuggestAdaptor extends StatelessWidget {
                 fit: BoxFit.fill,
               )),
         ),
-        // SizedBox(
-        //   width: 70,
-        //   child: Text("aravind",
-        //       style: TextStyle(color: Colors.white),
-        //       maxLines: 1,
-        //       textAlign: TextAlign.center,
-        //       overflow: TextOverflow.ellipsis),
-        // ),
-        // SizedBox(
-        //   width: 5,
-        // ),
       ],
     );
   }

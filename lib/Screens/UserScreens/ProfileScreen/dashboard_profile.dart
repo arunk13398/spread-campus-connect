@@ -6,7 +6,9 @@ import 'package:miniq/Screens/UserScreens/ProfileScreen/personal_information.dar
 import 'package:miniq/Screens/UserScreens/ProfileScreen/profile_page.dart';
 
 import '../../../Contraints/user_preference.dart';
+import '../../../Model/feed_model.dart';
 import '../../../functions/functions.dart';
+import '../LoginScreen/splash_screen.dart';
 import 'edit_profile.dart';
 import 'gallery.dart';
 
@@ -19,6 +21,7 @@ class ProfileDashboard extends StatefulWidget {
 class _ProfileDashboardState extends State<ProfileDashboard> {
 
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  List<FeedModel> list = [];
   String numberId='';
   String UserName='';
   String College='';
@@ -29,6 +32,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   void initState() {
     super.initState();
     getDataF1();
+    load();
 
   }
   var size,height,width;
@@ -41,7 +45,9 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Column(
+          child:
+
+          Column(
             children: [
               Expanded(
                 child: SingleChildScrollView(
@@ -49,8 +55,6 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Dashboard",style: TextStyle(fontSize: 30),),
-                      SizedBox(height: 10,),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -89,6 +93,15 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                                 )
                               ],
                             ),
+                            Spacer(),
+                            Align(alignment:Alignment.topRight,
+                                child: InkWell(
+                                  onTap:(){
+                                    showAlertDialogMore(context);
+                                  },
+                                  child: SizedBox( width:40,height:40,
+                                      child: Icon(Icons.more_vert_outlined)),
+                                ))
                           ],
                         ),
                       ),
@@ -106,7 +119,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                           child: Container(
                             width: double.infinity,
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
+                                  borderRadius: BorderRadius.circular(15),
                                   border:Border.all(color: Colors.grey.shade300,width: 1,)
                               ),
                               child: Padding(
@@ -115,75 +128,75 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                               )),
                         ),
                       ),
+
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: InkWell(
-                          onTap: (){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        Gallery()));
-                          },
-                          child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(30),
-                                  border:Border.all(color: Colors.grey.shade300,width: 1,)
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                                child: Text("Image collection",style: TextStyle(fontWeight: FontWeight.bold),),
-                              )),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(10),
                         child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                border:Border.all(color: Colors.grey.shade300,width: 1,)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                              child: Text("about",style: TextStyle(fontWeight: FontWeight.bold),),
-                            )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                border:Border.all(color: Colors.grey.shade300,width: 1,)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                              child: Text("Privacy policy",style: TextStyle(fontWeight: FontWeight.bold),),
-                            )),
-                      ),
+                            height: height / 1.3,
+                            child: GridView.builder(
+                                itemCount: list.length,
+                                gridDelegate:
+                                SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 150,
+                                  mainAxisSpacing: 10.0,
+                                  crossAxisSpacing: 10,
+                                  childAspectRatio: 1,
+                                ),
+                                itemBuilder: (BuildContext context, int index) =>
+                                    galleryAdaptor(index))),
+                      )
+
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: InkWell(
+                      //     onTap: (){
+                      //       Navigator.push(
+                      //           context,
+                      //           MaterialPageRoute(
+                      //               builder: (context) =>
+                      //                   Gallery()));
+                      //     },
+                      //     child: Container(
+                      //         width: double.infinity,
+                      //         decoration: BoxDecoration(
+                      //             borderRadius: BorderRadius.circular(15),
+                      //             border:Border.all(color: Colors.grey.shade300,width: 1,)
+                      //         ),
+                      //         child: Padding(
+                      //           padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
+                      //           child: Text("Image collection",style: TextStyle(fontWeight: FontWeight.bold),),
+                      //         )),
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: Container(
+                      //       width: double.infinity,
+                      //       decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(15),
+                      //           border:Border.all(color: Colors.grey.shade300,width: 1,)
+                      //       ),
+                      //       child: Padding(
+                      //         padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
+                      //         child: Text("about",style: TextStyle(fontWeight: FontWeight.bold),),
+                      //       )),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: Container(
+                      //       width: double.infinity,
+                      //       decoration: BoxDecoration(
+                      //           borderRadius: BorderRadius.circular(15),
+                      //           border:Border.all(color: Colors.grey.shade300,width: 1,)
+                      //       ),
+                      //       child: Padding(
+                      //         padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
+                      //         child: Text("Privacy policy",style: TextStyle(fontWeight: FontWeight.bold),),
+                      //       )),
+                      // ),
 
                     ],
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top:8.0,bottom:20,left:8,right: 8),
-                child: InkWell(
-                  onTap: (){
-                    showAlertDialog(context);
-                  },
-                  child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          border:Border.all(color: Colors.grey.shade300,width: 1,)
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                        child: Text("Logout",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.red),),
-                      )),
                 ),
               ),
             ],
@@ -192,6 +205,9 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       ),
     );
   }
+
+
+
 
   getDataF1() async {
     numberId = (await getString(UserPreferences.USER_NUMBER));
@@ -212,6 +228,149 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         setState(() {});
       }
     });
+  }
+
+  load() async {
+    mRootReference.child("UsersList").child('GECWayanad').child('+919562592737').child('Student').child('Post').onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      list.clear();
+      data.forEach((key, value) {
+        list.add(FeedModel(
+          id: key,
+          userName: value['UserName'],
+          desigUser: value['Designation'],
+          description: value['Description'],
+          imageUrl: value['ImageUrl'],
+          UpdatedTime: value['ImageUrlTime'],
+        ));
+      });
+      setState(() {});
+    });
+  }
+
+  Widget galleryAdaptor(int index) {
+    return InkWell(
+      onLongPress: (){
+        print("abcd ${list[index].id}");
+        AlertDialog(
+          title: const Text("Remove"),
+          content: const Text("Are you sure to Remove"),
+          actions: [
+            TextButton(
+              child: const Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Yes"),
+              onPressed: () {
+                mRootReference.child("Feeds").child("Public").child(list[index].id).remove();
+                list.removeAt(index);
+              },
+            ),
+          ],
+        );
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: CachedNetworkImage(
+          width: double.infinity,
+          fit: BoxFit.fill,
+          imageUrl: list[index].imageUrl,
+          placeholder: (context, url) => Center(
+              child: CircularProgressIndicator(
+                color: Colors.red,
+              )),
+        ),
+      ),
+    );
+  }
+
+
+  showAlertDialogMore(BuildContext context) {
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("More options"),
+      content: Container(
+        height: 150,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              onTap: (){
+
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Privacy policy",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+              ),
+            ),
+            SizedBox(height: 5,),
+            InkWell(
+              onTap: (){
+
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("About",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+              ),
+            ),
+            SizedBox(height: 5,),
+            InkWell(
+              onTap: (){
+
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("help",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+              ),
+            ),
+            SizedBox(height: 5,),
+            InkWell(onLongPress: (){
+              setBool(UserPreferences.IS_LOGIN,false);
+              setString(UserPreferences.ACCESS_CODE,"");
+              setString(UserPreferences.USER_NUMBER,"");
+              setString(UserPreferences.USER_Name,"");
+              setString(UserPreferences.USER_TYPE,"");
+              finishAccountCreation( SplashScreen(), context);
+              // showAlertDialog(context);
+            },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Logout",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color:Colors.red),),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          child: Container(
+            decoration: BoxDecoration(
+              color:Colors.blue,
+              borderRadius: BorderRadius.all(
+                Radius.circular(30)
+              )
+            ),
+              child: Padding(
+                padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
+                child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
+              )),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
 }

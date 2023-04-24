@@ -72,7 +72,7 @@ class _TestPageState extends State<TestPage>
           indicatorPadding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
           controller: tabController,
           indicator:  UnderlineTabIndicator(
-            borderSide: BorderSide(color: MyColors.Greencolor, width: 4),
+            borderSide: BorderSide( color: Colors.grey, width: 4),
             insets: EdgeInsets.fromLTRB(16, 0, 16, 8),
           ),
           tabs: [

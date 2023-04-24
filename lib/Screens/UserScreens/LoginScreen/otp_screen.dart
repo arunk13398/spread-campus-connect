@@ -30,7 +30,6 @@ class _OTPScreenState extends State<OTPScreen> {
   }
   @override
   Widget build(BuildContext context) {
-
     return  Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,

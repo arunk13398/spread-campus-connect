@@ -1,9 +1,13 @@
+import 'dart:collection';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chip_list/chip_list.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:expandable/expandable.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
 import 'package:miniq/Contraints/user_preference.dart';
 import 'package:miniq/Model/feed_model.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/comment_view.dart';
@@ -17,7 +21,7 @@ import '../../bottom_navigation.dart';
 
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({Key? key}) : super(key: key);
+  const FeedPage({Key? key,}) : super(key: key);
 
   @override
   State<FeedPage> createState() => _FeedPageState();
@@ -31,9 +35,11 @@ class _FeedPageState extends State<FeedPage> {
   String UserName1 = '';
   String College = '';
   String Designation = '';
+  String Phone = '';
   bool isLiked = false;
   bool isConnected = false;
   var size, height, width;
+
 
   final List<String> _menuItems = [
     'Public',
@@ -68,7 +74,6 @@ class _FeedPageState extends State<FeedPage> {
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
         body:  Stack(
@@ -113,29 +118,17 @@ class _FeedPageState extends State<FeedPage> {
                                   child: Container(
                                       height: 40,
                                       width: 40,
-                                      decoration: BoxDecoration(color:Colors.blue,
+                                      decoration: BoxDecoration(
+                                        color:MyColors.Colorgreen3,
                                         borderRadius: BorderRadius.circular(60),
                                       ),
                                       child:Icon(Icons.add,color: Colors.white,)
                                   ),
                                 ),
                                 SizedBox(width: 10,),
-                                // ClipRRect(
-                                //     borderRadius: BorderRadius.circular(100),
-                                //     child: Image.network(
-                                //       "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                                //       // list[index].imageUrl,
-                                //       height: 40,
-                                //       width: 40,
-                                //       fit: BoxFit.cover,
-                                //     )),
-                                // SizedBox(width:12),
                               ],),
                             ),
                           ),
-
-
-
 
                           background: Container(
                             color: Colors.transparent,
@@ -177,14 +170,14 @@ class _FeedPageState extends State<FeedPage> {
                                     SizedBox(height: 30,),
                                     // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
                                     ChipList(
-                                      padding: EdgeInsets.all(5),
+                                      padding: EdgeInsets.all(8),
                                       listOfChipNames: _menuItems,
-                                      activeBgColorList: [Theme.of(context).primaryColor],
+                                      activeBgColorList: [MyColors.Colorgreen2],
                                       inactiveBgColorList: const [Colors.white],
                                       activeTextColorList: const [Colors.white],
                                       inactiveTextColorList: [Colors.black],
                                       listOfChipIndicesCurrentlySeclected: [_currentIndex],
-                                      inactiveBorderColorList:  [Colors.blue.shade200],
+                                      inactiveBorderColorList:  [MyColors.Colorgreen2],
                                       extraOnToggle: (val) {
                                         _currentIndex = val;
                                         setState(() {
@@ -206,20 +199,9 @@ class _FeedPageState extends State<FeedPage> {
                           primary: false,
                           shrinkWrap: true,
                           itemCount: list.length,
-                          itemBuilder: (BuildContext context, int index)=> FeedAdaptor(index)
+                          itemBuilder: (BuildContext context, int index)=> AdaptorNew(index)
                       )
 
-                      // isConnected==true?ListView.builder(
-                      //     primary: false,
-                      //     shrinkWrap: true,
-                      //     itemCount: list.length,
-                      //     itemBuilder: (BuildContext context, int index)=> FeedAdaptor(index)
-                      // ):
-                      // ListView.builder(
-                      //     primary: false,
-                      //     shrinkWrap: true,
-                      //     itemCount: 3,
-                      //     itemBuilder: (context, index) => getShimmerLoading())
                   )
                 ],
               ),
@@ -230,6 +212,7 @@ class _FeedPageState extends State<FeedPage> {
 
     );
   }
+
   getDataF1() async {
     numberId = (await getString(UserPreferences.USER_NUMBER));
     UserName = (await getString(UserPreferences.USER_Name));
@@ -244,6 +227,7 @@ class _FeedPageState extends State<FeedPage> {
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
         College = data["College"];
         Designation = data["Designation"];
+        Phone =data['Phone'];
         setState(() {});
       }
     });
@@ -267,7 +251,6 @@ class _FeedPageState extends State<FeedPage> {
         setState(() {});
       }
     });
-
   }
 
   load() async {
@@ -283,7 +266,6 @@ class _FeedPageState extends State<FeedPage> {
           description: value['Description'],
           imageUrl: value['ImageUrl'],
           UpdatedTime: value['ImageUrlTime'],
-
         ));
       });
       setState(() {});
@@ -291,226 +273,240 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   @override
+  Widget AdaptorNew(int index){
+    return Container(
+      child:ExpandableNotifier(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
 
-  Widget FeedAdaptor(int index) {
-    // int index  in function
-    return Column(
-      children: [
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 5.0,top:10),
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: width / 1.1,
-                        child: Row(
-                          children: [
-                            SizedBox(width:15),
-                            CachedNetworkImage(
-                              imageUrl: 'https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg',
-                              placeholder: (context, url) =>  CircleAvatar(
-                                backgroundColor: Colors.blue.shade300,
-                                radius: 22,
-                              ),
-                              imageBuilder: (context, image) => CircleAvatar(
-                                backgroundImage: image,
-                                radius: 22,
-                              ),
+                ScrollOnExpand(
+                  scrollOnExpand: true,
+                  scrollOnCollapse: true,
+                  child: ExpandablePanel(
+                    theme: const ExpandableThemeData(
+
+                      // expandIcon: CupertinoIcons.arrow_down_right_arrow_up_left,
+                      // iconSize: 22,
+                      // iconColor: Colors.blue,
+                      headerAlignment: ExpandablePanelHeaderAlignment.center,
+                      tapBodyToCollapse: true,
+                    ),
+                    header: SizedBox(
+                      width: width / 1.5,
+                      child: Row(
+                        children: [
+                          SizedBox(width:0),
+                          CachedNetworkImage(
+                            imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                            placeholder: (context, url) =>  CircleAvatar(
+                              backgroundColor: Colors.blue.shade300,
+                              radius: 22,
                             ),
-                            SizedBox(
-                              width: width / 1.8,
-                              child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.start,
-                                crossAxisAlignment:
-                                CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10.0, right: 5),
-                                    child: Text(
-                                         list[index].userName,
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                        textAlign: TextAlign.start),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10.0, right: 5),
-                                    child: Text(
-                                       list[index].desigUser,
+                            imageBuilder: (context, image) => CircleAvatar(
+                              backgroundImage: image,
+                              radius: 22,
+                            ),
+                          ),
+                          SizedBox(
+                            width: width / 1.8,
+                            child: Column(
+                              mainAxisAlignment:
+                              MainAxisAlignment.start,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 5),
+                                  child: Text(
+                                      list[index].userName,
                                       style: TextStyle(
-                                          fontSize: 15,
-                                          color: Colors.grey),
-                                    ),
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.start),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 5),
+                                  child: Text(
+                                    list[index].desigUser,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey),
                                   ),
+                                ),
 
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 10, right: 5),
+                            child: Text(
+                              "1 min ago",
+                              // list[index].username
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    collapsed: Padding(
+                      padding: const EdgeInsets.only(top:8.0),
+                      child: Text(list[index].description,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          textAlign: TextAlign.justify,
+                          softWrap: false,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                    expanded: Padding(
+                      padding: const EdgeInsets.only(top:8.0),
+                      child: Text(list[index].description,
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          textAlign: TextAlign.justify,
+                          softWrap: false,
+                          maxLines: 50,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+
+                    builder: (_, collapsed, expanded) {
+                      return Padding(
+                        padding:
+                        EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                        child: Expandable(
+                          collapsed: collapsed,
+                          expanded: expanded,
+                          theme: const ExpandableThemeData(crossFadePoint: 0),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child:
+                  CachedNetworkImage(
+                    imageUrl: list[index].imageUrl,
+                    placeholder: (context, url) =>
+                        getShimmerLoading(),
+                    imageBuilder: (context, image) => ClipRRect(borderRadius: BorderRadius.circular(10),
+                      child: CachedNetworkImage(
+                        // height: 250,
+                        width: double.infinity,
+                        fit: BoxFit.fill,
+                        imageUrl: list[index].imageUrl,
+                        placeholder: (context, url) => getShimmerLoading(),),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding:  EdgeInsets.only(left: 0.0,top:10,bottom: 10),
+                  child: Row(
+                    children: [
+                      SizedBox(width:0),
+                      Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              border:Border.all(color: Colors.grey.shade300,width: 1,)
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
+                            child: Row(
+                              children: [
+                                LikeButton(
+                                  size: 30,
+                                  circleColor:CircleColor(start:Color(0xFF79D71E),end: Color(0xFFCEF894)),
+                                  bubblesColor: BubblesColor(
+                                      dotPrimaryColor: Color(0xFF79D71E),
+                                      dotSecondaryColor: Color(0xFFCEF894),
+                                  ),
+                                  likeBuilder: (bool isLiked){
+                                    return Icon(
+                                      isLiked ?Icons.favorite:Icons.favorite_border,
+                                      color:isLiked ? Colors.black:Colors.grey,
+                                      size:30,
+                                    );
+                                  },
+                                  likeCount: 10,
+                                  countBuilder: (count,bool isLiked, String text){
+                                    var color = isLiked?Colors.indigo:Colors.orange;
+                                    Widget result;
+
+                                    if (count ==0 ){
+                                      result = Text("love",
+                                        style: TextStyle(color: color),);
+                                    }
+                                    else
+                                      result = Text(text,style: TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),);
+                                      print("tutututu ${result}");
+                                    return result;
+                                  },
+                                ),
+                              ],
+                            ),
+                          )),
+                      SizedBox(width:10),
+                      InkWell(
+                        onTap: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CommentViewScreen(
+                                          feedModel: list[index],)));
+                        },
+                        child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                border:Border.all(color: Colors.grey.shade300,width: 1,)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.chat_bubble_outline),
+                                  SizedBox(width: 2,),
+                                  Text(
+                                    "12",
+                                    style:
+                                    TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
+                                  ),
                                 ],
                               ),
+                            )),
+                      ),
+                      SizedBox(width:10),
+                      InkWell(
+                        onTap: (){
+                          // print("desig dwerx ${Designation}");
+                          print("ajfbsgdbfdv ${list[index].id}");
+                        },
+                        child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                border:Border.all(color: Colors.grey.shade300,width: 1,)
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10.0, right: 5),
-                              child: Text(
-                                "1 min ago",
-                                // list[index].username
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black),
-                              ),
-                            ),
-                          ],
-                        ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
+                              child: Icon(Icons.more_horiz),
+                            )),
                       ),
 
-                      Padding(
-                        padding:
-                        const EdgeInsets.only(left: 8.0, right: 5,top:10,bottom:5),
-                        child: SizedBox(
-                          width: width / 1.2,
-                          child: Text(list[index].description,
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              textAlign: TextAlign.start),
-                        ),
-                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child:
-              CachedNetworkImage(
-                imageUrl: list[index].imageUrl,
-                placeholder: (context, url) =>
-                    getShimmerLoading(),
-                imageBuilder: (context, image) => ClipRRect(borderRadius: BorderRadius.circular(8),
-                  child: CachedNetworkImage(
-        // height: 250,
-               width: double.infinity,
-               fit: BoxFit.fill,
-               imageUrl: list[index].imageUrl,
-               placeholder: (context, url) => getShimmerLoading(),),
                 ),
-              ),
-              // ClipRRect(
-              //   borderRadius: BorderRadius.circular(20),
-              //   child: CachedNetworkImage(
-              //     // height: 250,
-              //     width: double.infinity,
-              //     fit: BoxFit.fill,
-              //     imageUrl: list[index].imageUrl,
-              //     placeholder: (context, url) => Center(
-              //         child: CircularProgressIndicator(
-              //           color: MyColors.Greencolor,
-              //         )),
-              //   ),
-              // ),
+
+              ],
             ),
-
-            Padding(
-              padding:  EdgeInsets.only(left: 5.0,top:5,bottom: 10),
-              child: Row(
-                children: [
-                  SizedBox(width:20),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border:Border.all(color: Colors.grey.shade300,width: 1,)
-                    ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                        child: Row(
-                          children: [
-                            InkWell(
-                              onTap: (){
-                                setState(() {
-                                  isLiked = !isLiked;
-                                });
-                              },
-                              child: Icon(Icons.favorite, color: MyColors.Blackcolor, size: 26,
-                              )
-                                  ),
-
-                            SizedBox(width: 2,),
-                            Text(
-                              "12",
-                              style:
-                              TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      )),
-                  SizedBox(width:10),
-                  InkWell(
-                    onTap: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  CommentViewScreen(
-                                      feedModel: list[index])));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        border:Border.all(color: Colors.grey.shade300,width: 1,)
-                      ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                          child: Row(
-                            children: [
-                              Icon(Icons.chat_bubble_outline),
-                              SizedBox(width: 2,),
-                              Text(
-                                "12",
-                                style:
-                                TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        )),
-                  ),
-                  SizedBox(width:10),
-                  InkWell(
-                    onTap: (){
-                      print("desig dwerx ${Designation}");
-                    },
-                    child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            border:Border.all(color: Colors.grey.shade300,width: 1,)
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                          child: Icon(Icons.more_horiz),
-                        )),
-                  ),
-
-                ],
-              ),
-            ),
-
-          ],
-        ),
-
-        // SizedBox(height: 20,),
-      ],
+          )),
     );
   }
 
@@ -556,7 +552,8 @@ class _FeedPageState extends State<FeedPage> {
                       child: Container(
                           height: 40,
                           width: 40,
-                          decoration: BoxDecoration(color:Colors.blue,
+                          decoration: BoxDecoration(
+                            color:MyColors.Colorgreen3,
                             borderRadius: BorderRadius.circular(60),
                           ),
                           child:Icon(Icons.add,color: Colors.white,)
@@ -672,6 +669,40 @@ class _FeedPageState extends State<FeedPage> {
     );
   }
 
+  Future<void> addLike() async {
+    HashMap<String, dynamic> data = HashMap<String, dynamic>();
+
+    // String id1 = list[index].id
+    String id2 = Phone;
+    String id1 = DateTime.now().millisecondsSinceEpoch.toString();
+    await mRootReference.child('Feeds').child('Public').child(id2).child('Comments').child(id1).update(data);
+
+    // HashMap<String, dynamic> data = HashMap<String, dynamic>();
+    // String id2= list[index].id;
+    // String id3= numberId;
+    // print("tutututu ${UserName}");
+    // data["UserName"] = UserName;
+    // mRootReference.child('Feeds').child('Public').child(id2).child('Likes').child(id3).update(data);
+    //
+  }
+
+   newLike(){
+    if(isLiked==true){
+      HashMap<String, dynamic> data = HashMap<String, dynamic>();
+      String id3= numberId;
+      print("tutututu ${UserName}");
+      data["UserName"] = UserName;
+      mRootReference.child('Likes').child(id3).update(data);
+    }
+    else{
+      HashMap<String, dynamic> data = HashMap<String, dynamic>();
+      String id3= numberId;
+      print("tutututu ${UserName}");
+      data["UserName"] = UserName;
+      mRootReference.child('Likes').child(id3).remove();
+    }
+
+   }
 
 }
 

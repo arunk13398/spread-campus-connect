@@ -49,7 +49,7 @@ class _EditProfileState extends State<EditProfile> {
                         child: Icon(
                           Icons.linked_camera_sharp,
                           size: 35,
-                          color:  MyColors.theme2,
+                          color: Colors.grey,
                         ),
                       ),
                     ],
@@ -58,7 +58,8 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
                   child: Align(alignment: Alignment.centerLeft,
-                      child: Text("Personal details -", style: TextStyle(fontWeight: FontWeight.bold,color: MyColors.theme1,fontSize: 17))),
+                      child: Text("Personal details -",
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey,fontSize: 17))),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
@@ -196,7 +197,7 @@ class _EditProfileState extends State<EditProfile> {
                   padding: const EdgeInsets.only(left:15.0,right: 5,),
                   child: CheckboxListTile(
                     activeColor: Colors.blue,
-                    title: Text("Change to the page?",style: TextStyle(color: MyColors.theme1,fontSize: 14),),
+                    title: Text("Change to the page?",style: TextStyle( color: Colors.grey,fontSize: 14),),
                     value: _isChecked,
                     onChanged: (val) {
                       setState(() {
@@ -207,7 +208,8 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left:15,right: 15),
-                  child: Text("wait until the admin verification, page have more than features and responsibilities to others",style: TextStyle(color: MyColors.theme1,fontSize: 16),textAlign: TextAlign.center),
+                  child: Text("wait until the admin verification, page have more than features and responsibilities to others",
+                      style: TextStyle( color: Colors.grey,fontSize: 16),textAlign: TextAlign.center),
                 ),
               ],
             ),

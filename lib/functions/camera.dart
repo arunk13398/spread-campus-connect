@@ -95,29 +95,14 @@ class _CameraState extends State<Camera> {
                             source: ImageSource.camera);
                         print('${file?.path}');
                         if (file == null) return;
-                          if(isConnected==true){
-                            String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
-                            Reference mRootReference = FirebaseStorage.instance.ref();
-                            Reference referenceDirImages = mRootReference.child('images');
+                        String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+                        Reference mRootReference = FirebaseStorage.instance.ref();
+                        Reference referenceDirImages = mRootReference.child('images');
 
-                            Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
-                            try {await referenceImageToUpload.putFile(File(file!.path));
-                            imageUrl = await referenceImageToUpload.getDownloadURL();
-                            } catch (error) {}
-                          }else{
-                            AlertDialog(
-                              title:  Text("Error"),
-                              content:  Text("Facing network error"),
-                              actions: [
-                                TextButton(
-                                  child: const Text("Ok"),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
-                            );
-                          }
+                        Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+                        try {await referenceImageToUpload.putFile(File(file!.path));
+                        imageUrl = await referenceImageToUpload.getDownloadURL();
+                        } catch (error) {}
 
                       },
                       child: Row(
@@ -226,7 +211,7 @@ class _CameraState extends State<Camera> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color:Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -289,7 +274,7 @@ class _CameraState extends State<Camera> {
                         imageUrl: imageUrl,
                         placeholder: (context, url) => Center(
                             child: CircularProgressIndicator(
-                          color: MyColors.Greencolor,
+                          color: Colors.grey,
                         )),
                       )
                     : Container(),
@@ -316,7 +301,7 @@ class _CameraState extends State<Camera> {
                   //alertDialog(context,"is not empty","is url not empty${imageUrl}");
                   add().then((value) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      backgroundColor: MyColors.Greencolor,
+                      backgroundColor: Colors.grey,
                       content: Text(
                         "Successful",
                         style: TextStyle(color: Colors.black),
@@ -390,7 +375,7 @@ class _CameraState extends State<Camera> {
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(60),
-                                  color: MyColors.theme3,
+                                  color: Colors.grey,
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
@@ -424,7 +409,7 @@ class _CameraState extends State<Camera> {
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(60),
-                                  color: MyColors.theme3,
+                                  color: Colors.grey,
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
@@ -501,12 +486,8 @@ class _CameraState extends State<Camera> {
     data["Date"] = DateTime.now().toString();
     data["ImageUrlTime"] = DateTime.now().millisecondsSinceEpoch.toString();
 
-    await mRootReference
-        .child("Feeds")
-        .child(subId)
-        .child(id)
-        // .child('Images')
-        .update(data);
+    await mRootReference.child("Feeds").child(subId).child(id).update(data);
+    await mRootReference.child("UsersList").child('GECWayanad').child('+919562592737').child('Student').child('Post').child(id).update(data);
 
     Future.delayed(const Duration(seconds: 1), () {
       finishAccountCreation(BottomNavigation(), context);

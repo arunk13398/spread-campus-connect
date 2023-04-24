@@ -93,12 +93,12 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.2),
+                            color: Colors.grey, width: 1.2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color: Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -123,12 +123,12 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.2),
+                            color: Colors.grey, width: 1.2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color: Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -156,7 +156,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color: Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -177,12 +177,12 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.2),
+                            color: Colors.grey, width: 1.2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color: Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -203,12 +203,12 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.2),
+                            color: Colors.grey, width: 1.2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color: Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -229,12 +229,12 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.2),
+                            color: Colors.grey, width: 1.2),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
-                            color: MyColors.LightBlackcolor, width: 1.6),
+                            color: Colors.grey, width: 1.6),
                       ),
                     ),
                   ),
@@ -274,12 +274,12 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           borderSide: BorderSide(
-                              color: MyColors.LightBlackcolor, width: 1.2),
+                              color: Colors.grey, width: 1.2),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           borderSide: BorderSide(
-                              color: MyColors.LightBlackcolor, width: 1.6),
+                              color: Colors.grey, width: 1.6),
                         ),
                       ),
                       maxLines: 100,
@@ -296,7 +296,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                         onPressed: () async {
                           await AddComplaint().then((value) {
                             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              backgroundColor: MyColors.Greencolor,
+                              backgroundColor: Colors.grey,
                               content: Text(
                                 "Successful",
                                 style: TextStyle(color: Colors.black),

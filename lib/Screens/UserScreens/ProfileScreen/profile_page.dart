@@ -63,14 +63,14 @@ class _ProfilePageState extends State<ProfilePage> {
                             style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: MyColors.Whitecolor)),
-                        Icon(Icons.school, color: MyColors.Greencolor,)
+                              color: Colors.grey,)),
+                        Icon(Icons.school, color: Colors.grey,)
                       ],
                     ),
                   ),
-                  Text("Gecwyd", style: TextStyle(fontSize: 16, color: MyColors.Whitecolor)),
+                  Text("Gecwyd", style: TextStyle(fontSize: 16, color: Colors.grey,)),
                   SizedBox(height: 5,),
-                  Text("Third year", style: TextStyle(fontSize: 16, color: MyColors.Whitecolor)),
+                  Text("Third year", style: TextStyle(fontSize: 16,  color: Colors.grey,)),
                   SizedBox(height: 10,),
                   SizedBox(width: 10),
                   Padding(padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -85,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       builder: (context) => EditProfile()));
                             },
                             textColor: Colors.white,
-                            color: MyColors.LightBlackcolor,
+                            color: Colors.grey,
                             minWidth: width / 2.3,
                             height: 60,
                             shape: RoundedRectangleBorder(
@@ -113,7 +113,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               //         builder: (context) => HomeScreenBuyer()));
                             },
                             textColor: Colors.black,
-                            color: MyColors.Orangecolor,
+                            color: Colors.grey,
                             minWidth: width / 2.3,
                             height: 60,
                             shape: RoundedRectangleBorder(
@@ -150,7 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               //         builder: (context) => HomeScreenBuyer()));
                             },
                             textColor: Colors.black,
-                            color: MyColors.Whitecolor,
+                            color: Colors.grey,
                             minWidth: width / 3.3,
                             height: 55,
                             shape: RoundedRectangleBorder(
@@ -254,7 +254,7 @@ class SuggestAdaptor extends StatelessWidget {
           elevation: 5,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(22.0),
-              side: BorderSide(color: MyColors.theme1, width: 2)),
+              side: BorderSide( color: Colors.grey, width: 2)),
           child: ClipRRect(
               borderRadius: BorderRadius.circular(22),
               child: Image.network(
