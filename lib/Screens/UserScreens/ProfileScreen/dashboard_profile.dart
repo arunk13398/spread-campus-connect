@@ -125,14 +125,27 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                          width: double.infinity,
+                          width: width/1,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border:Border.all(color: Colors.grey.shade300,width: 1,)
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                              child: Text("12 followers                |               6 post               |              Student",style: TextStyle(fontWeight: FontWeight.bold),),
+                              child: Row(
+                                children: [
+                                  Spacer(),
+                                  Text("12 followers",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Spacer(),
+                                  Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Spacer(),
+                                  Text("0 post",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Spacer(),
+                                  Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Spacer(),
+                                  Text(Designation,style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Spacer(),],
+                              ),
                             )),
                       ),
 
