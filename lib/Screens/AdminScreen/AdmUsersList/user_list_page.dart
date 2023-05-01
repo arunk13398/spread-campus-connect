@@ -45,7 +45,11 @@ class _UserListPageState extends State<UserListPage> {
 
 
   @override
+  var size,height,width;
   Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     return  Scaffold (
       appBar: AppBar(
         title: Text("Users"),
@@ -138,13 +142,14 @@ class _UserListPageState extends State<UserListPage> {
                     ),child:Center(child: Text("AK",style:TextStyle(fontSize:20,color: Colors.white)))),
                 SizedBox(width:15),
                 SizedBox(
-                  width: 200,
+                  width: width/2.2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(userlist[index].userName,style:TextStyle(fontSize:18,fontWeight: FontWeight.bold),maxLines: 2,overflow: TextOverflow.ellipsis,),
                       Text(userlist[index].desigUser,style:TextStyle(fontSize:16,color: Colors.grey)),
+                      Text(userlist[index].College,style:TextStyle(fontSize:12,color: Colors.blue.shade200)),
                     ],
                   ),
                 ),

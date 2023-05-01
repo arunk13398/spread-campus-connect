@@ -78,7 +78,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                             ),
                           ),
                           SizedBox(
-                            width: width / 1.8,
+                            width: width / 2,
                             child: Column(
                               mainAxisAlignment:
                               MainAxisAlignment.start,

@@ -316,7 +316,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     AlertDialog alert = AlertDialog(
       title: const Text("More options"),
       content: Container(
-        height: 150,
+        height: height/4.65,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

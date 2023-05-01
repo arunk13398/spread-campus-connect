@@ -258,47 +258,53 @@ class _FeedManagePageState extends State<FeedManagePage> {
                               radius: 20,
                             ),
                           ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          SizedBox(
+                            width:width/3.45,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
 
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10.0, right: 5),
-                                child: Text(
-                                    list[index].userName,
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                    textAlign: TextAlign.start),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10.0, right: 5),
-                                child: Text(
-                                  list[index].desigUser,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey),
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 5),
+                                  child: Text(
+                                      list[index].userName,
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      textAlign: TextAlign.start),
                                 ),
-                              ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 5),
+                                  child: Text(
+                                    list[index].desigUser,
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey),
+                                  ),
+                                ),
 
-                            ],
+                              ],
+                            ),
                           )
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top:8.0),
-                      child: Text( list[index].description,
-                            style: TextStyle(fontSize: 16, color: Colors.black),
-                            textAlign: TextAlign.justify,
-                            softWrap: false,
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis),
+                      SizedBox(
+                        height: height/9.92,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top:8.0),
+                        child: Text( list[index].description,
+                              style: TextStyle(fontSize: 16, color: Colors.black),
+                              textAlign: TextAlign.justify,
+                              softWrap: false,
+                              maxLines: 5,
+                              overflow: TextOverflow.ellipsis),
+                        ),
                       ),
                     ],
                   ),

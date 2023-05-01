@@ -65,7 +65,11 @@ class _PublishNotificationState extends State<PublishNotification> {
 
 
   @override
+  var size,height,width;
   Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     return  Scaffold(
         body:SafeArea(
           child:
@@ -240,55 +244,60 @@ class _PublishNotificationState extends State<PublishNotification> {
 
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(width:5,),
-                      Text("Select your designation ",style: TextStyle(color: Colors.black,fontSize: 16,)),
-                      Spacer(),
-                      Container(
-                        width: 200,
-                        height: 40,
-                        decoration:BoxDecoration(
-                            color:Colors.white,
-                            borderRadius: BorderRadius.circular(5),
-                            border: Border.all(
-                                color: Colors.black38,
-                                width: 1
-                            )
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            // Initial Value
-                            value: _designationDpValue,
-                            iconEnabledColor: Colors.black,
-                            borderRadius: BorderRadius.circular(10),
-                            // Down Arrow Icon
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            // Array list of items
-                            items: _usersList.map((String items) {
-                              return DropdownMenuItem(
-                                value: items,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left:10.0,right:10),
-                                  child: Text(items),
-                                ),
-                              );
-                            }).toList(),
-                            // After selecting the desired option,it will
-                            // change button value to selected value
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _designationDpValue = newValue!;
-                                print("asdfghjkl ${_designationDpValue}");
-                                print("asdfghjkl ${_studentValue}");
-                              });
-                            },
+                  child: SizedBox(
+                    width:width/1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(width:5,),
+                        SizedBox(
+                            width:width/3,
+                            child: Text("Select your designation ",style: TextStyle(color: Colors.black,fontSize: 16,))),
+                        Spacer(),
+                        Container(
+                          width: 200,
+                          height: 40,
+                          decoration:BoxDecoration(
+                              color:Colors.white,
+                              borderRadius: BorderRadius.circular(5),
+                              border: Border.all(
+                                  color: Colors.black38,
+                                  width: 1
+                              )
+                          ),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                              // Initial Value
+                              value: _designationDpValue,
+                              iconEnabledColor: Colors.black,
+                              borderRadius: BorderRadius.circular(10),
+                              // Down Arrow Icon
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              // Array list of items
+                              items: _usersList.map((String items) {
+                                return DropdownMenuItem(
+                                  value: items,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left:10.0,right:10),
+                                    child: Text(items),
+                                  ),
+                                );
+                              }).toList(),
+                              // After selecting the desired option,it will
+                              // change button value to selected value
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _designationDpValue = newValue!;
+                                  print("asdfghjkl ${_designationDpValue}");
+                                  print("asdfghjkl ${_studentValue}");
+                                });
+                              },
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: 5,),
-                    ],
+                        SizedBox(width: 5,),
+                      ],
+                    ),
                   ),
                 ),
                 _designationDpValue==_studentValue?
@@ -296,53 +305,57 @@ class _PublishNotificationState extends State<PublishNotification> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          SizedBox(width:5,),
-                          Text("Select acadamic year ",style: TextStyle(color: Colors.black,fontSize: 16,)),
-                          Spacer(),
-                          Container(
-                            width: 200,
-                            height: 40,
-                            decoration:BoxDecoration(
-                                color:Colors.white,
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                    color: Colors.black38,
-                                    width: 1
-                                )
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                // Initial Value
-                                value: _academicDpValue,
-                                iconEnabledColor: Colors.black,
-                                borderRadius: BorderRadius.circular(10),
-                                // Down Arrow Icon
-                                icon: const Icon(Icons.keyboard_arrow_down),
-                                // Array list of items
-                                items: _academicYear.map((String items) {
-                                  return DropdownMenuItem(
-                                    value: items,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left:10.0,right:10),
-                                      child: Text(items),
-                                    ),
-                                  );
-                                }).toList(),
-                                // After selecting the desired option,it will
-                                // change button value to selected value
-                                onChanged: (String? newValue) {
-                                  setState(() {
-                                    _academicDpValue = newValue!;
-                                  });
-                                },
+                      SizedBox(
+                        width:width/1,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(width:5,),
+                            SizedBox(width:width/3,
+                                child: Text("Select acadamic year ",style: TextStyle(color: Colors.black,fontSize: 16,))),
+                            Spacer(),
+                            Container(
+                              width: 200,
+                              height: 40,
+                              decoration:BoxDecoration(
+                                  color:Colors.white,
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                      color: Colors.black38,
+                                      width: 1
+                                  )
+                              ),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton(
+                                  // Initial Value
+                                  value: _academicDpValue,
+                                  iconEnabledColor: Colors.black,
+                                  borderRadius: BorderRadius.circular(10),
+                                  // Down Arrow Icon
+                                  icon: const Icon(Icons.keyboard_arrow_down),
+                                  // Array list of items
+                                  items: _academicYear.map((String items) {
+                                    return DropdownMenuItem(
+                                      value: items,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left:10.0,right:10),
+                                        child: Text(items),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  // After selecting the desired option,it will
+                                  // change button value to selected value
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      _academicDpValue = newValue!;
+                                    });
+                                  },
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 5,),
-                        ],
+                            SizedBox(width: 5,),
+                          ],
+                        ),
                       ),
                       SizedBox(height: 15,),
 

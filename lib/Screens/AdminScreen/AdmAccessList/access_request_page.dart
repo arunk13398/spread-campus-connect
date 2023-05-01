@@ -48,7 +48,11 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
   }
 
   @override
+  var size,height,width;
   Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     return  Scaffold (
       appBar: AppBar(
         title: Text("Access request"),
@@ -61,9 +65,9 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
             itemBuilder: (context, index) => AccessListview(index),),
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {  },
-        child: Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(onPressed: () {  },
+      //   child: Icon(Icons.add),
+      // ),
     );
   }
   Widget AccessListview(int index){
@@ -83,7 +87,7 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
                   ),child:Center(child: Text("AK",style:TextStyle(fontSize:20,color: Colors.white)))),
               SizedBox(width:5),
               SizedBox(
-                width: 90,
+                width: width/4.5,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,6 +110,7 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: SizedBox(
                       height: 20,
+                      // width: width/3.2,
                       child: DropdownButton(
                         value: _academicDpValue,
                         iconEnabledColor: Colors.black,
@@ -136,18 +141,17 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
               ),
               SizedBox(width:5),
               Container(
-                width:80,
+                width:width/5,
                 decoration: BoxDecoration(
-                    color:Colors.green.shade50,
+                    color:Colors.red.shade50,
                     borderRadius: BorderRadius.circular(10)
                 ),
                 child:Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("Active",style:TextStyle(fontSize:18,color: Colors.green,fontWeight: FontWeight.bold)),
+                      child: Text("To :"+"Reviewer",style:TextStyle(fontSize:15,color: Colors.red,fontWeight: FontWeight.bold)),
                     )),
               ),
-              Icon(Icons.more_vert)
             ],
           ),
         ),

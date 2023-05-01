@@ -37,8 +37,13 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   @override
+  var size,height,width;
   Widget build(BuildContext context) {
+    size = MediaQuery.of(context).size;
+    height = size.height;
+    width = size.width;
     return Scaffold(
+
       body: Center(child: InkWell(
         onLongPress: (){
           // showAlertDialog(context);
@@ -123,127 +128,131 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     ],
                   ),
                   SizedBox(height: 10,),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              onTap:(){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>FeedManagePage()));
+                  SizedBox(
+                    width:width/1,
+                    height: 120,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap:(){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>FeedManagePage()));
 
 
-                              },
-                              child: Container(
-                                  height: 83,
-                                  width:83,
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue[100],
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child:Center(child: Icon(Icons.account_tree_sharp,color: Colors.blue,size: 35))
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text("All feeds"),
-                            )
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              onTap:(){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            UserListPage()));
-                              },
-                              child: Container(
-                                height: 83,
-                                width:83,
-                                decoration: BoxDecoration(
-                                  color: Colors.indigo[100],
-                                   borderRadius: BorderRadius.circular(10),
+                                },
+                                child: Container(
+                                    height: 83,
+                                    width:83,
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue[100],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child:Center(child: Icon(Icons.account_tree_sharp,color: Colors.blue,size: 35))
                                 ),
-                                child:Center(child: Icon(Icons.person_search_sharp,color: Colors.indigo,size: 35))
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text("User list"),
-                            )
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text("All feeds"),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              onTap:(){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            AccessRequestPage()));
-                              },
-                              child: Container(
-                                height: 83,
-                                width:83,
-                                decoration: BoxDecoration(
-                                  color: Colors.orange[100],
-                                   borderRadius: BorderRadius.circular(10),
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap:(){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              UserListPage()));
+                                },
+                                child: Container(
+                                    height: 83,
+                                    width:83,
+                                    decoration: BoxDecoration(
+                                      color: Colors.indigo[100],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child:Center(child: Icon(Icons.person_search_sharp,color: Colors.indigo,size: 35))
                                 ),
-                                child:Center(child: Icon(Icons.manage_accounts_rounded,color: Colors.orange,size: 35,))
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text("access list"),
-                            )
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text("User list"),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Column(
-                          children: [
-                            InkWell(
-                              onTap:(){
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>AddNewListPage()));
-                              },
-
-                              child: Container(
-                                height: 83,
-                                width:83,
-                                decoration: BoxDecoration(
-                                  color: Colors.lightGreenAccent[100],
-                                   borderRadius: BorderRadius.circular(10),
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap:(){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              AccessRequestPage()));
+                                },
+                                child: Container(
+                                    height: 83,
+                                    width:83,
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange[100],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child:Center(child: Icon(Icons.manage_accounts_rounded,color: Colors.orange,size: 35,))
                                 ),
-                                child:Center(child: Icon(Icons.add_box_sharp,color: Colors.greenAccent,size: 32))
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Text("Item List"),
-                            )
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text("access list"),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap:(){
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>AddNewListPage()));
+                                },
 
-                    ],
+                                child: Container(
+                                    height: 83,
+                                    width:83,
+                                    decoration: BoxDecoration(
+                                      color: Colors.lightGreenAccent[100],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child:Center(child: Icon(Icons.add_box_sharp,color: Colors.greenAccent,size: 32))
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text("Item List"),
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),
@@ -286,7 +295,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                child: Padding(
                  padding: const EdgeInsets.all(8.0),
                  child: Text(list[index].description,style: TextStyle(color: Colors.white),
-                     maxLines: 20,
+                     maxLines: 15,
                      overflow: TextOverflow.ellipsis),
                ),),
          ),

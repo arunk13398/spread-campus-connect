@@ -157,7 +157,7 @@ class _NotificationListState extends State<NotificationList> {
                     child: Row(
                       children: [
                         Icon(Icons.notifications_none,color: Colors.white,), SizedBox(width: 6,),
-                        Text("Publish new",style:TextStyle(fontSize: 17,color:Colors.white,fontWeight: FontWeight.bold)),
+                        Text("Publish new",style:TextStyle(fontSize: 15,color:Colors.white,fontWeight: FontWeight.bold)),
                       ],
                     ),
                     ),

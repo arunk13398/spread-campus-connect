@@ -220,7 +220,7 @@ class _ComplaintListState extends State<ComplaintList> {
                   children: [
                     SizedBox(width:15),
                     SizedBox(
-                      width: width / 1.5,
+                      width: width / 1.7,
                       child: Column(
                         mainAxisAlignment:
                         MainAxisAlignment.start,
