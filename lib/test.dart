@@ -40,6 +40,7 @@ class _TestDemoState extends State<TestDemo> {
   bool isSwitchedDepartment = false;
   bool isSwitchedAcadamic = false;
   bool isSwitchedSuggestons = false;
+  bool isLiked = false;
 
   initAuth() async {
     await Future.delayed(const Duration(seconds: 2));
@@ -233,6 +234,18 @@ class _TestDemoState extends State<TestDemo> {
 
                 },
               ),
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    isLiked=!isLiked;
+                    HashMap<String, dynamic> data = HashMap<String, dynamic>();
+                    String id3= Uid;
+                    print("tutututu ${Uid}");
+                    // data["UserName"] = UserName;
+                    mRootReference.child('Likes').child(id3).update(data);
+                  });
+                },
+                icon: isLiked?Icon(Icons.favorite):Icon(Icons.favorite_border),)
             ],
           ),
       ),

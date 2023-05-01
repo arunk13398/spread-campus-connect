@@ -528,8 +528,7 @@ class _UserRegistrationState extends State<UserRegistration> {
                         child: ChipList(
                           listOfChipNames: _suggestion,
                           supportsMultiSelect: true,
-
-                          activeBgColorList: const [Colors.blue],
+                          activeBgColorList: const [MyColors.Colorgreen3],
                           inactiveBgColorList:  [Colors.blue.shade50],
                           activeTextColorList: const [
                             // Colors.pink,
@@ -538,13 +537,13 @@ class _UserRegistrationState extends State<UserRegistration> {
                             Colors.white
                           ],
                           inactiveTextColorList: [Theme.of(context).primaryColor],
-                          listOfChipIndicesCurrentlySeclected: [0],
-                          inactiveBorderColorList: [Colors.blue],
+                          listOfChipIndicesCurrentlySeclected: [6],
+                          inactiveBorderColorList: [MyColors.Colorgreen3],
                           activeBorderColorList: const [
                             // Colors.pink,
                             // Colors.yellow,
                             // Colors.green,
-                            Colors.blue
+                            MyColors.Colorgreen3
                           ],
                           // extraOnToggle: (val) {
                           //   _currentIndex = val;
@@ -561,7 +560,7 @@ class _UserRegistrationState extends State<UserRegistration> {
                     Padding(
                       padding: const EdgeInsets.only(left:5.0,right: 5,),
                       child: CheckboxListTile(
-                        activeColor: Colors.blue,
+                        activeColor: MyColors.Colorgreen3,
                         title: Text("Agree the terms",style: TextStyle(color: Colors.black,fontSize: 18,),),
                         value: _isChecked,
                         onChanged: (val) {
@@ -581,7 +580,7 @@ class _UserRegistrationState extends State<UserRegistration> {
               child: Container(
                 height: 50,
                 child: MaterialButton(
-                  color: Colors.blue,
+                  color: MyColors.Colorgreen3,
                   minWidth: double.infinity,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0)),

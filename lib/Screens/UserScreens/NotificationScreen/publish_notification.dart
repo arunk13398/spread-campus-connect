@@ -24,6 +24,7 @@ class _PublishNotificationState extends State<PublishNotification> {
   // String UserName1 = '';
   String College = '';
   String Designation = '';
+  String imageUrl = '';
 
 
 
@@ -83,7 +84,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
-                          color: Colors.blue),
+                          color: Colors.black),
                     ),
                   ),
                 ),
@@ -120,7 +121,8 @@ class _PublishNotificationState extends State<PublishNotification> {
                 Padding(
                   padding: const EdgeInsets.only(left:8.0,),
                   child: Align(alignment: Alignment.topLeft,
-                      child: Text("User name",style:TextStyle(color:Colors.blue))),
+                      child: Text("User name",
+                          style:TextStyle(color:MyColors.Colorgreen3))),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -141,7 +143,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                 Padding(
                   padding: const EdgeInsets.only(left:8.0,),
                   child: Align(alignment: Alignment.topLeft,
-                      child: Text("Designation",style:TextStyle(color:Colors.blue))),
+                      child: Text("Designation",style:TextStyle(color:MyColors.Colorgreen3))),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -464,7 +466,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                       filled: true,
                       fillColor: Colors.white,
                       labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -487,7 +489,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Colors.blue),
+                          color:MyColors.Colorgreen3),
                       softWrap: false,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -508,7 +510,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                         filled: true,
                         fillColor: Colors.white,
                         labelStyle: TextStyle(color: Colors.black),
-                        hintStyle: TextStyle(color: Colors.blue),
+                        hintStyle: TextStyle(color:MyColors.Colorgreen3),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           borderSide: BorderSide(
@@ -555,7 +557,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                         },
 
                         textColor: Colors.white,
-                        color: Colors.blue,
+                        color:MyColors.Colorgreen3,
                         minWidth: double.infinity,
                         height: 60,
                         shape: RoundedRectangleBorder(
@@ -576,12 +578,13 @@ class _PublishNotificationState extends State<PublishNotification> {
 
 
   getDataD1() async {
-    // numberId = (await getString(UserPreferences.USER_NUMBER));
-    // UserName = (await getString(UserPreferences.USER_Name));
-    // College = (await getString(UserPreferences.COLLEGE));
+    numberId = (await getString(UserPreferences.USER_NUMBER));
+    UserName = (await getString(UserPreferences.USER_Name));
+    College = (await getString(UserPreferences.COLLEGE));
     mRootReference
-        .child("AccessControl")
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
         .child(await getString(UserPreferences.USER_NUMBER))
+        .child(await getString(UserPreferences.DESIGNATION))
         .once()
         .then((value) {
       if (value.snapshot.exists) {
@@ -590,6 +593,7 @@ class _PublishNotificationState extends State<PublishNotification> {
         College = data["College"];
         Designation = data["Designation"];
         UserName = data["Name"];
+        imageUrl=data['ImageUrl'];
         setState(() {});
       }
     });
@@ -606,6 +610,8 @@ class _PublishNotificationState extends State<PublishNotification> {
     data["College"] = College;
     data["Subject"] = _subject.text;
     data["NotificationContent"] = _content.text;
+    data["UserProfileImage"]=imageUrl;
+
 
 
 

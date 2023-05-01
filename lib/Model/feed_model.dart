@@ -6,6 +6,7 @@ class FeedModel {
   String description;
   String imageUrl;
   String UpdatedTime;
+  String profImg;
 
   FeedModel({
     required this.id,
@@ -14,6 +15,7 @@ class FeedModel {
     required this.description,
     required this.imageUrl,
     required this.UpdatedTime,
+    required this.profImg,
   });
 
 }

@@ -15,8 +15,8 @@ import 'package:miniq/Theme/theme.dart';
 import 'package:miniq/functions/camera.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../functions/functions.dart';
-import '../../bottom_navigation.dart';
+import '../../../Model/access_model.dart';
+
 
 
 
@@ -30,12 +30,18 @@ class FeedPage extends StatefulWidget {
 class _FeedPageState extends State<FeedPage> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<FeedModel> list = [];
+  // List<LikeModel> likelist=[];
   String numberId = '';
   String UserName = '';
   String UserName1 = '';
   String College = '';
   String Designation = '';
   String Phone = '';
+  String UidLike = '';
+  String UidName = '';
+  String ProfimageUrl = '';
+
+
   bool isLiked = false;
   bool isConnected = false;
   var size, height, width;
@@ -64,7 +70,6 @@ class _FeedPageState extends State<FeedPage> {
     _scrollController =  ScrollController();
     _scrollController.addListener(() {
       setState(() {
-
       });
     });
   }
@@ -216,22 +221,25 @@ class _FeedPageState extends State<FeedPage> {
   getDataF1() async {
     numberId = (await getString(UserPreferences.USER_NUMBER));
     UserName = (await getString(UserPreferences.USER_Name));
-    // College = (await getString(UserPreferences.COLLEGE));
     mRootReference
-        .child("AccessControl")
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
         .child(await getString(UserPreferences.USER_NUMBER))
+        .child(await getString(UserPreferences.DESIGNATION))
         .once()
         .then((value) {
       if (value.snapshot.exists) {
-        print("efgh ${value.snapshot.value}");
+        print("lllllllll ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
         College = data["College"];
         Designation = data["Designation"];
         Phone =data['Phone'];
+        ProfimageUrl=data['ImageUrl'];
         setState(() {});
       }
     });
+
   }
+
 
   getData() async {
     String id=College;
@@ -254,7 +262,6 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   load() async {
-
     mRootReference.child("Feeds").child(_menuItems[_currentIndex]).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
@@ -266,11 +273,13 @@ class _FeedPageState extends State<FeedPage> {
           description: value['Description'],
           imageUrl: value['ImageUrl'],
           UpdatedTime: value['ImageUrlTime'],
+          profImg: value['ProfileImage'],
         ));
       });
       setState(() {});
     });
   }
+
 
   @override
   Widget AdaptorNew(int index){
@@ -298,8 +307,20 @@ class _FeedPageState extends State<FeedPage> {
                       child: Row(
                         children: [
                           SizedBox(width:0),
+                          list[index].profImg==''?
                           CachedNetworkImage(
                             imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                            placeholder: (context, url) =>  CircleAvatar(
+                              backgroundColor: Colors.blue.shade300,
+                              radius: 22,
+                            ),
+                            imageBuilder: (context, image) => CircleAvatar(
+                              backgroundImage: image,
+                              radius: 22,
+                            ),
+                          ):
+                          CachedNetworkImage(
+                            imageUrl: list[index].profImg,
                             placeholder: (context, url) =>  CircleAvatar(
                               backgroundColor: Colors.blue.shade300,
                               radius: 22,
@@ -393,7 +414,7 @@ class _FeedPageState extends State<FeedPage> {
                 Padding(
                   padding: const EdgeInsets.all(0.0),
                   child:
-                  CachedNetworkImage(
+                  list[index].imageUrl!=""?CachedNetworkImage(
                     imageUrl: list[index].imageUrl,
                     placeholder: (context, url) =>
                         getShimmerLoading(),
@@ -405,7 +426,7 @@ class _FeedPageState extends State<FeedPage> {
                         imageUrl: list[index].imageUrl,
                         placeholder: (context, url) => getShimmerLoading(),),
                     ),
-                  ),
+                  ):getShimmerLoading(),
                 ),
                 Padding(
                   padding:  EdgeInsets.only(left: 0.0,top:10,bottom: 10),
@@ -422,7 +443,7 @@ class _FeedPageState extends State<FeedPage> {
                             child: Row(
                               children: [
                                 LikeButton(
-                                  size: 30,
+                                  size: 25,
                                   circleColor:CircleColor(start:Color(0xFF79D71E),end: Color(0xFFCEF894)),
                                   bubblesColor: BubblesColor(
                                       dotPrimaryColor: Color(0xFF79D71E),
@@ -432,7 +453,7 @@ class _FeedPageState extends State<FeedPage> {
                                     return Icon(
                                       isLiked ?Icons.favorite:Icons.favorite_border,
                                       color:isLiked ? Colors.black:Colors.grey,
-                                      size:30,
+                                      size:25,
                                     );
                                   },
                                   likeCount: 10,
@@ -450,6 +471,32 @@ class _FeedPageState extends State<FeedPage> {
                                     return result;
                                   },
                                 ),
+
+                          //       IconButton(
+                          //       onPressed: () {
+                          // if(isLiked==true){
+                          // HashMap<String, dynamic> data = HashMap<String, dynamic>();
+                          // String id= numberId;
+                          // data["UserName"] = UserName;
+                          // data["Id"] = numberId;
+                          // mRootReference.child('Likes').child(id).remove();
+                          // }else{
+                          // HashMap<String, dynamic> data = HashMap<String, dynamic>();
+                          // String id= numberId;
+                          // data["UserName"] = UserName;
+                          // data["LikeId"] = numberId;
+                          // mRootReference.child('Likes').child(id).update(data);
+                          //   }
+                          // setState(() {
+                          //   isLiked=!isLiked;
+                          //    });
+                          // },
+                          //   icon: isLiked?Container(height: 20,
+                          //       child: Icon(Icons.favorite)):
+                          //   Container(height: 20,
+                          //       child: Icon(Icons.favorite_border)),)
+
+
                               ],
                             ),
                           )),
@@ -488,6 +535,8 @@ class _FeedPageState extends State<FeedPage> {
                         onTap: (){
                           // print("desig dwerx ${Designation}");
                           print("ajfbsgdbfdv ${list[index].id}");
+                          // print("hellohello ${likelist.length}");
+
                         },
                         child: Container(
                             decoration: BoxDecoration(
@@ -561,8 +610,19 @@ class _FeedPageState extends State<FeedPage> {
                     ),),
                 SizedBox(width: 10,),
 
+                ProfimageUrl==''?
                 CachedNetworkImage(
-                  imageUrl: 'https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg',
+                  imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                  placeholder: (context, url) =>  CircleAvatar(
+                    backgroundColor: Colors.blue.shade300,
+                    radius: 22,
+                  ),
+                  imageBuilder: (context, image) => CircleAvatar(
+                    backgroundImage: image,
+                    radius: 22,
+                  ),
+                ):CachedNetworkImage(
+                  imageUrl: ProfimageUrl,
                   placeholder: (context, url) =>  CircleAvatar(
                     backgroundColor: Colors.blue.shade300,
                     radius: 22,
@@ -668,6 +728,9 @@ class _FeedPageState extends State<FeedPage> {
       ),
     );
   }
+
+
+
 
   Future<void> addLike() async {
     HashMap<String, dynamic> data = HashMap<String, dynamic>();

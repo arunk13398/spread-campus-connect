@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../Contraints/user_preference.dart';
 
 class PersonalInformation extends StatefulWidget {
-  final Designation,College;
-  const PersonalInformation({Key? key, this.Designation, this.College}) : super(key: key);
+  const PersonalInformation({Key? key,}) : super(key: key);
 
   @override
   State<PersonalInformation> createState() => _PersonalInformationState();
@@ -27,12 +26,14 @@ class _PersonalInformationState extends State<PersonalInformation> {
   String Phone='';
 
 
+
   @override
   void initState() {
     super.initState();
     getDataF1();
 
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,6 +42,30 @@ class _PersonalInformationState extends State<PersonalInformation> {
           crossAxisAlignment: CrossAxisAlignment.center,
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
+              child: TextFormField(
+
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'College',
+                  hintText: 'College',
+                  prefixIcon: Icon(Icons.location_on_outlined,
+                      size: 20,
+                      color: Colors.blue.shade300),
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color:  Colors.green, width: 1.2),
+                  ),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
               child: Text(College,style: TextStyle(fontWeight: FontWeight.bold),),
@@ -84,23 +109,6 @@ class _PersonalInformationState extends State<PersonalInformation> {
   getDataF1() async {
     numberId = (await getString(UserPreferences.USER_NUMBER));
     UserName = (await getString(UserPreferences.USER_Name));
-    // College = (await getString(UserPreferences.COLLEGE));
-
-    // mRootReference
-    //     .child("AccessControl")
-    //     .child(await getString(UserPreferences.USER_NUMBER))
-    //     .once()
-    //     .then((value) {
-    //   if (value.snapshot.exists) {
-    //     print("efgh ${value.snapshot.value}");
-    //     Map<dynamic, dynamic> data1 = value.snapshot.value as Map;
-    //     College = data1["College"];
-    //     Designation = data1["Designation"];
-    //     UserName = data1["Name"];
-    //     setState(() {});
-    //   }
-    // });
-
     mRootReference
         .child("UsersList").child("GECWayanad")
         .child(await getString(UserPreferences.USER_NUMBER))

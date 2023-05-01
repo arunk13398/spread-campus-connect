@@ -8,6 +8,8 @@ import 'package:miniq/functions/functions.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:miniq/Screens/UserScreens/LoginScreen/user_registration.dart';
 
+import '../../Adminbottom_navigation.dart';
+
 class OTPScreen extends StatefulWidget {
   String number;
   OTPScreen({Key? key,required this.number}) : super(key: key);
@@ -173,7 +175,7 @@ class _OTPScreenState extends State<OTPScreen> {
               alertDialog(context,"Welcome ${loginData["Name"]}","You are successfully logged in");
 
               Future.delayed(const Duration(milliseconds: 1000), () {
-                finishAccountCreation(const AdminDashboard(), context);
+                finishAccountCreation( AdminBottomNavigation(), context);
               });
             }
           }else{

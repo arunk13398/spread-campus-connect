@@ -221,6 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
           description: value['Description'],
           imageUrl: value['ImageUrl'],
           UpdatedTime: value['ImageUrlTime'],
+          profImg: value['ProfileImage'],
         ));
       });
       setState(() {});

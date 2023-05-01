@@ -1,7 +1,16 @@
+import 'dart:collection';
+import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:miniq/Theme/theme.dart';
+
+import '../../../Contraints/user_preference.dart';
+import '../../../functions/functions.dart';
+import '../../bottom_navigation.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -11,9 +20,57 @@ class EditProfile extends StatefulWidget {
 }
 
 class _EditProfileState extends State<EditProfile> {
-  bool _isChecked = true;
+
+  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  GlobalKey key = GlobalKey();
+
+  XFile? file;
+  String imageUrl = '';
+  String numberId='';
+  String UserName='';
+  String College='';
+  String Designation='';
+  String AccessName='';
+  String Phone='';
+
+  bool _isChecked = false;
+  bool _isChecked1 = false;
 
   var orientation, size, height, width;
+
+  final UserNameController = TextEditingController();
+  final UserDesignationController = TextEditingController();
+  final UserCollegeController = TextEditingController();
+  final UserNumberController = TextEditingController();
+
+
+  @override
+  void initState() {
+    getDataF1();
+    super.initState();
+  }
+
+  getDataF1() async {
+    mRootReference
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .child(await getString(UserPreferences.DESIGNATION))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("lllllllll ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        UserCollegeController.text = data["College"];
+        UserDesignationController.text = data["Designation"];
+        UserNameController.text=data["Name"];
+        UserNumberController.text = data["Phone"];
+        AccessName = data["AcessName"];
+        imageUrl=data['ImageUrl'];
+        setState(() {});
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -28,92 +85,109 @@ class _EditProfileState extends State<EditProfile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 10.0, bottom: 10),
-                  child: Stack(
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
-                        placeholder: (context, url) => const CircleAvatar(
-                          backgroundColor: Colors.amber,
-                          radius: 60,
-                        ),
-                        imageBuilder: (context, image) => CircleAvatar(
-                          backgroundImage: image,
-                          radius: 60,
-                        ),
-                      ),
-                      Positioned(
-                        top: 120,
-                        left: 115,
-                        child: Icon(
-                          Icons.linked_camera_sharp,
-                          size: 35,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
+                InkWell(
+                  onTap: () async {
+
+                    ImagePicker imagePicker = ImagePicker();
+                    file = await imagePicker.pickImage(
+                        source: ImageSource.gallery);
+                    print("Testing${file?.path}");
+                    if (file == null) return;
+
+                    String uniqueFileName =
+                    DateTime.now().millisecondsSinceEpoch.toString();
+
+                    Reference mRootReference =
+                    FirebaseStorage.instance.ref();
+                    Reference referenceDirImages =
+                    mRootReference.child('images').child('ProfileImage');
+
+                    Reference referenceImageToUpload =
+                    referenceDirImages.child(uniqueFileName);
+                    try {
+                      await referenceImageToUpload
+                          .putFile(File(file!.path));
+                      imageUrl =
+                          await referenceImageToUpload.getDownloadURL();
+                    } catch (error) {}
+
+                  },
+                  child: imageUrl!=""?CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    placeholder: (context, url) => const CircleAvatar(
+                      backgroundColor: Colors.amber,
+                      radius: 100,
+                    ),
+                    imageBuilder: (context, image) => CircleAvatar(
+                      backgroundImage: image,
+                      radius: 100,
+                    ),
+                  ):CachedNetworkImage(
+                    imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                    placeholder: (context, url) => const CircleAvatar(
+                      backgroundColor: Colors.amber,
+                      radius: 100,
+                    ),
+                    imageBuilder: (context, image) => CircleAvatar(
+                      backgroundImage: image,
+                      radius: 100,
+                    ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
-                  child: Align(alignment: Alignment.centerLeft,
-                      child: Text("Personal details -",
-                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey,fontSize: 17))),
+                Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
+                      child: Align(alignment: Alignment.centerLeft,
+                          child: Text("Personal details -",
+                              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey,fontSize: 17))),
+                    ),
+                    Spacer(),
+                    Container(
+                      width:120,height:50,
+                      child: CheckboxListTile(
+                        activeColor: Colors.blue,
+                        title: Text("Edit?",style: TextStyle( color: Colors.grey,fontSize: 14),),
+                        value: _isChecked1,
+                        onChanged: (val) {
+                          setState(() {
+                            _isChecked1 = val!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
+
+
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
-                  child: Container(
-                    width:width/1,
-                    child: Row(
-                      children: [
-                        Container(
-                          width:width/2,
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              border:  OutlineInputBorder(),
-                              labelText: 'First name',
-                              hintText: 'First name',
-                              prefixIcon: Icon(Icons.person_outlined,
-                                  size: 20,
-                                  color: Colors.blue.shade300),
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color:  Colors.green, width: 1.2),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        Container(
-                          width:width/3.5,
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: 'last name',
-                              hintText: 'last name',
-                              filled: true,
-                              fillColor: Colors.white,
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color:  Colors.green, width: 1.2),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                  child: TextFormField(
+                    enabled: _isChecked1,
+                    controller: UserNameController,
+                    decoration: InputDecoration(
+                      border:  OutlineInputBorder(),
+                      labelText: 'First name',
+                      hintText: 'First name',
+                      prefixIcon: Icon(Icons.person_outlined,
+                          size: 20,
+                          color: Colors.blue.shade300),
+                      filled: true,
+                      fillColor: Colors.white,
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue.shade300, width: 1.2),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color:  Colors.green, width: 1.2),
+                      ),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
                   child: TextFormField(
+                    enabled: _isChecked1,
+                    controller: UserNumberController,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'Mobile number',
@@ -136,6 +210,8 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
                   child: TextFormField(
+                    enabled: _isChecked1,
+                    controller: UserCollegeController,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: 'College',
@@ -154,13 +230,17 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                   ),
                 ),
+
+
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
                   child: TextFormField(
+                    enabled: _isChecked1,
+                    controller: UserDesignationController,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      labelText: 'Semester',
-                      hintText: 'Semester',
+                      labelText: 'designation',
+                      hintText: 'Designation',
                       prefixIcon: Icon(Icons.signpost_outlined,
                           size: 20,
                           color: Colors.blue.shade300),
@@ -182,9 +262,11 @@ class _EditProfileState extends State<EditProfile> {
                     height: 60.0,
                     child: MaterialButton(
                         onPressed: () {
+                          addCustomer();
+                          print("gguuggugu${UserCollegeController.text}");
                         },
                         textColor: Colors.white,
-                        color: Colors.blue,
+                        color: MyColors.Colorgreen3,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         child: const Text(
@@ -193,24 +275,52 @@ class _EditProfileState extends State<EditProfile> {
                         )),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(left:15.0,right: 5,),
-                  child: CheckboxListTile(
-                    activeColor: Colors.blue,
-                    title: Text("Change to the page?",style: TextStyle( color: Colors.grey,fontSize: 14),),
-                    value: _isChecked,
-                    onChanged: (val) {
-                      setState(() {
-                        _isChecked = val!;
-                      });
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left:15,right: 15),
-                  child: Text("wait until the admin verification, page have more than features and responsibilities to others",
-                      style: TextStyle( color: Colors.grey,fontSize: 16),textAlign: TextAlign.center),
-                ),
+                AccessName=="Admin"?
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left:15.0,right: 5,),
+                      child: CheckboxListTile(
+                        activeColor: Colors.blue,
+                        title: Text("Change to the page?",style: TextStyle( color: Colors.grey,fontSize: 14),),
+                        value: _isChecked,
+                        onChanged: (val) {
+                          setState(() {
+                            _isChecked = val!;
+                          });
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left:15,right: 15),
+                      child: Text("wait until the admin verification, page have more than features and responsibilities to others",
+                          style: TextStyle( color: Colors.grey,fontSize: 16),textAlign: TextAlign.center),
+                    ),
+
+                    _isChecked==true?Padding(
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 20, right: 20),
+                      child: SizedBox(
+                        width: 120,
+                        height: 30.0,
+                        child: MaterialButton(
+                            onPressed: () {
+                              PageRequest();
+                              print("gguuggugu${UserCollegeController.text}");
+                            },
+                            textColor: Colors.white,
+                            color: MyColors.Colorgreen3,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0)),
+                            child: Center(
+                              child: const Text(
+                                "Requst to admin",
+                                style: TextStyle(fontSize: 12,color: Colors.white,),
+                              ),
+                            )),
+                      ),
+                    ):SizedBox(),
+                  ],
+                ):Container(),
               ],
             ),
           ),
@@ -218,4 +328,44 @@ class _EditProfileState extends State<EditProfile> {
       ),
     );
   }
+
+  Future<void> addCustomer() async {
+    String id = await getString(UserPreferences.USER_NUMBER);
+    String id1 = await getString(UserPreferences.DESIGNATION);
+    String id2 = await getString(UserPreferences.COLLEGE);
+
+    HashMap<String, dynamic> updateData = HashMap<String, dynamic>();
+    updateData["Name"] = UserNameController.text;
+    updateData["Phone"] = UserNumberController.text;
+    updateData["College"] =UserCollegeController.text;
+    updateData["Designation"] =UserDesignationController.text;
+    updateData["ImageUrl"] = imageUrl;
+    await mRootReference.child("UsersList").child(id2).child(id).child(id1).update(updateData);
+
+    Future.delayed(const Duration(seconds: 1), () {
+      finishAccountCreation( BottomNavigation(), context);
+    });
+  }
+  Future<void> PageRequest() async {
+
+    String id = await getString(UserPreferences.USER_NUMBER);
+    String id1 = await getString(UserPreferences.DESIGNATION);
+    String id2 = await getString(UserPreferences.COLLEGE);
+
+    HashMap<String, dynamic> updateData = HashMap<String, dynamic>();
+    updateData["id"] = id;
+    updateData["Name"] = UserNameController.text;
+    updateData["Phone"] = UserNumberController.text;
+    updateData["College"] =UserCollegeController.text;
+    updateData["Designation"] =UserDesignationController.text;
+    updateData["ImageUrl"] = imageUrl;
+    await mRootReference.child("PageRequest").child(id)
+        // .child(id).child(id1)
+        .update(updateData);
+
+    Future.delayed(const Duration(seconds: 1), () {
+      finishAccountCreation( BottomNavigation(), context);
+    });
+  }
+
 }

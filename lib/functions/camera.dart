@@ -41,6 +41,7 @@ class _CameraState extends State<Camera> {
   String designationU = '';
   String CollegeU = '';
   String Uid = '';
+  String ProfileImage='';
   late FirebaseAuth _auth;
   late Stream<User?> _authStateChanges;
 
@@ -68,256 +69,412 @@ class _CameraState extends State<Camera> {
       backgroundColor: Colors.white,
       body: SafeArea(
           child: Column(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 10.0, top: 20, bottom: 10),
-                  child: Text("Upload Image",
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black)),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(),
-                ),
-                Padding(
-                    padding: const EdgeInsets.only(
-                        left: 10, right: 10, top: 10, bottom: 10),
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    // crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                  imageUrl != ""
+                      ? Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: CachedNetworkImage(
+                    // height: 250,
+                    width: double.infinity,
+                    fit: BoxFit.fill,
+                    imageUrl: imageUrl,
+                    placeholder: (context, url) => Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.grey,
+                          )),
+                  ),
+                      )
+                      : Center(
                     child: InkWell(
-                      onTap: () async {
-                        ImagePicker imagePicker = ImagePicker();
-                        XFile? file = await imagePicker.pickImage(
-                            source: ImageSource.camera);
-                        print('${file?.path}');
-                        if (file == null) return;
-                        String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
-                        Reference mRootReference = FirebaseStorage.instance.ref();
-                        Reference referenceDirImages = mRootReference.child('images');
-
-                        Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
-                        try {await referenceImageToUpload.putFile(File(file!.path));
-                        imageUrl = await referenceImageToUpload.getDownloadURL();
-                        } catch (error) {}
-
+                      onTap: (){
+                        showAlertDialogCamera(context);
                       },
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(60),
-                              color: Colors.blue.shade200,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Icon(
-                                Icons.camera_alt_outlined,
-                                color: Colors.white,
-                                size: 25,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "Upload from camera",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          )
-                        ],
-                      ),
-                    )),
-                Padding(
-                    padding: const EdgeInsets.only(
-                        left: 10, right: 10, top: 10, bottom: 10),
-                    child: InkWell(
-                      onTap: () async {
-                        ImagePicker imagePicker = ImagePicker();
-                        file = await imagePicker.pickImage(
-                            source: ImageSource.gallery);
-                        print("Testing${file?.path}");
-                        if (file == null) return;
-
-                        String uniqueFileName =
-                            DateTime.now().millisecondsSinceEpoch.toString();
-
-                        Reference mRootReference =
-                            FirebaseStorage.instance.ref();
-                        Reference referenceDirImages =
-                            mRootReference.child('images');
-
-                        Reference referenceImageToUpload =
-                            referenceDirImages.child(uniqueFileName);
-                        try {
-                          await referenceImageToUpload
-                              .putFile(File(file!.path));
-                          imageUrl =
-                              await referenceImageToUpload.getDownloadURL();
-                        } catch (error) {}
-                      },
-                      child: Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(60),
-                              color: Colors.blue.shade200,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Icon(
-                                Icons.image_outlined,
-                                color: Colors.white,
-                                size: 25,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            "Upload from gallery",
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    )),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: description,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'Enter discription',
-                      hintText: 'Enter discription',
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(color: Colors.black, width: 1.2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(
-                            color:Colors.grey, width: 1.6),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                            height:300,
+                            width:double.infinity,
+                            color:Colors.grey[200],
+                          child:Center(child: Text("Select Image")),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Row(
-                  children: [
-                    SizedBox(width: 10),
-                    Text("Feed Publish to", style: TextStyle(fontSize: 18)),
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: 45,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            border:
-                                Border.all(color: Colors.black38, width: 1)),
-                        child: DropdownButtonHideUnderline(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 12.0, right: 20),
-                            child: DropdownButton(
-                              // Initial Value
-                              value: _categoryDpValue,
-                              iconEnabledColor: Colors.black,
-                              borderRadius: BorderRadius.circular(30),
-                              // Down Arrow Icon
-                              icon: const Icon(Icons.swap_vert),
-                              // Array list of items
-                              items: _category.map((String items) {
-                                return DropdownMenuItem(
-                                  value: items,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10.0, right: 10),
-                                    child: Text(items),
-                                  ),
-                                );
-                              }).toList(),
-                              // After selecting the desired option,it will
-                              // change button value to selected value
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _categoryDpValue = newValue!;
-                                });
-                              },
+                   Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: description,
+                          style: TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: 'Enter discription',
+                            hintText: 'Enter discription',
+                            filled: true,
+                            fillColor: Colors.white,
+                            labelStyle: TextStyle(color: Colors.black),
+                            hintStyle: TextStyle(color: Colors.blue),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                              borderSide: BorderSide(color: Colors.black, width: 1.2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                              borderSide: BorderSide(
+                                  color:Colors.grey, width: 1.6),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                imageUrl != ""
-                    ? CachedNetworkImage(
-                        // height: 250,
-                        width: double.infinity,
-                        fit: BoxFit.fill,
-                        imageUrl: imageUrl,
-                        placeholder: (context, url) => Center(
-                            child: CircularProgressIndicator(
-                          color: Colors.grey,
-                        )),
-                      )
-                    : Container(),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
-            child: MaterialButton(
-              color: Colors.blue,
-              minWidth: double.infinity,
-              height: 50,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
-              child: Text(
-                "submit",
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-
-              onPressed: () async {
-                if (file == null) {
-                  alertDialog(context, "is empty file path", "${file?.path}");
-                } else {
-                  //alertDialog(context,"is not empty","is url not empty${imageUrl}");
-                  add().then((value) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      backgroundColor: Colors.grey,
-                      content: Text(
-                        "Successful",
-                        style: TextStyle(color: Colors.black),
+                      Row(
+                        children: [
+                          SizedBox(width: 10),
+                          Text("Feed Publish to", style: TextStyle(fontSize: 18)),
+                          Spacer(),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Container(
+                              height: 45,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(30),
+                                  border:
+                                      Border.all(color: Colors.black38, width: 1)),
+                              child: DropdownButtonHideUnderline(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(left: 12.0, right: 20),
+                                  child: DropdownButton(
+                                    // Initial Value
+                                    value: _categoryDpValue,
+                                    iconEnabledColor: Colors.black,
+                                    borderRadius: BorderRadius.circular(30),
+                                    // Down Arrow Icon
+                                    icon: const Icon(Icons.swap_vert),
+                                    // Array list of items
+                                    items: _category.map((String items) {
+                                      return DropdownMenuItem(
+                                        value: items,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 10.0, right: 10),
+                                          child: Text(items),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    // After selecting the desired option,it will
+                                    // change button value to selected value
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        _categoryDpValue = newValue!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ));
-                    description.clear();
-                    // finish(context);
-                  });
-                }
-              },
-              // _reference.add(dataToSend);
-            ),
+        ]
+         ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                child: MaterialButton(
+                  color: MyColors.Colorgreen3,
+                  minWidth: double.infinity,
+                  height: 50,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0)),
+                  child: Text(
+                    "submit",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+
+                  onPressed: () async {
+                    if (file == null) {
+                      alertDialog(context, "is empty file path", "${file?.path}");
+                    } else {
+                      //alertDialog(context,"is not empty","is url not empty${imageUrl}");
+                      add().then((value) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          backgroundColor: Colors.grey,
+                          content: Text(
+                            "Successful",
+                            style: TextStyle(color: Colors.black),
+                          ),
+                        ));
+                        description.clear();
+                        // finish(context);
+                      });
+                    }
+                  },
+                  // _reference.add(dataToSend);
+                ),
+              ),
+            ],
           ),
-        ],
-      )),
-    );
+
+
+        //     Column(
+        //   children: [
+        //     Expanded(
+        //       child: Column(
+        //         children: [
+        //           Padding(
+        //             padding:
+        //                 const EdgeInsets.only(left: 10.0, top: 20, bottom: 10),
+        //             child: Text("Upload Image",
+        //                 style: TextStyle(
+        //                     fontSize: 18,
+        //                     fontWeight: FontWeight.bold,
+        //                     color: Colors.black)),
+        //           ),
+        //           Padding(
+        //             padding: const EdgeInsets.all(8.0),
+        //             child: Container(),
+        //           ),
+        //           Padding(
+        //               padding: const EdgeInsets.only(
+        //                   left: 10, right: 10, top: 10, bottom: 10),
+        //               child: InkWell(
+        //                 onTap: () async {
+        //                   ImagePicker imagePicker = ImagePicker();
+        //                   XFile? file = await imagePicker.pickImage(
+        //                       source: ImageSource.camera);
+        //                   print('${file?.path}');
+        //                   if (file == null) return;
+        //                   String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+        //                   Reference mRootReference = FirebaseStorage.instance.ref();
+        //                   Reference referenceDirImages = mRootReference.child('images');
+        //
+        //                   Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+        //                   try {await referenceImageToUpload.putFile(File(file!.path));
+        //                   imageUrl = await referenceImageToUpload.getDownloadURL();
+        //                   } catch (error) {}
+        //
+        //                 },
+        //                 child: Row(
+        //                   children: [
+        //                     Container(
+        //                       decoration: BoxDecoration(
+        //                         borderRadius: BorderRadius.circular(60),
+        //                         color: MyColors.ColorGreen1,
+        //                       ),
+        //                       child: Padding(
+        //                         padding: const EdgeInsets.all(10.0),
+        //                         child: Icon(
+        //                           Icons.camera_alt_outlined,
+        //                           color: Colors.black,
+        //                           size: 25,
+        //                         ),
+        //                       ),
+        //                     ),
+        //                     SizedBox(
+        //                       width: 10,
+        //                     ),
+        //                     Text(
+        //                       "Upload from camera",
+        //                       style: TextStyle(
+        //                           fontSize: 18,
+        //                           fontWeight: FontWeight.bold,
+        //                           color: Colors.black),
+        //                     )
+        //                   ],
+        //                 ),
+        //               )),
+        //           Padding(
+        //               padding: const EdgeInsets.only(
+        //                   left: 10, right: 10, top: 10, bottom: 10),
+        //               child: InkWell(
+        //                 onTap: () async {
+        //                   ImagePicker imagePicker = ImagePicker();
+        //                   file = await imagePicker.pickImage(
+        //                       source: ImageSource.gallery);
+        //                   print("Testing${file?.path}");
+        //                   if (file == null) return;
+        //
+        //                   String uniqueFileName =
+        //                       DateTime.now().millisecondsSinceEpoch.toString();
+        //
+        //                   Reference mRootReference =
+        //                       FirebaseStorage.instance.ref();
+        //                   Reference referenceDirImages =
+        //                       mRootReference.child('images');
+        //
+        //                   Reference referenceImageToUpload =
+        //                       referenceDirImages.child(uniqueFileName);
+        //                   try {
+        //                     await referenceImageToUpload
+        //                         .putFile(File(file!.path));
+        //                     imageUrl =
+        //                         await referenceImageToUpload.getDownloadURL();
+        //                   } catch (error) {}
+        //                 },
+        //                 child: Row(
+        //                   children: [
+        //                     Container(
+        //                       decoration: BoxDecoration(
+        //                         borderRadius: BorderRadius.circular(60),
+        //                         color: MyColors.ColorGreen1,
+        //                       ),
+        //                       child: Padding(
+        //                         padding: const EdgeInsets.all(10.0),
+        //                         child: Icon(
+        //                           Icons.image_outlined,
+        //                           color: Colors.black,
+        //                           size: 25,
+        //                         ),
+        //                       ),
+        //                     ),
+        //                     SizedBox(
+        //                       width: 10,
+        //                     ),
+        //                     Text(
+        //                       "Upload from gallery",
+        //                       style: TextStyle(
+        //                           fontSize: 18,
+        //                           fontWeight: FontWeight.bold,
+        //                           color: Colors.black),
+        //                     ),
+        //                   ],
+        //                 ),
+        //               )),
+        //
+        //
+        //           Padding(
+        //             padding: const EdgeInsets.all(8.0),
+        //             child: TextFormField(
+        //               controller: description,
+        //               style: TextStyle(color: Colors.black),
+        //               decoration: InputDecoration(
+        //                 border: const OutlineInputBorder(),
+        //                 labelText: 'Enter discription',
+        //                 hintText: 'Enter discription',
+        //                 filled: true,
+        //                 fillColor: Colors.white,
+        //                 labelStyle: TextStyle(color: Colors.black),
+        //                 hintStyle: TextStyle(color: Colors.blue),
+        //                 enabledBorder: OutlineInputBorder(
+        //                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        //                   borderSide: BorderSide(color: Colors.black, width: 1.2),
+        //                 ),
+        //                 focusedBorder: OutlineInputBorder(
+        //                   borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        //                   borderSide: BorderSide(
+        //                       color:Colors.grey, width: 1.6),
+        //                 ),
+        //               ),
+        //             ),
+        //           ),
+        //           Row(
+        //             children: [
+        //               SizedBox(width: 10),
+        //               Text("Feed Publish to", style: TextStyle(fontSize: 18)),
+        //               Spacer(),
+        //               Padding(
+        //                 padding: const EdgeInsets.all(8.0),
+        //                 child: Container(
+        //                   height: 45,
+        //                   decoration: BoxDecoration(
+        //                       color: Colors.white,
+        //                       borderRadius: BorderRadius.circular(30),
+        //                       border:
+        //                           Border.all(color: Colors.black38, width: 1)),
+        //                   child: DropdownButtonHideUnderline(
+        //                     child: Padding(
+        //                       padding:
+        //                           const EdgeInsets.only(left: 12.0, right: 20),
+        //                       child: DropdownButton(
+        //                         // Initial Value
+        //                         value: _categoryDpValue,
+        //                         iconEnabledColor: Colors.black,
+        //                         borderRadius: BorderRadius.circular(30),
+        //                         // Down Arrow Icon
+        //                         icon: const Icon(Icons.swap_vert),
+        //                         // Array list of items
+        //                         items: _category.map((String items) {
+        //                           return DropdownMenuItem(
+        //                             value: items,
+        //                             child: Padding(
+        //                               padding: const EdgeInsets.only(
+        //                                   left: 10.0, right: 10),
+        //                               child: Text(items),
+        //                             ),
+        //                           );
+        //                         }).toList(),
+        //                         // After selecting the desired option,it will
+        //                         // change button value to selected value
+        //                         onChanged: (String? newValue) {
+        //                           setState(() {
+        //                             _categoryDpValue = newValue!;
+        //                           });
+        //                         },
+        //                       ),
+        //                     ),
+        //                   ),
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //           imageUrl != ""
+        //               ? CachedNetworkImage(
+        //                   // height: 250,
+        //                   width: double.infinity,
+        //                   fit: BoxFit.fill,
+        //                   imageUrl: imageUrl,
+        //                   placeholder: (context, url) => Center(
+        //                       child: CircularProgressIndicator(
+        //                     color: Colors.grey,
+        //                   )),
+        //                 )
+        //               : Container(),
+        //         ],
+        //       ),
+        //     ),
+        //     Padding(
+        //       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+        //       child: MaterialButton(
+        //         color: MyColors.Colorgreen3,
+        //         minWidth: double.infinity,
+        //         height: 50,
+        //         shape: RoundedRectangleBorder(
+        //             borderRadius: BorderRadius.circular(10.0)),
+        //         child: Text(
+        //           "submit",
+        //           style: TextStyle(fontSize: 18, color: Colors.white),
+        //         ),
+        //
+        //         onPressed: () async {
+        //           if (file == null) {
+        //             alertDialog(context, "is empty file path", "${file?.path}");
+        //           } else {
+        //             //alertDialog(context,"is not empty","is url not empty${imageUrl}");
+        //             add().then((value) {
+        //               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        //                 backgroundColor: Colors.grey,
+        //                 content: Text(
+        //                   "Successful",
+        //                   style: TextStyle(color: Colors.black),
+        //                 ),
+        //               ));
+        //               description.clear();
+        //               // finish(context);
+        //             });
+        //           }
+        //         },
+        //         // _reference.add(dataToSend);
+        //       ),
+        //     ),
+        //   ],
+        // )),
+    ));
   }
 
 
@@ -478,16 +635,30 @@ class _CameraState extends State<Camera> {
     String id = DateTime.now().millisecondsSinceEpoch.toString();
     String subId = _categoryDpValue;
     print("gggggggg" + imageUrl);
+    data["id"]=id;
     data["Description"] = description.text;
     data["ImageUrl"] = imageUrl;
     data['UserName'] = UserName;
     data['Designation'] = designationU;
-    // data['Uid']=Uid;
+    data['ProfileImage'] = ProfileImage;
     data["Date"] = DateTime.now().toString();
     data["ImageUrlTime"] = DateTime.now().millisecondsSinceEpoch.toString();
 
-    await mRootReference.child("Feeds").child(subId).child(id).update(data);
-    await mRootReference.child("UsersList").child('GECWayanad').child('+919562592737').child('Student').child('Post').child(id).update(data);
+    await mRootReference
+        .child("Feeds")
+        .child(subId)
+        .child(id)
+        .update(data);
+    HashMap<String, dynamic> PostLink = HashMap<String, dynamic>();
+    PostLink["id"]=id;
+    PostLink["Description"] = description.text;
+    PostLink["ImageUrl"] = imageUrl;
+    await mRootReference
+        .child("UsersList")
+        .child(await getString(UserPreferences.COLLEGE))
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .child(await getString(UserPreferences.DESIGNATION))
+        .child('Post').child(id).update(PostLink);
 
     Future.delayed(const Duration(seconds: 1), () {
       finishAccountCreation(BottomNavigation(), context);
@@ -499,20 +670,19 @@ class _CameraState extends State<Camera> {
   }
 
   getDataF1() async {
-    // numberId = (await getString(UserPreferences.USER_NUMBER));
-    // UserName = (await getString(UserPreferences.USER_Name));
-    // College = (await getString(UserPreferences.COLLEGE));
     mRootReference
-        .child("AccessControl")
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
         .child(await getString(UserPreferences.USER_NUMBER))
+        .child(await getString(UserPreferences.DESIGNATION))
         .once()
         .then((value) {
       if (value.snapshot.exists) {
-        print("efgh ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
         UserName = data["Name"];
         College = data["College"];
         Designation = data["Designation"];
+        ProfileImage= data['ImageUrl'];
+        print("profle image ${ProfileImage}");
         setState(() {});
       }
     });
@@ -531,8 +701,160 @@ class _CameraState extends State<Camera> {
   }
 
   getSharPdata() async {
-
     CollegeU = (await getString(UserPreferences.COLLEGE));
     designationU = (await getString(UserPreferences.DESIGNATION));
   }
+
+  showAlertDialogCamera(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      title: const Text("More options"),
+      content: Container(
+        height: 150,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 10, bottom: 10),
+                child: InkWell(
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    ImagePicker imagePicker = ImagePicker();
+                    XFile? file = await imagePicker.pickImage(
+                        source: ImageSource.camera);
+                    print('${file?.path}');
+                    if (file == null) return;
+                    String uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+                    Reference mRootReference = FirebaseStorage.instance.ref();
+                    Reference referenceDirImages = mRootReference.child('images');
+
+                    Reference referenceImageToUpload = referenceDirImages.child(uniqueFileName);
+                    try {await referenceImageToUpload.putFile(File(file!.path));
+                    imageUrl = await referenceImageToUpload.getDownloadURL();
+                    } catch (error) {}
+                    setState(() {
+                      initState();
+                    });
+                  },
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(60),
+                          color: MyColors.ColorGreen1,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Icon(
+                            Icons.camera_alt_outlined,
+                            color: Colors.black,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Upload from camera",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )
+                    ],
+                  ),
+
+                )),
+            Padding(
+                padding: const EdgeInsets.only(
+                    left: 10, right: 10, top: 10, bottom: 10),
+                child: InkWell(
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    ImagePicker imagePicker = ImagePicker();
+                    file = await imagePicker.pickImage(
+                        source: ImageSource.gallery);
+                    print("Testing${file?.path}");
+                    if (file == null) return;
+
+                    String uniqueFileName =
+                    DateTime.now().millisecondsSinceEpoch.toString();
+
+                    Reference mRootReference =
+                    FirebaseStorage.instance.ref();
+                    Reference referenceDirImages =
+                    mRootReference.child('images');
+
+                    Reference referenceImageToUpload =
+                    referenceDirImages.child(uniqueFileName);
+                    try {
+                      await referenceImageToUpload
+                          .putFile(File(file!.path));
+                      imageUrl =
+                      await referenceImageToUpload.getDownloadURL();
+                    } catch (error) {}
+
+                  },
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(60),
+                          color: MyColors.ColorGreen1,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Icon(
+                            Icons.image_outlined,
+                            color: Colors.black,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        "Upload from gallery",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
+                )),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          child: Container(
+              decoration: BoxDecoration(
+                  color:Colors.blue,
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(30)
+                  )
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
+                child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
+              )),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
 }

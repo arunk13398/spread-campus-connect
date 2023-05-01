@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:expandable/expandable.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -7,6 +8,7 @@ import 'package:miniq/Screens/UserScreens/NotificationScreen/publish_notificatio
 import 'package:chip_list/chip_list.dart';
 import '../../../Contraints/user_preference.dart';
 import '../../../Model/notification_model.dart';
+import '../../../Theme/theme.dart';
 
 
 class NotificationList extends StatefulWidget {
@@ -23,6 +25,7 @@ class _NotificationListState extends State<NotificationList> {
   String Uid='';
   String Designation = '';
   String access="Teacher";
+  String access1="Admin";
   String College = '';
   String _categoryDpValue = 'General';
   var _category = ['Student', 'Teacher', 'NonTeachingStaff', 'OtherEmployees', 'Alumni', 'Others','General'];
@@ -56,7 +59,7 @@ class _NotificationListState extends State<NotificationList> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
-                        color: Colors.blue),
+                        color: MyColors.Colorgreen3,),
                   ),
                 ),
               ),
@@ -130,7 +133,7 @@ class _NotificationListState extends State<NotificationList> {
 
 
 
-              Designation==access?Align(
+              Designation==access||Designation==access1?Align(
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.only(bottom:20.0,right:10),
@@ -139,7 +142,7 @@ class _NotificationListState extends State<NotificationList> {
                     child: MaterialButton(
                       height:45,
                       minWidth: 145,
-                      color:Colors.blue,
+                      color:MyColors.Colorgreen2,
                       splashColor: Colors.green,
                      shape:RoundedRectangleBorder(
                        borderRadius: BorderRadius.circular(30)
@@ -206,14 +209,31 @@ class _NotificationListState extends State<NotificationList> {
                   children: <Widget>[
                     Row(
                       children: [
-                        ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              "https://th.bing.com/th/id/R.40deba34f6c2decf532724c4c03f4fc4?rik=DmIMwHsFZgTrNw&riu=http%3a%2f%2fimg.doooor.com%2fimg%2fforum%2f201412%2f02%2f141955p15dugfkga555fcf.jpg&ehk=WtRMuE8T84Y04XeZy%2fCihE5BF1EwBS9p9QoEqnvYHXA%3d&risl=&pid=ImgRaw&r=0",
-                              height: 50,
-                              width: 60,
-                              fit: BoxFit.cover,
-                            )),
+                        notificationList[index].ProfileImg!=""?
+                        CachedNetworkImage(
+                          imageUrl: notificationList[index].ProfileImg,
+                          placeholder: (context, url) => const CircleAvatar(
+                            backgroundColor: MyColors.ColorGreen1,
+                            radius: 30,
+                          ),
+                          imageBuilder: (context, image) => CircleAvatar(
+                            backgroundImage: image,
+                            radius: 30,
+                          ),
+                        ):
+                        CachedNetworkImage(
+                          imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                          placeholder: (context, url) => const CircleAvatar(
+                            backgroundColor: MyColors.ColorGreen1,
+                            radius: 30,
+                          ),
+                          imageBuilder: (context, image) => CircleAvatar(
+                            backgroundImage: image,
+                            radius: 30,
+                          ),
+                        )
+                        ,
+
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                           child: Column(
@@ -236,7 +256,7 @@ class _NotificationListState extends State<NotificationList> {
                                 notificationList[index].designation,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
+                                  color: MyColors.Colorgreen3,
                                   fontSize: 16,
                                 ),
                               ),
@@ -252,7 +272,7 @@ class _NotificationListState extends State<NotificationList> {
                         theme: const ExpandableThemeData(
                           expandIcon: CupertinoIcons.arrow_down_right_arrow_up_left,
                           iconSize: 22,
-                          iconColor: Colors.blue,
+                          iconColor: Colors.red,
                           headerAlignment: ExpandablePanelHeaderAlignment.center,
                           tapBodyToCollapse: true,
                         ),
@@ -321,9 +341,9 @@ class _NotificationListState extends State<NotificationList> {
 
 
   getDataAccess() async {
-    // numberId = (await getString(UserPreferences.USER_NUMBER));
-    // UserName = (await getString(UserPreferences.USER_Name));
-    // College = (await getString(UserPreferences.COLLEGE));
+    //numberId = (await getString(UserPreferences.USER_NUMBER));
+    //UserName = (await getString(UserPreferences.USER_Name));
+    College = (await getString(UserPreferences.COLLEGE));
     mRootReference
         .child("AccessControl")
         .child(await getString(UserPreferences.USER_NUMBER))
@@ -351,7 +371,7 @@ class _NotificationListState extends State<NotificationList> {
           name: value['Name'],
           notificationContent: value['NotificationContent'],
           subject: value['Subject'],
-
+          ProfileImg: value['UserProfileImage'],
 
           // rAdmNumber: value['AdmissionNo'],
           // rClgNo: value['RegisterNo'],

@@ -4,9 +4,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:miniq/Screens/UserScreens/ProfileScreen/personal_information.dart';
 import 'package:miniq/Screens/UserScreens/ProfileScreen/profile_page.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../../Contraints/user_preference.dart';
 import '../../../Model/feed_model.dart';
+import '../../../Model/gallery_model.dart';
+import '../../../Theme/theme.dart';
 import '../../../functions/functions.dart';
 import '../LoginScreen/splash_screen.dart';
 import 'edit_profile.dart';
@@ -21,17 +24,20 @@ class ProfileDashboard extends StatefulWidget {
 class _ProfileDashboardState extends State<ProfileDashboard> {
 
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
-  List<FeedModel> list = [];
+
+  List<GalleryModel> Glist = [];
   String numberId='';
   String UserName='';
   String College='';
   String Designation='';
+  String imageUrl='';
 
 
   @override
   void initState() {
     super.initState();
     getDataF1();
+    getDataF2();
     load();
 
   }
@@ -46,7 +52,6 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         child: Padding(
           padding: const EdgeInsets.all(10.0),
           child:
-
           Column(
             children: [
               Expanded(
@@ -59,9 +64,18 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                            CachedNetworkImage(
-                              imageUrl:
-                              'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                            imageUrl!=""?CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              placeholder: (context, url) => const CircleAvatar(
+                                backgroundColor: Colors.amber,
+                                radius: 60,
+                              ),
+                              imageBuilder: (context, image) => CircleAvatar(
+                                backgroundImage: image,
+                                radius: 60,
+                              ),
+                            ):CachedNetworkImage(
+                              imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
                               placeholder: (context, url) => const CircleAvatar(
                                 backgroundColor: Colors.amber,
                                 radius: 60,
@@ -71,6 +85,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                                 radius: 60,
                               ),
                             ),
+
                             SizedBox(width: 20,),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -80,12 +95,13 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                                 Text(College,style: TextStyle(fontSize: 16,color: Colors.grey),),
                                 SizedBox(height: 5,),
                                 MaterialButton(onPressed: () {
+                                  print("sshashj${imageUrl}");
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => EditProfile()));
                                 },
-                                  color: Colors.blue,
+                                  color: MyColors.Colorgreen3,
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(20)
                                   ),
@@ -108,25 +124,16 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
 
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: InkWell(
-                          onTap:(){
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        PersonalInformation(College: College,Designation: Designation,)));
-                          },
-                          child: Container(
-                            width: double.infinity,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  border:Border.all(color: Colors.grey.shade300,width: 1,)
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                                child: Text("Personal information",style: TextStyle(fontWeight: FontWeight.bold),),
-                              )),
-                        ),
+                        child: Container(
+                          width: double.infinity,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border:Border.all(color: Colors.grey.shade300,width: 1,)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
+                              child: Text("12 followers                |               6 post               |              Student",style: TextStyle(fontWeight: FontWeight.bold),),
+                            )),
                       ),
 
                       Padding(
@@ -134,7 +141,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                         child: Container(
                             height: height / 1.3,
                             child: GridView.builder(
-                                itemCount: list.length,
+                                itemCount: Glist.length,
                                 gridDelegate:
                                 SliverGridDelegateWithMaxCrossAxisExtent(
                                   maxCrossAxisExtent: 150,
@@ -144,7 +151,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                                 ),
                                 itemBuilder: (BuildContext context, int index) =>
                                     galleryAdaptor(index))),
-                      )
+                      ),
 
                       // Padding(
                       //   padding: const EdgeInsets.all(8.0),
@@ -206,42 +213,58 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
-
-
-
-  getDataF1() async {
+  getDataF2() async {
     numberId = (await getString(UserPreferences.USER_NUMBER));
     UserName = (await getString(UserPreferences.USER_Name));
-    // College = (await getString(UserPreferences.COLLEGE));
+    College = (await getString(UserPreferences.COLLEGE));
     mRootReference
         .child("AccessControl")
         .child(await getString(UserPreferences.USER_NUMBER))
         .once()
         .then((value) {
       if (value.snapshot.exists) {
-        print("efgh ${value.snapshot.value}");
+        print("fffffff ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
         College = data["College"];
         Designation = data["Designation"];
-        UserName = data["Name"];
-
+        setState(() {});
+      }
+    });
+  }
+  getDataF1() async {
+    numberId = (await getString(UserPreferences.USER_NUMBER));
+    UserName = (await getString(UserPreferences.USER_Name));
+    College = (await getString(UserPreferences.COLLEGE));
+    mRootReference
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .child(await getString(UserPreferences.DESIGNATION))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("lllllllll ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        imageUrl=data['ImageUrl'];
         setState(() {});
       }
     });
   }
 
   load() async {
-    mRootReference.child("UsersList").child('GECWayanad').child('+919562592737').child('Student').child('Post').onValue.listen((event) {
+    mRootReference.
+    child("UsersList").
+    child(await getString(UserPreferences.COLLEGE)).
+    child(await getString(UserPreferences.USER_NUMBER)).
+    child(await getString(UserPreferences.DESIGNATION)).
+    child('Post').onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
-      list.clear();
+      Glist.clear();
       data.forEach((key, value) {
-        list.add(FeedModel(
+        Glist.add(GalleryModel(
           id: key,
-          userName: value['UserName'],
-          desigUser: value['Designation'],
-          description: value['Description'],
-          imageUrl: value['ImageUrl'],
-          UpdatedTime: value['ImageUrlTime'],
+           Description: value["Description"],
+           gImageUrl: value["ImageUrl"],
+
         ));
       });
       setState(() {});
@@ -251,7 +274,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   Widget galleryAdaptor(int index) {
     return InkWell(
       onLongPress: (){
-        print("abcd ${list[index].id}");
+        print("abcd ${Glist[index].id}");
         AlertDialog(
           title: const Text("Remove"),
           content: const Text("Are you sure to Remove"),
@@ -265,8 +288,8 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
             TextButton(
               child: const Text("Yes"),
               onPressed: () {
-                mRootReference.child("Feeds").child("Public").child(list[index].id).remove();
-                list.removeAt(index);
+                mRootReference.child("Feeds").child("Public").child(Glist[index].id).remove();
+                Glist.removeAt(index);
               },
             ),
           ],
@@ -277,7 +300,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         child: CachedNetworkImage(
           width: double.infinity,
           fit: BoxFit.fill,
-          imageUrl: list[index].imageUrl,
+          imageUrl: Glist[index].gImageUrl,
           placeholder: (context, url) => Center(
               child: CircularProgressIndicator(
                 color: Colors.red,
@@ -348,7 +371,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         TextButton(
           child: Container(
             decoration: BoxDecoration(
-              color:Colors.blue,
+              color:MyColors.Colorgreen3,
               borderRadius: BorderRadius.all(
                 Radius.circular(30)
               )
@@ -372,5 +395,25 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       },
     );
   }
+
+  Shimmer getShimmerLoading1(){
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade500,
+      // enabled: _enabled,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child:  Container(
+          width: 120.0,
+          height: 120.0,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(60),
+          ),
+        ),
+      ),
+    );
+  }
+
 
 }

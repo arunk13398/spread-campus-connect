@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../Contraints/user_preference.dart';
 import '../../../Model/complaint_model.dart';
+import '../../../Theme/theme.dart';
 import 'Complaint_details.dart';
 import 'complaint_registration.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -48,7 +49,7 @@ class _ComplaintListState extends State<ComplaintList> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
-                      color: Colors.blue),
+                      color: Colors.black),
                 ),
               ),
             ),
@@ -73,7 +74,7 @@ class _ComplaintListState extends State<ComplaintList> {
                         builder: (context) =>
                             ComplaintRegistration()));
               },
-                color: Colors.blue,
+                color: MyColors.Colorgreen3,
                 minWidth: double.infinity,
                 height: 50,
                 shape: RoundedRectangleBorder(
@@ -296,7 +297,7 @@ class _ComplaintListState extends State<ComplaintList> {
                                   builder: (context) =>
                                       ComplaintDetails(complaintModel: ComplaintList[index],)));
                         },
-                          color: Colors.blue,
+                          color: MyColors.Colorgreen2,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(20)
                           ),

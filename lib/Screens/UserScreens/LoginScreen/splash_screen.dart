@@ -8,6 +8,8 @@ import 'package:miniq/Screens/test_page.dart';
 import 'package:miniq/Theme/theme.dart';
 import 'package:miniq/functions/functions.dart';
 
+import '../../Adminbottom_navigation.dart';
+
 class SplashScreen extends StatefulWidget {
    SplashScreen({Key? key, }) : super(key: key);
 
@@ -54,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
       else if(await getString(UserPreferences.ACCESS_CODE)=="2"){
         Future.delayed(const Duration(milliseconds: 3000), () {
-          callTo(const AdminDashboard(), context);
+          callTo( AdminBottomNavigation(), context);
         });
       }
       else{

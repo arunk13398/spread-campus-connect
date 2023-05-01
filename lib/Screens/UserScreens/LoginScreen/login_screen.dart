@@ -13,6 +13,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController phoneNumber= TextEditingController();
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: <Widget>[
                 const Spacer(),
-                Image.asset("assets/r1.png"),
+                Image.asset("assets/letterblacknewcolor.png",height: 150,),
+                SizedBox(height: 0,),
                 const Padding(
                   padding: EdgeInsets.only(
                       left: 16.0, top: 0.0, right: 16.0, bottom: 40),
@@ -48,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           autofocus: true,
                           textAlign: TextAlign.start,
                           decoration: const InputDecoration(
-                              hintText: 'Enter Mobile number',),
+                          hintText: 'Enter Mobile number',),
                           keyboardType: TextInputType.number,
                           textInputAction: TextInputAction.done,
                           style: const TextStyle(
@@ -69,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => OTPScreen(number: phoneNumber.text,)));
                         },
                         textColor: Colors.white,
-                        color: Colors.blue,
+                        color: MyColors.Colorgreen3,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         child: const Text(

@@ -70,7 +70,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
-                          color: Colors.blue),
+                          color:MyColors.Colorgreen3),
                     ),
                   ),
                 ),
@@ -86,7 +86,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       border: const OutlineInputBorder(),
                       labelText: 'Name',
                       labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
                       hintText: 'Name',
                       filled: true,
                       fillColor: Colors.white,
@@ -116,7 +116,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       border: const OutlineInputBorder(),
                       labelText: 'Mobile number',
                       labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
                       hintText: 'Mobile number',
                       filled: true,
                       fillColor: Colors.white,
@@ -147,7 +147,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       filled: true,
                       fillColor: Colors.white,
                       labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -173,7 +173,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       filled: true,
                       fillColor: Colors.white,
                       labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -199,7 +199,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       filled: true,
                       fillColor: Colors.white,
                       labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -220,12 +220,12 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      labelText: 'Subject',
-                      hintText: 'Subject',
+                      labelText: 'Subject header',
+                      hintText: 'Subject header',
                       filled: true,
                       fillColor: Colors.white,
                       labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color: Colors.blue),
+                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         borderSide: BorderSide(
@@ -249,7 +249,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
-                          color: Colors.blue),
+                          color:MyColors.Colorgreen3),
                       softWrap: false,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -270,7 +270,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                         filled: true,
                         fillColor: Colors.white,
                         labelStyle: TextStyle(color: Colors.black),
-                        hintStyle: TextStyle(color: Colors.blue),
+                        hintStyle: TextStyle(color:MyColors.Colorgreen3),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                           borderSide: BorderSide(
@@ -307,7 +307,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                           });
                         },
                         textColor: Colors.white,
-                        color: Colors.blue,
+                        color:MyColors.Colorgreen3,
                         minWidth: double.infinity,
                         height: 60,
                         shape: RoundedRectangleBorder(

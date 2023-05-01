@@ -84,6 +84,7 @@ class _GalleryState extends State<Gallery> {
           description: value['Description'],
           imageUrl: value['ImageUrl'],
           UpdatedTime: value['ImageUrlTime'],
+          profImg: value['ProfileImage'],
         ));
       });
       setState(() {});

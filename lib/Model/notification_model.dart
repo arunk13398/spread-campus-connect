@@ -7,6 +7,7 @@ class NotificationModel{
   String subject;
   String notificationContent;
   String designation;
+  String ProfileImg;
 
 
   NotificationModel({
@@ -16,6 +17,7 @@ class NotificationModel{
         required this.id,
         required this.notificationContent,
         required this.subject,
+        required this.ProfileImg,
       }
       );
 }
