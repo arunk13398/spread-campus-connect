@@ -32,6 +32,7 @@ class _EditProfileState extends State<EditProfile> {
   String Designation='';
   String AccessName='';
   String Phone='';
+  String access='';
 
   bool _isChecked = false;
   bool _isChecked1 = false;
@@ -47,6 +48,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     getDataF1();
+    getdata();
     super.initState();
   }
 
@@ -275,8 +277,8 @@ class _EditProfileState extends State<EditProfile> {
                         )),
                   ),
                 ),
-                AccessName=="Admin"?
-                Column(
+                AccessName=="Admin"||access=="2"?
+                Container():Column(
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(left:15.0,right: 5,),
@@ -320,7 +322,7 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                     ):SizedBox(),
                   ],
-                ):Container(),
+                ),
               ],
             ),
           ),
@@ -367,5 +369,8 @@ class _EditProfileState extends State<EditProfile> {
       finishAccountCreation( BottomNavigation(), context);
     });
   }
-
+  getdata() async {
+    AccessName= await getString(UserPreferences.USER_Name);
+    access=   await getString(UserPreferences.ACCESS_CODE);
+  }
 }

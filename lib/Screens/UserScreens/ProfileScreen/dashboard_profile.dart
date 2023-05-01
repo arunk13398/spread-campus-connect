@@ -31,6 +31,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   String College='';
   String Designation='';
   String imageUrl='';
+  String access='';
 
 
   @override
@@ -87,27 +88,30 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                             ),
 
                             SizedBox(width: 20,),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(UserName,style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                                Text(College,style: TextStyle(fontSize: 16,color: Colors.grey),),
-                                SizedBox(height: 5,),
-                                MaterialButton(onPressed: () {
-                                  print("sshashj${imageUrl}");
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => EditProfile()));
-                                },
-                                  color: MyColors.Colorgreen3,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20)
-                                  ),
-                                  child: Text("Edit profile",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
-                                )
-                              ],
+                            SizedBox(
+                              width:width/2.5,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(UserName,style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
+                                  Text(College,style: TextStyle(fontSize: 16,color: Colors.grey),),
+                                  SizedBox(height: 5,),
+                                  MaterialButton(onPressed: () {
+                                    print("sshashj${imageUrl}");
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => EditProfile()));
+                                  },
+                                    color: MyColors.Colorgreen3,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20)
+                                    ),
+                                    child: Text("Edit profile",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
+                                  )
+                                ],
+                              ),
                             ),
                             Spacer(),
                             Align(alignment:Alignment.topRight,
