@@ -330,54 +330,56 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
       title: const Text("More options"),
       content: Container(
         height: height/4.65,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            InkWell(
-              onTap: (){
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: (){
 
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("Privacy policy",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Privacy policy",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                ),
               ),
-            ),
-            SizedBox(height: 5,),
-            InkWell(
-              onTap: (){
+              SizedBox(height: 5,),
+              InkWell(
+                onTap: (){
 
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("About",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("About",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                ),
               ),
-            ),
-            SizedBox(height: 5,),
-            InkWell(
-              onTap: (){
+              SizedBox(height: 5,),
+              InkWell(
+                onTap: (){
 
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("help",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                ),
+              ),
+              SizedBox(height: 5,),
+              InkWell(onLongPress: (){
+                setBool(UserPreferences.IS_LOGIN,false);
+                setString(UserPreferences.ACCESS_CODE,"");
+                setString(UserPreferences.USER_NUMBER,"");
+                setString(UserPreferences.USER_Name,"");
+                setString(UserPreferences.USER_TYPE,"");
+                finishAccountCreation( SplashScreen(), context);
+                // showAlertDialog(context);
               },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("help",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Logout",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color:Colors.red),),
+                ),
               ),
-            ),
-            SizedBox(height: 5,),
-            InkWell(onLongPress: (){
-              setBool(UserPreferences.IS_LOGIN,false);
-              setString(UserPreferences.ACCESS_CODE,"");
-              setString(UserPreferences.USER_NUMBER,"");
-              setString(UserPreferences.USER_Name,"");
-              setString(UserPreferences.USER_TYPE,"");
-              finishAccountCreation( SplashScreen(), context);
-              // showAlertDialog(context);
-            },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("Logout",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color:Colors.red),),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       actions: [

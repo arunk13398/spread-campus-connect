@@ -61,17 +61,34 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
               InkWell(onTap: (){
                 print("ajfbsgdbfdv ${commentList.length}");
               },
-                child: Container(
-                  height: height/2,
-                  child: CachedNetworkImage(
-                    width: double.infinity,
-                    fit: BoxFit.fitWidth,
-                    imageUrl: widget.feedModel.imageUrl,
-                    placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.red,
-                        )),
-                  ),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: height/2,
+                      child: CachedNetworkImage(
+                        width: double.infinity,
+                        fit: BoxFit.fitWidth,
+                        imageUrl: widget.feedModel.imageUrl,
+                        placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.red,
+                            )),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 2,
+                      child: Container(
+                        color: Colors.black12,
+                        // height: 380,
+                        width: width/1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(widget.feedModel.description,style: TextStyle(color: Colors.white),
+                              maxLines: 15,
+                              overflow: TextOverflow.ellipsis),
+                        ),),
+                    ),
+                  ],
                 ),
               ),
               Padding(
@@ -81,9 +98,10 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
               ),
               Container(
                 height:height/2.7,
-                child:commentList.length==0?Column(
+                child:commentList.length==0?
+                Column(
                   children: [
-                    Image.asset("assets/wrong.jpg"),
+                    Image.asset("assets/wrong.jpg",height:height/3,),
                     Text("- No Comments -")
                   ],
                 ):
@@ -94,51 +112,54 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
                           },
                         ),
                       ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width:315,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            controller: comment,
-                            style: TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              border: const OutlineInputBorder(),
-                              labelText: 'Enter College',
-                              hintText: 'eg: GECWayand',
-                              filled: true,
-                              fillColor: Colors.white,
-                              labelStyle: TextStyle(color: Colors.black),
-                              hintStyle: TextStyle(color: Colors.blue),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(
-                                    color:Colors.grey, width: 1.6),
+                  SizedBox(
+                    width:width/1,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width:width/1.27,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              controller: comment,
+                              style: TextStyle(color: Colors.black),
+                              decoration: InputDecoration(
+                                border: const OutlineInputBorder(),
+                                labelText: 'Enter comment',
+                                hintText: ' Comment',
+                                filled: true,
+                                fillColor: Colors.white,
+                                labelStyle: TextStyle(color: Colors.black),
+                                hintStyle: TextStyle(color: Colors.blue),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                  borderSide: BorderSide(color: Colors.grey.shade300, width: 1.2),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                  borderSide: BorderSide(
+                                      color:Colors.grey, width: 1.6),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: MaterialButton(
-                          minWidth: 40,
-                          height: 50,
-                          color: Colors.blue,
-                          child: Icon(Icons.arrow_forward_rounded),
-                            onPressed: (){
-                              addComment();
-                              comment.clear();
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: MaterialButton(
+                            minWidth: 40,
+                            height: 50,
+                            color: MyColors.Colorgreen3,
+                            child: Icon(Icons.arrow_forward_rounded),
+                              onPressed: (){
+                                addComment();
+                                comment.clear();
 
-                            }
-                        ),
-                      )
-                    ],
+                              }
+                          ),
+                        )
+                      ],
+                    ),
                   ),
 
             ],

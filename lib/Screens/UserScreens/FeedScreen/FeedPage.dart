@@ -172,7 +172,7 @@ class _FeedPageState extends State<FeedPage> {
                                               fontSize: 40,
                                               color: Colors.black)),
                                     ),
-                                    SizedBox(height: 30,),
+                                    SizedBox(height: 15,),
                                     // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
                                     ChipList(
                                       padding: EdgeInsets.all(8),
@@ -330,8 +330,9 @@ class _FeedPageState extends State<FeedPage> {
                               radius: 22,
                             ),
                           ),
-                          SizedBox(
-                            width: width / 1.8,
+                          Container(
+                            // color:Colors.red,
+                            width: width / 2.1,
                             child: Column(
                               mainAxisAlignment:
                               MainAxisAlignment.start,
@@ -365,6 +366,7 @@ class _FeedPageState extends State<FeedPage> {
                               ],
                             ),
                           ),
+                          Spacer(),
                           Padding(
                             padding: const EdgeInsets.only(
                                 left: 10, right: 5),
