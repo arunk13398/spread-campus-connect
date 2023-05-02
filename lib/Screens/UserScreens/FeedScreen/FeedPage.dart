@@ -172,10 +172,10 @@ class _FeedPageState extends State<FeedPage> {
                                               fontSize: 40,
                                               color: Colors.black)),
                                     ),
-                                    SizedBox(height: 15,),
+                                    SizedBox(height: 30,),
                                     // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
                                     ChipList(
-                                      padding: EdgeInsets.all(8),
+                                      padding: EdgeInsets.all(10),
                                       listOfChipNames: _menuItems,
                                       activeBgColorList: [MyColors.Colorgreen2],
                                       inactiveBgColorList: const [Colors.white],
@@ -274,6 +274,8 @@ class _FeedPageState extends State<FeedPage> {
           imageUrl: value['ImageUrl'],
           UpdatedTime: value['ImageUrlTime'],
           profImg: value['ProfileImage'],
+          toPublish: value['ToPublish'],
+          // ToPublish: value['ToPublish'],
         ));
       });
       setState(() {});

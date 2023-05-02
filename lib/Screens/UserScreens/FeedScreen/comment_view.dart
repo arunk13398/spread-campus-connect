@@ -23,6 +23,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   TextEditingController comment = TextEditingController();
   String username = '';
+  String userProfImg = '';
   var size, height, width;
   @override
 
@@ -31,19 +32,11 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
 
 
   var top=0.0;
-  late ScrollController _scrollController;
 
   @override void initState() {
     loadComment();
-    // getData();
-    getData1();
+    getDataF1();
     super.initState();
-    _scrollController =  ScrollController();
-    _scrollController.addListener(() {
-      setState(() {
-
-      });
-    });
   }
 
 
@@ -79,7 +72,6 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
                       bottom: 2,
                       child: Container(
                         color: Colors.black12,
-                        // height: 380,
                         width: width/1,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -213,29 +205,30 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
     // print("gggggggg"+imageUrl);
     data["Description"] = comment.text;
     data["UserName"] = username;
+    data["UserProfilImage"] = userProfImg;
     data["Date"] = DateTime.now().toString();
     data["Time"] = DateTime.now().millisecondsSinceEpoch.toString();
 
-    await mRootReference.child('Feeds').child('Public').child(id).child('Comments').child(id1).update(data);
+    await mRootReference.child('Feeds').child(widget.feedModel.toPublish).child(id).child('Comments').child(id1).update(data);
 
     // await
     // referenceRoot.child("Test")
     //     .child("Images").push().update(data);
   }
 
-  getData1() async {
+  getDataF1() async {
     username = (await getString(UserPreferences.USER_Name));
     mRootReference
-        .child("UsersList")
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
         .child(await getString(UserPreferences.USER_NUMBER))
-        .child("Profile")
+        .child(await getString(UserPreferences.DESIGNATION))
         .once()
         .then((value) {
       if (value.snapshot.exists) {
-        print("ajfbsgdbfdv ${value.snapshot.value}");
-
+        print("lllllllll ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        username = data["Name"];
+        username=data['Name'];
+        userProfImg=data['ImageUrl'];
         setState(() {});
       }
     });
@@ -243,7 +236,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
 
   loadComment() {
     String id = widget.feedModel.id;
-    mRootReference.child('Feeds').child('Public').child(id).child('Comments').onValue.listen((event) {
+    mRootReference.child('Feeds').child(widget.feedModel.toPublish).child(id).child('Comments').onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       commentList.clear();
       data.forEach((key, value) {
@@ -252,6 +245,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
           username: value['UserName'],
           description: value['Description'],
           Time: value['Time'],
+          UserProfImg: value['UserProfilImage']
         ));
       });
       setState(() {});
@@ -260,22 +254,31 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
 
   Widget CommentAdaptor(int index) {
     return Padding(
-      padding: const EdgeInsets.only(left: 6, right: 6),
+      padding: const EdgeInsets.only(left: 15, right: 15,top:6,bottom:6),
       child: Row(
         children: [
-          Card(
-            elevation: 5,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100.0),
+          commentList[index].UserProfImg==''?
+          CachedNetworkImage(
+            imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+            placeholder: (context, url) =>  CircleAvatar(
+              backgroundColor: Colors.blue.shade300,
+              radius: 20,
             ),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  "https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0",
-                  height: 50,
-                  width: 50,
-                  fit: BoxFit.cover,
-                )),
+            imageBuilder: (context, image) => CircleAvatar(
+              backgroundImage: image,
+              radius: 20,
+            ),
+          ) :
+          CachedNetworkImage(
+            imageUrl: commentList[index].UserProfImg,
+            placeholder: (context, url) =>  CircleAvatar(
+              backgroundColor: Colors.blue.shade300,
+              radius: 20,
+            ),
+            imageBuilder: (context, image) => CircleAvatar(
+              backgroundImage: image,
+              radius: 20,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10.0),
@@ -300,13 +303,51 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
             ),
           ),
           Spacer(),
-          Icon(
-            Icons.favorite_border,
-            size: 27,
-            color: Colors.white54,
+          InkWell(
+            onTap: (){
+              showAlertDialogMore(context,index);
+            },
+            child: Icon(
+              Icons.more_vert_outlined,
+              size: 27,
+              color: Colors.black,
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  showAlertDialogMore(BuildContext context,int index) {
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("confirm"),
+      content: const Text("Are you sure to delete"),
+      actions: [
+        TextButton(
+          child: const Text("No"),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: const Text("Yes"),
+          onPressed: () {
+            mRootReference.child('Feeds').child(widget.feedModel.toPublish).child(widget.feedModel.id).child('Comments').child(commentList[index].id).remove();
+            commentList.removeAt(index);
+            Navigator.of(context).pop();
+          },
+        ),
+
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }

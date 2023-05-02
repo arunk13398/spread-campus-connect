@@ -318,6 +318,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
           imageUrl: value['ImageUrl'],
           UpdatedTime: value['ImageUrlTime'],
           profImg: value['ProfileImage'],
+          toPublish: value['ToPublish'],
+          // ToPublish:  value['ToPublish'],
         ));
       });
       setState(() {});

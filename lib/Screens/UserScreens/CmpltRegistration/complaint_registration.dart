@@ -19,12 +19,13 @@ class ComplaintRegistration extends StatefulWidget {
 
 class _ComplaintRegistrationState extends State<ComplaintRegistration> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
-
+  String _collegeDpValue = 'Office';
+  var _college = ['Office', 'Hod','Principal','Admin',];
   String numberId = '';
   String UserName = '';
 
-  TextEditingController RegName = TextEditingController();
-  TextEditingController RegMobNumber = TextEditingController();
+  final RegName = TextEditingController();
+  final RegMobNumber = TextEditingController();
   TextEditingController RegClgNo = TextEditingController();
   TextEditingController RegAdmNumber = TextEditingController();
   TextEditingController RegTo = TextEditingController();
@@ -107,7 +108,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
-                    maxLength: 10,
+                    maxLength: 13,
                     controller: RegMobNumber,
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
@@ -187,31 +188,84 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: RegTo,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'To',
-                      hintText: 'To',
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(
-                            color: Colors.grey, width: 1.2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(
-                            color: Colors.grey, width: 1.6),
+                // Padding(
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: TextFormField(
+                //     controller: RegTo,
+                //     style: TextStyle(color: Colors.black),
+                //     decoration: InputDecoration(
+                //       border: const OutlineInputBorder(),
+                //       labelText: 'To',
+                //       hintText: 'To',
+                //       filled: true,
+                //       fillColor: Colors.white,
+                //       labelStyle: TextStyle(color: Colors.black),
+                //       hintStyle: TextStyle(color:MyColors.Colorgreen3),
+                //       enabledBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //         borderSide: BorderSide(
+                //             color: Colors.grey, width: 1.2),
+                //       ),
+                //       focusedBorder: OutlineInputBorder(
+                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //         borderSide: BorderSide(
+                //             color: Colors.grey, width: 1.6),
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
+                Row(
+                  children: [
+                    SizedBox(width:10),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text("To",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                    ),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        width: 300,
+                        height: 55,
+                        decoration:BoxDecoration(
+                            color:Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                color: Colors.black38,
+                                width: 1
+                            )
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                            // Initial Value
+                            value: _collegeDpValue,
+                            iconEnabledColor: Colors.black,
+                            borderRadius: BorderRadius.circular(10),
+                            // Down Arrow Icon
+                            icon: const Icon(Icons.keyboard_arrow_down),
+                            // Array list of items
+                            items: _college.map((String items) {
+                              return DropdownMenuItem(
+                                value: items,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left:10.0,right:10),
+                                  child: Text(items),
+                                ),
+                              );
+                            }).toList(),
+                            // After selecting the desired option,it will
+                            // change button value to selected value
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _collegeDpValue = newValue!;
+                              });
+                            },
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -326,18 +380,18 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
   }
 
   getData() async {
-    numberId = (await getString(UserPreferences.USER_NUMBER));
-    UserName = (await getString(UserPreferences.USER_Name));
+    RegMobNumber.text = (await getString(UserPreferences.USER_NUMBER));
+    RegName.text = (await getString(UserPreferences.USER_Name));
     mRootReference
-        .child("UsersList")
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
         .child(await getString(UserPreferences.USER_NUMBER))
-        .child("Profile")
+        .child(await getString(UserPreferences.DESIGNATION))
         .once()
         .then((value) {
       if (value.snapshot.exists) {
         print("ajfbsgdbfdv ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        UserName = data["Name"];
+        RegName.text = data["Name"];
         setState(() {});
       }
     });
@@ -362,13 +416,13 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
 
     String id1 = DateTime.now().millisecondsSinceEpoch.toString();
     // print("gggggggg"+imageUrl);
-    // String id = numberId;
-    data["Id"] = numberId;
+    String id = RegMobNumber.text;
+    data["Id"] = RegMobNumber.text;
     data["Name"] = RegName.text;
     data["MobileNumber"] = RegMobNumber.text;
     data["RegisterNo"] = RegClgNo.text;
     data["AdmissionNo"] = RegAdmNumber.text;
-    data["To"] = RegTo.text;
+    data["To"] = _collegeDpValue;
     data["Subject"] = RegSubject.text;
     data["Complaint"] = RegCmptText.text;
 
@@ -376,7 +430,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
     data["Date"] = DateTime.now().toString();
     data["Time"] = DateTime.now().millisecondsSinceEpoch.toString();
 
-    await mRootReference.child("Complaints").child(id1)
+    await mRootReference.child("Complaints").child(id).child(id1)
     // .child('Details')
         // .push();
         .update(data);

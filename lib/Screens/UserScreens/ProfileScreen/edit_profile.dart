@@ -212,7 +212,7 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
                   child: TextFormField(
-                    enabled: _isChecked1,
+                    enabled: false,
                     controller: UserCollegeController,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
@@ -237,7 +237,7 @@ class _EditProfileState extends State<EditProfile> {
                 Padding(
                   padding: const EdgeInsets.only(left:15.0,right: 15,top:5,bottom:5),
                   child: TextFormField(
-                    enabled: _isChecked1,
+                    enabled: false,
                     controller: UserDesignationController,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
@@ -257,7 +257,7 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                   ),
                 ),
-                Padding(
+                _isChecked1==true?Padding(
                   padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 20, right: 20),
                   child: SizedBox(
                     width: double.infinity,
@@ -272,11 +272,11 @@ class _EditProfileState extends State<EditProfile> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0)),
                         child: const Text(
-                          "Submit",
+                          "Update",
                           style: TextStyle(fontSize: 18,color: Colors.white,),
                         )),
                   ),
-                ),
+                ):Container(),
                 AccessName=="Admin"||access=="2"?
                 Container():Column(
                   children: [
@@ -302,8 +302,8 @@ class _EditProfileState extends State<EditProfile> {
                     _isChecked==true?Padding(
                       padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 20, right: 20),
                       child: SizedBox(
-                        width: 120,
-                        height: 30.0,
+                        width: 150,
+                        height: 35.0,
                         child: MaterialButton(
                             onPressed: () {
                               PageRequest();
@@ -316,7 +316,7 @@ class _EditProfileState extends State<EditProfile> {
                             child: Center(
                               child: const Text(
                                 "Requst to admin",
-                                style: TextStyle(fontSize: 12,color: Colors.white,),
+                                style: TextStyle(fontSize: 15,color: Colors.white,),
                               ),
                             )),
                       ),
@@ -342,7 +342,21 @@ class _EditProfileState extends State<EditProfile> {
     updateData["College"] =UserCollegeController.text;
     updateData["Designation"] =UserDesignationController.text;
     updateData["ImageUrl"] = imageUrl;
+
+
+    HashMap<String, dynamic> updateAcsessControl = HashMap<String, dynamic>();
+    updateAcsessControl["Name"] = UserNameController.text;
+    updateAcsessControl["Phone"] = UserNumberController.text;
+    updateAcsessControl["College"] =UserCollegeController.text;
+    updateAcsessControl["Designation"] =UserDesignationController.text;
     await mRootReference.child("UsersList").child(id2).child(id).child(id1).update(updateData);
+    await mRootReference.child("AccessControl").child(id).update(updateAcsessControl);
+
+    setString(UserPreferences.USER_Name,UserNameController.text.toString());
+    setString(UserPreferences.COLLEGE,UserCollegeController.text.toString());
+    setString(UserPreferences.DESIGNATION,UserDesignationController.text.toString());
+    setString(UserPreferences.USER_NUMBER,UserNumberController.text.toString());
+
 
     Future.delayed(const Duration(seconds: 1), () {
       finishAccountCreation( BottomNavigation(), context);

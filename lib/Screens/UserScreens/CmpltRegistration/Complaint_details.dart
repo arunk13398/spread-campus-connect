@@ -65,7 +65,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                       width: width / 1,
                       child: Row(
                         children: [
-                          SizedBox(width:15),
+                          SizedBox(width:5),
                           CachedNetworkImage(
                             imageUrl: 'https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg',
                             placeholder: (context, url) =>  CircleAvatar(
@@ -86,17 +86,28 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                               CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.only(left:5.0,top:10),
-                                  child: Row(
+                                  padding: const EdgeInsets.only(left:10.0,top:0),
+                                  child: Column(
                                     children: [
-                                      Text("Posted to "),
-                                      Text(widget.complaintModel.rTo,style: TextStyle(fontWeight: FontWeight.bold),),
+                                      Row(
+                                        children: [
+                                          Text("Posted to "),
+                                          Text(widget.complaintModel.rTo,style: TextStyle(fontWeight: FontWeight.bold),),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text("Date"),
+                                          Text(" 12/2/2022",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.red),),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 )
                               ],
                             ),
                           ),
+                          Spacer(),
                           Padding(
                             padding: const EdgeInsets.only(
                                 left: 10.0, right: 5),

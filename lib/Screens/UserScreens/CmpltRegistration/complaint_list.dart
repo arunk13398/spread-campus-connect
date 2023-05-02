@@ -22,13 +22,13 @@ class _ComplaintListState extends State<ComplaintList> {
   String Uid = '';
   String username = '';
   bool isConnected = false;
+
   @override
   void initState() {
     // TODO: implement initState
     loadComplaint();
+
     checkRealtimeConnection();
-    // getData();
-    getData();
     super.initState();
   }
   @override
@@ -106,25 +106,10 @@ class _ComplaintListState extends State<ComplaintList> {
       ),
     );
   }
-  getData() async {
-    Uid = (await getString(UserPreferences.USER_NUMBER));
-    mRootReference
-        .child("UsersList")
-        .child(await getString(UserPreferences.USER_NUMBER))
-        .child("Profile")
-        .once()
-        .then((value) {
-      if (value.snapshot.exists) {
-        print("ajfbsgdbfdv ${value.snapshot.value}");
-        Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        username = data["Name"];
-        setState(() {});
-      }
-    });
-  }
-  loadComplaint() {
 
-    mRootReference.child("Complaints").onValue.listen((event) {
+
+  loadComplaint() async {
+    mRootReference.child("Complaints").child(await getString(UserPreferences.USER_NUMBER)).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       ComplaintList.clear();
       data.forEach((key, value) {

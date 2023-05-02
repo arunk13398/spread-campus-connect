@@ -26,6 +26,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
 
   List<GalleryModel> Glist = [];
+
   String numberId='';
   String UserName='';
   String College='';
@@ -281,6 +282,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
           id: key,
            Description: value["Description"],
            gImageUrl: value["ImageUrl"],
+          ToPublish: value["ToPublish"],
 
         ));
       });
@@ -292,25 +294,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     return InkWell(
       onLongPress: (){
         print("abcd ${Glist[index].id}");
-        AlertDialog(
-          title: const Text("Remove"),
-          content: const Text("Are you sure to Remove"),
-          actions: [
-            TextButton(
-              child: const Text("Ok"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text("Yes"),
-              onPressed: () {
-                mRootReference.child("Feeds").child("Public").child(Glist[index].id).remove();
-                Glist.removeAt(index);
-              },
-            ),
-          ],
-        );
+        showAlertDialogMoreGallery(context,index);
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
@@ -327,13 +311,12 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
-
   showAlertDialogMore(BuildContext context) {
 
     AlertDialog alert = AlertDialog(
       title: const Text("More options"),
       content: Container(
-        height: height/4.65,
+        height:140,
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,5 +417,43 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     );
   }
 
+showAlertDialogMoreGallery(BuildContext context,int index) {
+
+  AlertDialog alert = AlertDialog(
+    title: const Text("confirm"),
+    content: const Text("Are you sure to delete"),
+    actions: [
+      TextButton(
+        child: const Text("No"),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+      TextButton(
+        child: const Text("Yes"),
+        onPressed: () async {
+          mRootReference
+              .child("UsersList").child(await getString(UserPreferences.COLLEGE))
+              .child(await getString(UserPreferences.USER_NUMBER))
+              .child(await getString(UserPreferences.DESIGNATION)).child("Post").child(Glist[index].id).remove();
+
+          mRootReference.child('Feeds').child(Glist[index].ToPublish).child(Glist[index].id).remove();
+          Glist.removeAt(index);
+          load();
+          Navigator.of(context).pop();
+        },
+      ),
+
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
 
 }

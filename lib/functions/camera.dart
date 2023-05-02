@@ -519,7 +519,7 @@ class _CameraState extends State<Camera> {
                   children: <Widget>[
                     Text("Uplord Image",
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                            fontSize: 13,)),
                     Padding(
                         padding: const EdgeInsets.only(
                             left: 10, right: 10, top: 10, bottom: 10),
@@ -549,7 +549,7 @@ class _CameraState extends State<Camera> {
                               Text(
                                 "Upload from camera",
                                 style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                    fontSize: 13,),
                               )
                             ],
                           ),
@@ -583,7 +583,7 @@ class _CameraState extends State<Camera> {
                               Text(
                                 "Upload from gallery",
                                 style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
+                                    fontSize: 13, ),
                               )
                             ],
                           ),
@@ -641,6 +641,7 @@ class _CameraState extends State<Camera> {
     data['UserName'] = UserName;
     data['Designation'] = designationU;
     data['ProfileImage'] = ProfileImage;
+    data['ToPublish'] = _categoryDpValue;
     data["Date"] = DateTime.now().toString();
     data["ImageUrlTime"] = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -653,6 +654,7 @@ class _CameraState extends State<Camera> {
     PostLink["id"]=id;
     PostLink["Description"] = description.text;
     PostLink["ImageUrl"] = imageUrl;
+    PostLink['ToPublish'] = _categoryDpValue;
     await mRootReference
         .child("UsersList")
         .child(await getString(UserPreferences.COLLEGE))
@@ -758,7 +760,7 @@ class _CameraState extends State<Camera> {
                       Text(
                         "Upload from camera",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                       )
@@ -818,7 +820,7 @@ class _CameraState extends State<Camera> {
                       Text(
                         "Upload from gallery",
                         style: TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.black),
                       ),
@@ -832,7 +834,7 @@ class _CameraState extends State<Camera> {
         TextButton(
           child: Container(
               decoration: BoxDecoration(
-                  color:Colors.blue,
+                  color:MyColors.Colorgreen3,
                   borderRadius: BorderRadius.all(
                       Radius.circular(30)
                   )
