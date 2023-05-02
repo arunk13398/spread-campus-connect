@@ -296,6 +296,9 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         print("abcd ${Glist[index].id}");
         showAlertDialogMoreGallery(context,index);
       },
+      onTap: (){
+        showAlertDialogMoreGalleryView(context,index);
+      },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
         child: CachedNetworkImage(
@@ -314,7 +317,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   showAlertDialogMore(BuildContext context) {
 
     AlertDialog alert = AlertDialog(
-      title: const Text("More options"),
+      title: const Text("More options",style: TextStyle(fontSize: 16,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
       content: Container(
         height:140,
         child: SingleChildScrollView(
@@ -445,6 +448,30 @@ showAlertDialogMoreGallery(BuildContext context,int index) {
       ),
 
     ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+showAlertDialogMoreGalleryView(BuildContext context,int index) {
+
+  AlertDialog alert = AlertDialog(
+    backgroundColor: Colors.transparent,
+    content: CachedNetworkImage(
+      width: 400,
+      fit: BoxFit.fitWidth,
+      imageUrl: Glist[index].gImageUrl,
+      placeholder: (context, url) => Center(
+          child: CircularProgressIndicator(
+            color: MyColors.Colorgreen3,
+          )),
+    ),
   );
 
   // show the dialog

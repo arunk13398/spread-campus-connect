@@ -8,6 +8,7 @@ class FeedModel {
   String UpdatedTime;
   String profImg;
   String toPublish;
+  String RegisterLink;
 
   FeedModel({
     required this.id,
@@ -18,6 +19,7 @@ class FeedModel {
     required this.UpdatedTime,
     required this.profImg,
     required this.toPublish,
+    required this.RegisterLink,
   });
 
 }

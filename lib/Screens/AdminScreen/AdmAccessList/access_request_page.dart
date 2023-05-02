@@ -141,7 +141,7 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
               ),
               SizedBox(width:5),
               Container(
-                width:width/5,
+                width:width/4.5,
                 decoration: BoxDecoration(
                     color:Colors.red.shade50,
                     borderRadius: BorderRadius.circular(10)

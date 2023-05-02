@@ -86,6 +86,7 @@ class _GalleryState extends State<Gallery> {
           UpdatedTime: value['ImageUrlTime'],
           profImg: value['ProfileImage'],
           toPublish: value['ToPublish'],
+          RegisterLink: value['RegisterLink'],
           // ToPublish: value['ToPublish'],
         ));
       });

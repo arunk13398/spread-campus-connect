@@ -13,6 +13,7 @@ import 'package:miniq/Screens/bottom_navigation.dart';
 import 'package:miniq/Theme/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../Screens/Adminbottom_navigation.dart';
 import '../Screens/UserScreens/FeedScreen/FeedPage.dart';
 import 'functions.dart';
 // import 'Pakage:Test';
@@ -29,10 +30,11 @@ class Camera extends StatefulWidget {
 class _CameraState extends State<Camera> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   GlobalKey key = GlobalKey();
-
+  bool _isChecked = false;
   XFile? file;
 
   TextEditingController description = TextEditingController();
+  TextEditingController PostLinkUrl = TextEditingController();
   String numberId = "";
   String UserName = "";
   String imageUrl = '';
@@ -180,8 +182,50 @@ class _CameraState extends State<Camera> {
                           ),
                         ],
                       ),
-        ]
-         ),
+                      SizedBox(height: 0,),
+
+                    Designation=='Teacher'||designationU=='Admin'?Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left:0.0,right: 5,),
+                          child: CheckboxListTile(
+                            activeColor: Colors.blue,
+                            title: Text("Provide any Post register links",style: TextStyle( color: Colors.black,fontSize: 15),),
+                            value: _isChecked,
+                            onChanged: (val) {
+                              setState(() {
+                                _isChecked = val!;
+                              });
+                            },
+                          ),
+                        ),
+                        _isChecked==true?Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            controller: PostLinkUrl,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: 'Paste link',
+                              hintText: 'https:// Post link',
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color: Colors.blue),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(color: Colors.black, width: 1.2),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(
+                                    color:Colors.grey, width: 1.6),
+                              ),
+                            ),
+                          ),
+                        ):Container(),
+                      ],
+                    ):Container(),]),
                 ),
               ),
               Padding(
@@ -642,6 +686,7 @@ class _CameraState extends State<Camera> {
     data['Designation'] = designationU;
     data['ProfileImage'] = ProfileImage;
     data['ToPublish'] = _categoryDpValue;
+    data['RegisterLink'] = PostLinkUrl.text;
     data["Date"] = DateTime.now().toString();
     data["ImageUrlTime"] = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -663,7 +708,7 @@ class _CameraState extends State<Camera> {
         .child('Post').child(id).update(PostLink);
 
     Future.delayed(const Duration(seconds: 1), () {
-      finishAccountCreation(BottomNavigation(), context);
+      finishAccountCreation(designationU=='Admin'?AdminBottomNavigation():BottomNavigation(), context);
     });
 
     // await

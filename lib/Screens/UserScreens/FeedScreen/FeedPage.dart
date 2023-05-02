@@ -6,6 +6,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:expandable/expandable.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import 'package:miniq/Contraints/user_preference.dart';
@@ -14,6 +16,8 @@ import 'package:miniq/Screens/UserScreens/FeedScreen/comment_view.dart';
 import 'package:miniq/Theme/theme.dart';
 import 'package:miniq/functions/camera.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 import '../../../Model/access_model.dart';
 
@@ -275,6 +279,7 @@ class _FeedPageState extends State<FeedPage> {
           UpdatedTime: value['ImageUrlTime'],
           profImg: value['ProfileImage'],
           toPublish: value['ToPublish'],
+          RegisterLink: value['RegisterLink']
           // ToPublish: value['ToPublish'],
         ));
       });
@@ -537,10 +542,7 @@ class _FeedPageState extends State<FeedPage> {
                       SizedBox(width:10),
                       InkWell(
                         onTap: (){
-                          // print("desig dwerx ${Designation}");
-                          print("ajfbsgdbfdv ${list[index].id}");
-                          // print("hellohello ${likelist.length}");
-
+                          showAlertDialogMore(context,);
                         },
                         child: Container(
                             decoration: BoxDecoration(
@@ -552,6 +554,32 @@ class _FeedPageState extends State<FeedPage> {
                               child: Icon(Icons.more_horiz),
                             )),
                       ),
+                      SizedBox(width:10),
+                      list[index].RegisterLink!=""?
+                    Container(
+                      width: width/2.7,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            border:Border.all(color: Colors.grey.shade300,width: 1,)
+                        ),
+                        child: InkWell(
+                          onTap: ()  {
+                            _launchUrl(index);
+                            // Text(list[index].RegisterLink);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(left:10.0,right:10,top:5,bottom:5),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.ads_click,size: 20,),
+                                SizedBox(width:15),
+                                Text("Apply",style: TextStyle(color:Colors.blue,fontWeight: FontWeight.bold),)
+                              ],
+                            ),
+                          ),
+                        )):Container(),
 
                     ],
                   ),
@@ -733,9 +761,6 @@ class _FeedPageState extends State<FeedPage> {
     );
   }
 
-
-
-
   Future<void> addLike() async {
     HashMap<String, dynamic> data = HashMap<String, dynamic>();
 
@@ -753,7 +778,82 @@ class _FeedPageState extends State<FeedPage> {
     //
   }
 
-   newLike(){
+  showAlertDialogMore(BuildContext context) {
+
+    AlertDialog alert = AlertDialog(
+      title: const Text("More options",style: TextStyle(fontSize: 16,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
+      content: Container(
+        height:100,
+        width: 80,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: (){
+
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Report",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                ),
+              ),
+              SizedBox(height: 5,),
+              InkWell(
+                onTap: (){
+
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("About",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                ),
+              ),
+              SizedBox(height: 5,),
+              InkWell(
+                onTap: (){
+
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("help",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                ),
+              ),
+              SizedBox(height: 5,),
+
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          child: Container(
+              decoration: BoxDecoration(
+                  color:MyColors.Colorgreen3,
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(30)
+                  )
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
+                child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
+              )),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  newLike(){
     if(isLiked==true){
       HashMap<String, dynamic> data = HashMap<String, dynamic>();
       String id3= numberId;
@@ -769,7 +869,14 @@ class _FeedPageState extends State<FeedPage> {
       mRootReference.child('Likes').child(id3).remove();
     }
 
-   }
-
+  }
 }
 
+_launchUrl(int index) async {
+  const url = 'https://www.google.com';
+  final uri = Uri.parse(url);
+  if(await canLaunchUrl(uri))
+    await launchUrl(uri);
+  else
+    throw "empty url";
+}

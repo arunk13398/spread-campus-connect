@@ -222,7 +222,8 @@ class _ProfilePageState extends State<ProfilePage> {
           imageUrl: value['ImageUrl'],
           UpdatedTime: value['ImageUrlTime'],
           profImg: value['ProfileImage'],
-          toPublish: value['ToPublish']
+          toPublish: value['ToPublish'],
+          RegisterLink: value['RegisterLink'],
           // ToPublish:  value['ToPublish'],
         ));
       });

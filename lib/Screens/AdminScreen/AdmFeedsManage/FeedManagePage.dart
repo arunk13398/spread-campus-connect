@@ -331,6 +331,7 @@ class _FeedManagePageState extends State<FeedManagePage> {
           UpdatedTime: value['ImageUrlTime'],
           profImg: value['ProfileImage'],
           toPublish: value['ToPublish'],
+          RegisterLink: value['RegisterLink'],
         ));
       });
       setState(() {});
