@@ -341,7 +341,6 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                   ),
                 ),
 
-
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
@@ -410,7 +409,6 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
 
 
 
-
   Future<void> AddComplaint() async {
     HashMap<String, dynamic> data = HashMap<String, dynamic>();
 
@@ -425,15 +423,15 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
     data["To"] = _collegeDpValue;
     data["Subject"] = RegSubject.text;
     data["Complaint"] = RegCmptText.text;
+    data["Status"] = "Processing";
 
     // data["UserName"] = username;
     data["Date"] = DateTime.now().toString();
     data["Time"] = DateTime.now().millisecondsSinceEpoch.toString();
 
-    await mRootReference.child("Complaints").child(id).child(id1)
-    // .child('Details')
-        // .push();
-        .update(data);
+    await mRootReference.child("Complaints").child(id).child(id1).update(data);
+    await mRootReference.child("Complaints").child("AdminAccess").child(id1).update(data);
+
     Future.delayed(const Duration(seconds: 1), () {
       finishAccountCreation( ComplaintList(), context);
     });

@@ -23,11 +23,17 @@ class _ComplaintListState extends State<ComplaintList> {
   String username = '';
   bool isConnected = false;
 
+  String numberId='';
+  String UserName='';
+  String College='';
+  String Designation='';
+  String imageUrl='';
+  String access='';
+
   @override
   void initState() {
-    // TODO: implement initState
     loadComplaint();
-
+    getDataF1();
     checkRealtimeConnection();
     super.initState();
   }
@@ -109,24 +115,47 @@ class _ComplaintListState extends State<ComplaintList> {
 
 
   loadComplaint() async {
-    mRootReference.child("Complaints").child(await getString(UserPreferences.USER_NUMBER)).onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
-      ComplaintList.clear();
-      data.forEach((key, value) {
-        ComplaintList.add(ComplaintModel(
-          id: key,
-          rAdmNumber: value['AdmissionNo'],
-          rClgNo: value['RegisterNo'],
-          rCmptText: value['Complaint'],
-          rDate: value['Date'],
-          rMobNumber: value['MobileNumber'],
-          rName: value['Name'],
-          rSubject: value['Subject'],
-          rTo: value['To'],
-        ));
-      });
-      setState(() {});
-    });
+        // if(Designation=='Admin'||Designation=='Teacher'){
+        //   mRootReference.child("Complaints").child("AdminAccess").onValue.listen((event) {
+        //     Map<dynamic, dynamic> data = event.snapshot.value as Map;
+        //     ComplaintList.clear();
+        //     data.forEach((key, value) {
+        //       ComplaintList.add(ComplaintModel(
+        //         id: key,
+        //         rAdmNumber: value['AdmissionNo'],
+        //         rClgNo: value['RegisterNo'],
+        //         rCmptText: value['Complaint'],
+        //         rDate: value['Date'],
+        //         rMobNumber: value['MobileNumber'],
+        //         rName: value['Name'],
+        //         rSubject: value['Subject'],
+        //         rTo: value['To'],
+        //         rStatus: value['Status'],
+        //       ));
+        //     });
+        //     setState(() {});
+        //   });
+        // }else{
+          mRootReference.child("Complaints").child(await getString(UserPreferences.USER_NUMBER)).onValue.listen((event) {
+            Map<dynamic, dynamic> data = event.snapshot.value as Map;
+            ComplaintList.clear();
+            data.forEach((key, value) {
+              ComplaintList.add(ComplaintModel(
+                id: key,
+                rAdmNumber: value['AdmissionNo'],
+                rClgNo: value['RegisterNo'],
+                rCmptText: value['Complaint'],
+                rDate: value['Date'],
+                rMobNumber: value['MobileNumber'],
+                rName: value['Name'],
+                rSubject: value['Subject'],
+                rTo: value['To'],
+                rStatus: value['Status'],
+              ));
+            });
+            setState(() {});
+          });
+        // }
   }
 
   void checkRealtimeConnection() {
@@ -265,7 +294,9 @@ class _ComplaintListState extends State<ComplaintList> {
                             child: Row(
                               children: [
                                 Text("Status :"),
-                                Text("Progress",style: TextStyle(fontWeight: FontWeight.bold),),
+                                Text(ComplaintList[index].rStatus,
+                                  style: TextStyle(fontWeight: FontWeight.bold,
+                                      color: ComplaintList[index].rStatus=="Rejected"?Colors.red:Colors.black),),
                               ],
                             ),
                           )
@@ -299,4 +330,24 @@ class _ComplaintListState extends State<ComplaintList> {
     );
   }
 
+  getDataF1() async {
+    numberId = (await getString(UserPreferences.USER_NUMBER));
+    UserName = (await getString(UserPreferences.USER_Name));
+    College = (await getString(UserPreferences.COLLEGE));
+    Designation = (await getString(UserPreferences.COLLEGE));
+    mRootReference
+        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .child(await getString(UserPreferences.DESIGNATION))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("lllllllll ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        imageUrl=data['ImageUrl'];
+        Designation= data['Designation'];
+        setState(() {});
+      }
+    });
+  }
 }

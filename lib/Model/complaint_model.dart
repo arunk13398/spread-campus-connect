@@ -8,6 +8,7 @@ class ComplaintModel{
   String rSubject;
   String rCmptText;
   String rDate;
+  String rStatus;
 
   ComplaintModel({
     required this.id,
@@ -19,5 +20,6 @@ class ComplaintModel{
     required this.rMobNumber,
     required this.rSubject,
     required this.rTo,
+    required this.rStatus,
 });
 }

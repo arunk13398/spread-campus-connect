@@ -200,7 +200,7 @@ class _NotificationListState extends State<NotificationList> {
       child: Card(
         color: Colors.white,
         shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         child: Container(
           child: ExpandableNotifier(
               child: Padding(
@@ -214,22 +214,22 @@ class _NotificationListState extends State<NotificationList> {
                           imageUrl: notificationList[index].ProfileImg,
                           placeholder: (context, url) => const CircleAvatar(
                             backgroundColor: MyColors.ColorGreen1,
-                            radius: 30,
+                            radius: 20,
                           ),
                           imageBuilder: (context, image) => CircleAvatar(
                             backgroundImage: image,
-                            radius: 30,
+                            radius: 20,
                           ),
                         ):
                         CachedNetworkImage(
                           imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
                           placeholder: (context, url) => const CircleAvatar(
                             backgroundColor: MyColors.ColorGreen1,
-                            radius: 30,
+                            radius: 20,
                           ),
                           imageBuilder: (context, image) => CircleAvatar(
                             backgroundImage: image,
-                            radius: 30,
+                            radius: 20,
                           ),
                         )
                         ,

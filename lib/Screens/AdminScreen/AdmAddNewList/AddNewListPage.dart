@@ -99,49 +99,53 @@ class _AddNewListPageState extends State<AddNewListPage> {
           autofocus: false,
         ),
     ),
-         MaterialButton(
-           color: MyColors.Colorgreen3,
-           minWidth: double.infinity,
-           shape: RoundedRectangleBorder(
-               borderRadius: BorderRadius.circular(10.0)),
-           onPressed: () async {
-             await AddList().then((value) {
-               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                 backgroundColor: Colors.grey,
-                 content: Text(
-                   "Successful",
-                   style: TextStyle(color: Colors.black),
-                 ),
-               ));
-               // description.clear();
-               // finish(context);
-             });
-           },
+         Padding(
+           padding: const EdgeInsets.all(8.0),
+           child: MaterialButton(
+             height: 50,
+             color: MyColors.Colorgreen3,
+             minWidth: double.infinity,
+             shape: RoundedRectangleBorder(
+                 borderRadius: BorderRadius.circular(10.0)),
+             onPressed: () async {
+               await AddList().then((value) {
+                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                   backgroundColor: Colors.grey,
+                   content: Text(
+                     "Successful",
+                     style: TextStyle(color: Colors.black),
+                   ),
+                 ));
+                 // description.clear();
+                 // finish(context);
+               });
+             },
 
-           // onPressed: () async {
-           //   await addCustomer().then((value) {
-           //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-           //       backgroundColor: Colors.white,
-           //       content: Text(
-           //         "Successful",
-           //         style: TextStyle(color: Colors.black),
-           //       ),
-           //     ));
-           //     finish(context);
-           //   });
-           // },
-           child: const Text("Register",style: TextStyle(color: Colors.white,fontSize: 20)),
+             // onPressed: () async {
+             //   await addCustomer().then((value) {
+             //     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+             //       backgroundColor: Colors.white,
+             //       content: Text(
+             //         "Successful",
+             //         style: TextStyle(color: Colors.black),
+             //       ),
+             //     ));
+             //     finish(context);
+             //   });
+             // },
+             child: const Text("create new data list",style: TextStyle(color: Colors.white,fontSize: 20)),
+           ),
          ),
-         MaterialButton(
-           color: MyColors.Colorgreen3,
-           minWidth: double.infinity,
-           shape: RoundedRectangleBorder(
-               borderRadius: BorderRadius.circular(10.0)),
-           onPressed: () async {
-             print("vvvvvvvvvv${newitem}");
-           },
-           child: const Text("test",style: TextStyle(color: Colors.white,fontSize: 20)),
-         ),
+         // MaterialButton(
+         //   color: MyColors.Colorgreen3,
+         //   minWidth: double.infinity,
+         //   shape: RoundedRectangleBorder(
+         //       borderRadius: BorderRadius.circular(10.0)),
+         //   onPressed: () async {
+         //     print("vvvvvvvvvv${newitem}");
+         //   },
+         //   child: const Text("test",style: TextStyle(color: Colors.white,fontSize: 20)),
+         // ),
          SizedBox(
            height: 200,
            child: ListView.builder(

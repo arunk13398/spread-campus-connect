@@ -71,7 +71,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
                     Positioned(
                       bottom: 2,
                       child: Container(
-                        color: Colors.black12,
+                        color: Colors.black26,
                         width: width/1,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
