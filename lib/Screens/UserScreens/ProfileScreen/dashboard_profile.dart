@@ -140,7 +140,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                               child: Row(
                                 children: [
                                   Spacer(),
-                                  Text("12 followers",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Text("0 followers",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),
                                   Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),
@@ -171,54 +171,6 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                                     galleryAdaptor(index))),
                       ),
 
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: InkWell(
-                      //     onTap: (){
-                      //       Navigator.push(
-                      //           context,
-                      //           MaterialPageRoute(
-                      //               builder: (context) =>
-                      //                   Gallery()));
-                      //     },
-                      //     child: Container(
-                      //         width: double.infinity,
-                      //         decoration: BoxDecoration(
-                      //             borderRadius: BorderRadius.circular(15),
-                      //             border:Border.all(color: Colors.grey.shade300,width: 1,)
-                      //         ),
-                      //         child: Padding(
-                      //           padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                      //           child: Text("Image collection",style: TextStyle(fontWeight: FontWeight.bold),),
-                      //         )),
-                      //   ),
-                      // ),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: Container(
-                      //       width: double.infinity,
-                      //       decoration: BoxDecoration(
-                      //           borderRadius: BorderRadius.circular(15),
-                      //           border:Border.all(color: Colors.grey.shade300,width: 1,)
-                      //       ),
-                      //       child: Padding(
-                      //         padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                      //         child: Text("about",style: TextStyle(fontWeight: FontWeight.bold),),
-                      //       )),
-                      // ),
-                      // Padding(
-                      //   padding: const EdgeInsets.all(8.0),
-                      //   child: Container(
-                      //       width: double.infinity,
-                      //       decoration: BoxDecoration(
-                      //           borderRadius: BorderRadius.circular(15),
-                      //           border:Border.all(color: Colors.grey.shade300,width: 1,)
-                      //       ),
-                      //       child: Padding(
-                      //         padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                      //         child: Text("Privacy policy",style: TextStyle(fontWeight: FontWeight.bold),),
-                      //       )),
-                      // ),
 
                     ],
                   ),
@@ -354,7 +306,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                 ),
               ),
               SizedBox(height: 5,),
-              InkWell(onLongPress: (){
+              InkWell(onTap: (){
                 setBool(UserPreferences.IS_LOGIN,false);
                 setString(UserPreferences.ACCESS_CODE,"");
                 setString(UserPreferences.USER_NUMBER,"");

@@ -141,8 +141,10 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
                           child: MaterialButton(
                             minWidth: 40,
                             height: 50,
-                            color: MyColors.Colorgreen3,
-                            child: Icon(Icons.arrow_forward_rounded),
+                            color: MyColors.ColorGreen1,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0)),
+                            child: Icon(Icons.send_time_extension_sharp),
                               onPressed: (){
                                 addComment();
                                 comment.clear();
@@ -158,39 +160,6 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
           ),
         )
 
-        // Stack(
-        //   children: [
-        //
-        //   CachedNetworkImage(
-        //            width: double.infinity,
-        //            fit: BoxFit.fitWidth,
-        //            imageUrl: widget.feedModel.imageUrl,
-        //            placeholder: (context, url) => Center(
-        //            child: CircularProgressIndicator(
-        //                 color: Colors.red,
-        //            )),
-        //         ),
-        //
-        //   DraggableScrollableSheet(
-        //   expand: true,
-        //   initialChildSize: 0.6,
-        //   minChildSize: 0.6,
-        //   maxChildSize: 1,
-        //   builder: (context,controller) {
-        //     return Container(
-        //       color:Colors.white,
-        //       child: ListView.builder(
-        //         controller: controller,
-        //         itemCount: commentList.length,
-        //         itemBuilder: (BuildContext context, int index) {
-        //           return CommentAdaptor(index);
-        //         },
-        //       ),
-        //
-        //     );
-        //   },),
-        //   ],
-        //     )
 
     );
   }
@@ -303,7 +272,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
             ),
           ),
           Spacer(),
-          InkWell(
+          commentList[index].username==username?InkWell(
             onTap: (){
               showAlertDialogMore(context,index);
             },
@@ -312,7 +281,7 @@ class _CommentViewScreenState extends State<CommentViewScreen> {
               size: 27,
               color: Colors.black,
             ),
-          ),
+          ):Container(),
         ],
       ),
     );

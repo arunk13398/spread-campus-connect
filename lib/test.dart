@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import 'Contraints/user_preference.dart';
+import 'Theme/theme.dart';
 import 'functions/functions.dart';
 
 
@@ -80,6 +81,11 @@ class _TestDemoState extends State<TestDemo> {
     });
   }
 
+  // void update(){
+  //   Timer.periodic(Duration(milliseconds: 100),(timer)){
+  //
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -245,7 +251,13 @@ class _TestDemoState extends State<TestDemo> {
                     mRootReference.child('Likes').child(id3).update(data);
                   });
                 },
-                icon: isLiked?Icon(Icons.favorite):Icon(Icons.favorite_border),)
+                icon: isLiked?Icon(Icons.favorite):Icon(Icons.favorite_border),),
+              LinearProgressIndicator(
+                backgroundColor: MyColors.Colorgreen3,
+                valueColor: AlwaysStoppedAnimation(MyColors.ColorGreen1),
+                minHeight: 3,
+              )
+
             ],
           ),
       ),

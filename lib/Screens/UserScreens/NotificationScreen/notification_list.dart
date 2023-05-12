@@ -200,36 +200,38 @@ class _NotificationListState extends State<NotificationList> {
       child: Card(
         color: Colors.white,
         shape:
-        RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
         child: Container(
           child: ExpandableNotifier(
               child: Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(0),
                 child: Column(
                   children: <Widget>[
+                    SizedBox(height:5),
                     Row(
                       children: [
+                        SizedBox(width:5),
                         notificationList[index].ProfileImg!=""?
                         CachedNetworkImage(
                           imageUrl: notificationList[index].ProfileImg,
                           placeholder: (context, url) => const CircleAvatar(
                             backgroundColor: MyColors.ColorGreen1,
-                            radius: 20,
+                            radius: 15,
                           ),
                           imageBuilder: (context, image) => CircleAvatar(
                             backgroundImage: image,
-                            radius: 20,
+                            radius: 15,
                           ),
                         ):
                         CachedNetworkImage(
                           imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
                           placeholder: (context, url) => const CircleAvatar(
                             backgroundColor: MyColors.ColorGreen1,
-                            radius: 20,
+                            radius: 15,
                           ),
                           imageBuilder: (context, image) => CircleAvatar(
                             backgroundImage: image,
-                            radius: 20,
+                            radius: 15,
                           ),
                         )
                         ,
@@ -243,7 +245,7 @@ class _NotificationListState extends State<NotificationList> {
                                 width:width/1.5,
                                 child: Text(notificationList[index].subject,
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black,
                                   ),
@@ -255,8 +257,7 @@ class _NotificationListState extends State<NotificationList> {
                               Text(
                                 notificationList[index].designation,
                                 style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: MyColors.Colorgreen3,
+                                  color: MyColors.Colorgreen2,
                                   fontSize: 16,
                                 ),
                               ),
@@ -271,31 +272,30 @@ class _NotificationListState extends State<NotificationList> {
                       child: ExpandablePanel(
                         theme: const ExpandableThemeData(
                           expandIcon: CupertinoIcons.arrow_down_right_arrow_up_left,
-                          iconSize: 22,
-                          iconColor: Colors.red,
+                          iconSize: 15,
+                          iconColor: Colors.grey,
                           headerAlignment: ExpandablePanelHeaderAlignment.center,
                           tapBodyToCollapse: true,
                         ),
                         header: Padding(
-                            padding: EdgeInsets.all(10),
+                            padding: EdgeInsets.only(left:5,right:5),
                             child: Text(
                               "Notification content",
                               style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  // fontWeight: FontWeight.bold,
                                   color: Colors.black),
                             )),
-                        collapsed: Text(
-                            notificationList[index].notificationContent,
-                            style: TextStyle(fontSize: 16, color: Colors.black),
+                        collapsed: Text(notificationList[index].notificationContent,
+                            style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                             textAlign: TextAlign.justify,
                             softWrap: false,
-                            maxLines: 2,
+                            maxLines: 1,
                             overflow: TextOverflow.ellipsis),
                         expanded: Column(
                           children: [
                             Text(notificationList[index].notificationContent,
-                                 style: TextStyle(fontSize: 16, color: Colors.black),
+                                 style: TextStyle(fontSize: 15, color: Colors.black),
                                 textAlign: TextAlign.justify,
                                 softWrap: false,
                                 maxLines: 50,

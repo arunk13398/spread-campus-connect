@@ -54,20 +54,37 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
     height = size.height;
     width = size.width;
     return  Scaffold (
-      appBar: AppBar(
-        title: Text("Access request"),
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(3.0),
-          child: ListView.builder(
-            itemCount: accesslist.length,
-            itemBuilder: (context, index) => AccessListview(index),),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left:10.0,top:15,bottom:20),
+              child: Align(alignment: Alignment.topLeft,
+                child: Text(
+                  "Access Request List",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.black),
+                ),
+              ),
+            ),
+            Expanded(
+                child: Container(
+                  // height: 120,
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child:ListView.builder(
+                      itemCount: accesslist.length,
+                      itemBuilder: (context, index) => AccessListview(index),),
+                  ),
+                )
+
+            ),
+          ],
         ),
       ),
-      // floatingActionButton: FloatingActionButton(onPressed: () {  },
-      //   child: Icon(Icons.add),
-      // ),
+
     );
   }
   Widget AccessListview(int index){
@@ -139,6 +156,7 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
                   ),
                 ),
               ),
+              Spacer(),
               SizedBox(width:5),
               Container(
                 width:width/4.5,
@@ -152,6 +170,7 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
                       child: Text("To :"+"Reviewer",style:TextStyle(fontSize:15,color: Colors.red,fontWeight: FontWeight.bold)),
                     )),
               ),
+              SizedBox(width:5),
             ],
           ),
         ),

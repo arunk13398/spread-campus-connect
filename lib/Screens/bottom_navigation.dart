@@ -11,6 +11,7 @@ import '../test.dart';
 import 'AdminScreen/TestPagesAkshy/admi.dart';
 import 'AdminScreen/admin_dashboard.dart';
 import 'UserScreens/CmpltRegistration/complaint_list.dart';
+import 'UserScreens/FriendsSuggestion/friends_list.dart';
 import 'UserScreens/LoginScreen/user_registration.dart';
 import 'UserScreens/NotificationScreen/notification_list.dart';
 import 'UserScreens/ProfileScreen/dashboard_profile.dart';
@@ -39,7 +40,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
 
   int _currentIndex=0;
-  List _screens1=[FeedPage(), NotificationList(), ComplaintList(), ProfileDashboard(),];
+  List _screens1=[FeedPage(),NotificationList(), ComplaintList(),FriendsListPage(),ProfileDashboard(),];
 
   void _updateIndex(int value) {
     setState(() {
@@ -79,7 +80,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ),
           BottomNavigationBarItem(
             label: "registration",
-            icon: Icon(Icons.app_registration),
+            icon: Icon(Icons.post_add),
+          ),
+          BottomNavigationBarItem(
+            label: "Friends",
+            icon: Icon(Icons.fork_right),
           ),
           BottomNavigationBarItem(
             label: "My Account",
@@ -106,6 +111,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
               ),
             ),
           ),
+
         ],
       ),
     );

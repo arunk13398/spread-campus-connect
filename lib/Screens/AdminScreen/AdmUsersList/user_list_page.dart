@@ -51,15 +51,34 @@ class _UserListPageState extends State<UserListPage> {
     height = size.height;
     width = size.width;
     return  Scaffold (
-      appBar: AppBar(
-        title: Text("Users"),
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(3.0),
-          child: ListView.builder(
-            itemCount: userlist.length,
-            itemBuilder: (context, index) => UsersListview(index),),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left:10.0,top:15,bottom:20),
+              child: Align(alignment: Alignment.topLeft,
+                child: Text(
+                  "UsersList",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      color: Colors.black),
+                ),
+              ),
+            ),
+            Expanded(
+                child: Container(
+                  // height: 120,
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: ListView.builder(
+                      itemCount: userlist.length,
+                      itemBuilder: (context, index) => UsersListview(index),),
+                  ),
+                )
+
+            ),
+          ],
         ),
       ),
     );

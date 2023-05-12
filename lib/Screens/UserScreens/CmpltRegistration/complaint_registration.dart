@@ -433,7 +433,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
     await mRootReference.child("Complaints").child("AdminAccess").child(id1).update(data);
 
     Future.delayed(const Duration(seconds: 1), () {
-      finishAccountCreation( ComplaintList(), context);
+      finishAccountCreation( BottomNavigation(), context);
     });
 
     // await

@@ -564,8 +564,8 @@ class _FeedPageState extends State<FeedPage> {
                         ),
                         child: InkWell(
                           onTap: ()  {
-                            _launchUrl(index);
-                            // Text(list[index].RegisterLink);
+                            final url = list[index].RegisterLink;
+                            openBrowserUrl(url: url,inApp: true);
                           },
                           child: Padding(
                             padding: const EdgeInsets.only(left:10.0,right:10,top:5,bottom:5),
@@ -580,7 +580,6 @@ class _FeedPageState extends State<FeedPage> {
                             ),
                           ),
                         )):Container(),
-
                     ],
                   ),
                 ),
@@ -790,7 +789,7 @@ class _FeedPageState extends State<FeedPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               InkWell(
-                onTap: (){
+                onTap: () async {
 
                 },
                 child: Padding(
@@ -872,11 +871,23 @@ class _FeedPageState extends State<FeedPage> {
   }
 }
 
-_launchUrl(int index) async {
-  const url = 'https://www.google.com';
-  final uri = Uri.parse(url);
-  if(await canLaunchUrl(uri))
-    await launchUrl(uri);
-  else
-    throw "empty url";
+// _launchUrl(int index) async {
+//   const url = 'https://www.google.com';
+//   final uri = Uri.parse(url);
+//   if(await canLaunchUrl(uri))
+//     await launchUrl(uri);
+//   else
+//     throw "empty url";
+// }
+
+Future openBrowserUrl({
+  required String url,
+  bool inApp = false,
+}) async {
+  if(await canLaunch(url)){
+    await launch(url,
+        forceWebView: inApp,
+        enableJavaScript: true,
+        forceSafariVC: inApp);
+  }
 }

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:miniq/Screens/AdminScreen/TestPagesAkshy/complaintregistration.dart';
 
+import '../../../Contraints/user_preference.dart';
 import '../../../Model/feed_model.dart';
 import '../../../Theme/theme.dart';
 import '../../../functions/camera.dart';
@@ -19,12 +20,14 @@ class FeedManagePage extends StatefulWidget {
 }
 
 class _FeedManagePageState extends State<FeedManagePage> {
+
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+
   List<FeedModel> list = [];
   String access="Teacher";
   String College = '';
-  String _categoryDpValue = 'General';
-  var _category = ['Student', 'Teacher', 'NonTeachingStaff', 'OtherEmployees', 'Alumni', 'Others','General'];
+  String _categoryDpValue = 'Public';
+  var _category = ['Public', 'Connections', 'Club', 'Event', 'Other',];
 
 
   void initState() {
@@ -103,7 +106,7 @@ class _FeedManagePageState extends State<FeedManagePage> {
                         onChanged: (String? newValue) {
                           setState(() {
                             _categoryDpValue = newValue!;
-                            // loadNotification();
+                            load();
                           });
                         },
                       ),
@@ -318,7 +321,7 @@ class _FeedManagePageState extends State<FeedManagePage> {
   }
 
   load() async {
-    mRootReference.child("Feeds").child("Public").onValue.listen((event) {
+    mRootReference.child("Feeds").child(_categoryDpValue).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
       data.forEach((key, value) {
@@ -339,6 +342,8 @@ class _FeedManagePageState extends State<FeedManagePage> {
   }
 }
 void doNothing(BuildContext context) {}
+
+
 showAlertDialog(BuildContext context,int index) {
   AlertDialog alert = AlertDialog(
     title: const Text("Confirm delete"),
@@ -351,10 +356,15 @@ showAlertDialog(BuildContext context,int index) {
         },
       ),
       TextButton(
-        child: const Text("Yes"),
-        onPressed: () {
-          // mRootReference.child("Feeds").child("Public").child(list[index].id).remove();
-          // list.removeAt(index);
+        child:  Text("Yes"),
+        onPressed: () async {
+          // mRootReference
+          //     .child("UsersList").child(await getString(UserPreferences.COLLEGE))
+          //     .child(await getString(UserPreferences.USER_NUMBER))
+          //     .child(await getString(UserPreferences.DESIGNATION)).child("Post").child(Glist[index].id).remove();
+          //
+          // mRootReference.child('Feeds').child(Glist[index].ToPublish).child(Glist[index].id).remove();
+          // Glist.removeAt(index);
         },
       ),
 

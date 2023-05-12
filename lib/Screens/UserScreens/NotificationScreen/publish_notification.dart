@@ -252,7 +252,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                         SizedBox(width:5,),
                         SizedBox(
                             width:width/3,
-                            child: Text("Select your designation ",style: TextStyle(color: Colors.black,fontSize: 16,))),
+                            child: Text("Select category to publish ",style: TextStyle(color: Colors.black,fontSize: 16,))),
                         Spacer(),
                         Container(
                           width: 200,
@@ -359,110 +359,6 @@ class _PublishNotificationState extends State<PublishNotification> {
                       ),
                       SizedBox(height: 15,),
 
-                      // _academicDpValue== _allDpValue?Container():
-                      // Column(children: [
-                      //   Row(
-                      //     children: [
-                      //       SizedBox(width: 5,),
-                      //       Text("Choose Course",style: TextStyle(color: Colors.black,fontSize: 16,)),
-                      //       Spacer(),
-                      //       Text("Select Department",style: TextStyle(color: Colors.black,fontSize: 16,)),
-                      //       SizedBox(width: 10,),
-                      //     ],
-                      //   ),
-                      //   SizedBox(height: 15,),
-                      //   Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       SizedBox(width:5,),
-                      //       // Text("Select your designation ",style: TextStyle(color: Colors.black,fontSize: 16,)),
-                      //       Container(
-                      //         width: 150,
-                      //         height: 40,
-                      //         decoration:BoxDecoration(
-                      //             color:Colors.white,
-                      //             borderRadius: BorderRadius.circular(5),
-                      //             border: Border.all(
-                      //                 color: Colors.black38,
-                      //                 width: 1
-                      //             )
-                      //         ),
-                      //         child: DropdownButtonHideUnderline(
-                      //           child: DropdownButton(
-                      //             // Initial Value
-                      //             value: _courseDpValue,
-                      //             iconEnabledColor: Colors.black,
-                      //             borderRadius: BorderRadius.circular(10),
-                      //             // Down Arrow Icon
-                      //             icon: const Icon(Icons.keyboard_arrow_down),
-                      //             // Array list of items
-                      //             items: _course.map((String items) {
-                      //               return DropdownMenuItem(
-                      //                 value: items,
-                      //                 child: Padding(
-                      //                   padding: const EdgeInsets.only(left:10.0,right:10),
-                      //                   child: Text(items),
-                      //                 ),
-                      //               );
-                      //             }).toList(),
-                      //             // After selecting the desired option,it will
-                      //             // change button value to selected value
-                      //             onChanged: (String? newValue) {
-                      //               setState(() {
-                      //                 _courseDpValue = newValue!;
-                      //                 print("asdfghjkl ${_courseDpValue}");
-                      //                 print("asdfghjkl ${_studentValue}");
-                      //               });
-                      //             },
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       Spacer(),
-                      //       Container(
-                      //         width: 150,
-                      //         height: 40,
-                      //         decoration:BoxDecoration(
-                      //             color:Colors.white,
-                      //             borderRadius: BorderRadius.circular(5),
-                      //             border: Border.all(
-                      //                 color: Colors.black38,
-                      //                 width: 1
-                      //             )
-                      //         ),
-                      //         child: DropdownButtonHideUnderline(
-                      //           child: DropdownButton(
-                      //             // Initial Value
-                      //             value: _departmentDpValue,
-                      //             iconEnabledColor: Colors.black,
-                      //             borderRadius: BorderRadius.circular(10),
-                      //             // Down Arrow Icon
-                      //             icon: const Icon(Icons.keyboard_arrow_down),
-                      //             // Array list of items
-                      //             items: _department.map((String items) {
-                      //               return DropdownMenuItem(
-                      //                 value: items,
-                      //                 child: Padding(
-                      //                   padding: const EdgeInsets.only(left:10.0,right:10),
-                      //                   child: Text(items),
-                      //                 ),
-                      //               );
-                      //             }).toList(),
-                      //             // After selecting the desired option,it will
-                      //             // change button value to selected value
-                      //             onChanged: (String? newValue) {
-                      //               setState(() {
-                      //                 _departmentDpValue = newValue!;
-                      //                 print("asdfghjkl ${_departmentDpValue}");
-                      //                 print("asdfghjkl ${_studentValue}");
-                      //               });
-                      //             },
-                      //           ),
-                      //         ),
-                      //       ),
-                      //       SizedBox(width: 5,),
-                      //     ],
-                      //   ),
-                      // ],)
                     ],
                   ),
                 ):Container(),
