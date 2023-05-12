@@ -65,7 +65,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         currentIndex: _currentIndex,
         onTap: _updateIndex,
         selectedItemColor: MyColors.Colorgreen3,
-        unselectedItemColor: Colors.grey[500],
+        unselectedItemColor: Colors.grey[400],
         selectedFontSize: 13,
         unselectedFontSize: 13,
         iconSize: 30,

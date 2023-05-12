@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Model/user_list_modal.dart';
+import '../../../Theme/theme.dart';
+import 'friends_profile.dart';
 
 class FriendsListPage extends StatefulWidget {
   const FriendsListPage({Key? key}) : super(key: key);
@@ -89,42 +91,59 @@ class _FriendsListPageState extends State<FriendsListPage> {
           padding: const EdgeInsets.all(5.0),
           child: Row(
             children: [
-              imageUrl!=""?CachedNetworkImage(
-                imageUrl: imageUrl,
-                placeholder: (context, url) => const CircleAvatar(
-                  backgroundColor: Colors.amber,
-                  radius: 22,
-                ),
-                imageBuilder: (context, image) => CircleAvatar(
-                  backgroundImage: image,
-                  radius: 22,
-                ),
-              ):CachedNetworkImage(
-                imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
-                placeholder: (context, url) => const CircleAvatar(
-                  backgroundColor: Colors.amber,
-                  radius: 22,
-                ),
-                imageBuilder: (context, image) => CircleAvatar(
-                  backgroundImage: image,
-                  radius: 22,
-                ),
-              ),
-              SizedBox(width:15),
-              SizedBox(
-                width: width/2.2,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              InkWell(
+                onTap: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FriendsProfile( userListModel: userlist[index])));
+                },
+                child: Row(
                   children: [
-                    Text(userlist[index].userName,style:TextStyle(fontSize:18,fontWeight: FontWeight.bold),maxLines: 2,overflow: TextOverflow.ellipsis,),
-                    Text(userlist[index].College,style:TextStyle(fontSize:12,color: Colors.blue.shade200)),
+                    imageUrl!=""?
+                    CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      placeholder: (context, url) => const CircleAvatar(
+                        backgroundColor: Colors.amber,
+                        radius: 22,
+                      ),
+                      imageBuilder: (context, image) => CircleAvatar(
+                        backgroundImage: image,
+                        radius: 22,
+                      ),
+                    ):
+                    CachedNetworkImage(
+                      imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                      placeholder: (context, url) => const CircleAvatar(
+                        backgroundColor: Colors.amber,
+                        radius: 22,
+                      ),
+                      imageBuilder: (context, image) => CircleAvatar(
+                        backgroundImage: image,
+                        radius: 22,
+                      ),
+                    ),
+                    SizedBox(width:15),
+                    SizedBox(
+                      width: width/2.4,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(userlist[index].userName,style:TextStyle(fontSize:18,fontWeight: FontWeight.bold),maxLines: 2,overflow: TextOverflow.ellipsis,),
+                          Text(userlist[index].College,style:TextStyle(fontSize:12,color: Colors.blue.shade200)),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
+
+
+
               Spacer(),
               Container(
-                width:80,
+                width:90,
                 decoration: BoxDecoration(
                     color:Colors.green.shade50,
                     borderRadius: BorderRadius.circular(10)
@@ -132,7 +151,7 @@ class _FriendsListPageState extends State<FriendsListPage> {
                 child:Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("Connect",style:TextStyle(fontSize:18,color: Colors.green,fontWeight: FontWeight.bold)),
+                      child: Text("Connect",style:TextStyle(fontSize:18,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold)),
                     )),
               ),
               SizedBox(width:10),
