@@ -42,11 +42,12 @@ class _FriendsProfileState extends State<FriendsProfile> {
   }
   var size,height,width;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,) {
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
     return  Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -93,7 +94,7 @@ class _FriendsProfileState extends State<FriendsProfile> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(widget.userListModel.userName,style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                                  Text(widget.userListModel.desigUser,style: TextStyle(fontSize: 16,color: Colors.grey),),
+                                  Text(widget.userListModel.College,style: TextStyle(fontSize: 16,color: Colors.grey),),
                                   SizedBox(height: 5,),
                                   MaterialButton(onPressed: () {
                                     // print("sshashj${imageUrl}");
@@ -106,20 +107,11 @@ class _FriendsProfileState extends State<FriendsProfile> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(20)
                                     ),
-                                    child: Text("Connect with you ?",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
+                                    child: Text("Connect with you",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
                                   )
                                 ],
                               ),
                             ),
-                            Spacer(),
-                            Align(alignment:Alignment.topRight,
-                                child: InkWell(
-                                  onTap:(){
-                                    showAlertDialogMore(context);
-                                  },
-                                  child: SizedBox( width:40,height:40,
-                                      child: Icon(Icons.more_vert_outlined)),
-                                ))
                           ],
                         ),
                       ),
@@ -156,17 +148,25 @@ class _FriendsProfileState extends State<FriendsProfile> {
                         child: Container(
                           // color:Colors.red,
                             height: height / 1.3,
-                            child: GridView.builder(
-                                itemCount: Glist.length,
-                                gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 150,
-                                  mainAxisSpacing: 10.0,
-                                  crossAxisSpacing: 10,
-                                  childAspectRatio: 1,
-                                ),
-                                itemBuilder: (BuildContext context, int index) =>
-                                    galleryAdaptor(index))),
+                            child: Glist.length==0?Column(
+                              children: [
+                                Image.asset("assets/wrong.jpg",height:height/3,),
+                                Text("- No Posts -")
+                              ],
+                            ):
+                            SizedBox(
+                              child: GridView.builder(
+                                  itemCount: Glist.length,
+                                  gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 150,
+                                    mainAxisSpacing: 10.0,
+                                    crossAxisSpacing: 10,
+                                    childAspectRatio: 1,
+                                  ),
+                                  itemBuilder: (BuildContext context, int index) =>
+                                      galleryAdaptor(index)),
+                            )),
                       ),
 
 

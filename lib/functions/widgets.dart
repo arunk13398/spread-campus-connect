@@ -81,6 +81,27 @@ Shimmer getShimmerLoading(){
   );
 }
 
+Shimmer getShimmerAllFeedsLoading(){
+  return Shimmer.fromColors(
+    baseColor: Colors.grey.shade300,
+    highlightColor: Colors.grey.shade500,
+    // enabled: _enabled,
+    child: Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Column(
+        children: [
+          Container(
+            width: 200,
+            height: 120,
+            color: Colors.white,
+          ),
+
+        ],
+      ),
+    ),
+  );
+}
+
 
 void checkRealtimeConnection(my_result,ConnectivityResult) {
   Connectivity().onConnectivityChanged.listen((my_result) {

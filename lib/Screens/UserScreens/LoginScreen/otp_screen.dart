@@ -8,6 +8,7 @@ import 'package:miniq/functions/functions.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:miniq/Screens/UserScreens/LoginScreen/user_registration.dart';
 
+import '../../../Theme/theme.dart';
 import '../../Adminbottom_navigation.dart';
 
 class OTPScreen extends StatefulWidget {
@@ -88,7 +89,7 @@ class _OTPScreenState extends State<OTPScreen> {
                 decoration:  BoxLooseDecoration(
                     textStyle: TextStyle(color: Colors.black),
                     radius: Radius.circular(5),
-                    strokeColorBuilder: FixedColorBuilder(Colors.blue.shade200)),
+                    strokeColorBuilder: FixedColorBuilder(MyColors.Colorgreen2)),
                 onCodeChanged: (pin) {
                   if (pin!.length == 6) {
                     matchOtp(context);
@@ -141,7 +142,8 @@ class _OTPScreenState extends State<OTPScreen> {
   }
 
 
-  void signInWithPhoneAuthCredential(PhoneAuthCredential phoneAuthCredential,BuildContext context) async {
+  void signInWithPhoneAuthCredential(PhoneAuthCredential phoneAuthCredential,
+      BuildContext context) async {
     try {
       final authCredential = await firebaseAuth.signInWithCredential(phoneAuthCredential);
       if (authCredential.user != null) {
@@ -184,7 +186,6 @@ class _OTPScreenState extends State<OTPScreen> {
             });
           }
         });
-
       }
     } on FirebaseAuthException catch (e) {
 

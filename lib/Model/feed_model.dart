@@ -9,6 +9,8 @@ class FeedModel {
   String profImg;
   String toPublish;
   String RegisterLink;
+  int? likedCount;
+  bool? isLiked;
 
   FeedModel({
     required this.id,
@@ -20,6 +22,8 @@ class FeedModel {
     required this.profImg,
     required this.toPublish,
     required this.RegisterLink,
+    this.likedCount=0,
+    this.isLiked=true,
   });
 
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 import '../../../Model/access_model.dart';
+import '../../../Model/listdata_model.dart';
 import '../../../Model/user_list_modal.dart';
 import '../../../functions/functions.dart';
 
@@ -21,9 +22,14 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<UserListModel> userlist = [];
   List<AccessModel> accesslist = [];
+
+
+  List<ListDataModel> datalist=[];
+  ListDataModel?selectedItem;
   @override
   void initState() {
     load();
+    loadNotification();
     // TODO: implement initState
     super.initState();
   }
@@ -87,6 +93,21 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
 
     );
   }
+
+  loadNotification() {
+    mRootReference.child("ListDemo").child("AccessList").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
+  }
+
+
   Widget AccessListview(int index){
     return Column(
       children: [
@@ -115,43 +136,78 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
                 ),
               ),
               SizedBox(width:5),
+              // Container(
+              //   decoration: BoxDecoration(
+              //       borderRadius: BorderRadius.circular(10),
+              //       border: Border.all(
+              //         width: 0.3,
+              //       )
+              //   ),
+              //   child: DropdownButtonHideUnderline(
+              //     child: Padding(
+              //       padding: const EdgeInsets.all(8.0),
+              //       child: SizedBox(
+              //         height: 20,
+              //         // width: width/3.2,
+              //         child: DropdownButton(
+              //           value: _academicDpValue,
+              //           iconEnabledColor: Colors.black,
+              //           borderRadius: BorderRadius.circular(10),
+              //           icon: const Icon(Icons.keyboard_arrow_down),
+              //           items: _academicYear.map((String items) {
+              //             return DropdownMenuItem(
+              //               value: items,
+              //               child: Padding(
+              //                 padding: const EdgeInsets.only(left:10.0,right:10),
+              //                 child: Text(items),
+              //               ),
+              //             );
+              //           }).toList(),
+              //           // After selecting the desired option,it will
+              //           // change button value to selected value
+              //           onChanged: (String? newValue) {
+              //             setState(() {
+              //               _academicDpValue = newValue!;
+              //               print("asdfghjkl ${_academicDpValue}");
+              //               print("asdfghjkl ${_academicYear}");
+              //             });
+              //           },
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+
               Container(
+                height: 30,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      width: 0.3,
-                    )
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          width: 0.3,
+                        )
                 ),
                 child: DropdownButtonHideUnderline(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SizedBox(
-                      height: 20,
-                      // width: width/3.2,
-                      child: DropdownButton(
-                        value: _academicDpValue,
-                        iconEnabledColor: Colors.black,
-                        borderRadius: BorderRadius.circular(10),
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        items: _academicYear.map((String items) {
-                          return DropdownMenuItem(
-                            value: items,
-                            child: Padding(
+                    padding: const EdgeInsets.only(left:20.0,right:20),
+                    child: DropdownButton<ListDataModel>(
+                      value : selectedItem,
+                      iconEnabledColor: Colors.black,
+                      borderRadius: BorderRadius.circular(30),
+                      icon: const Icon(Icons.swap_vert),
+                      onChanged:(ListDataModel? newValue){
+                        setState((){
+                          selectedItem = newValue;
+                        });
+                      },
+                      items: datalist.map<DropdownMenuItem<ListDataModel>>((ListDataModel value){
+                        return DropdownMenuItem<ListDataModel>(
+                            value: value,
+                            child:Padding(
                               padding: const EdgeInsets.only(left:10.0,right:10),
-                              child: Text(items),
-                            ),
-                          );
-                        }).toList(),
-                        // After selecting the desired option,it will
-                        // change button value to selected value
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _academicDpValue = newValue!;
-                            print("asdfghjkl ${_academicDpValue}");
-                            print("asdfghjkl ${_academicYear}");
-                          });
-                        },
-                      ),
+                              child: Text(value.id),
+                            )
+                        );
+                      }).toList(),
                     ),
                   ),
                 ),
@@ -167,7 +223,7 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
                 child:Center(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("To :"+"Reviewer",style:TextStyle(fontSize:15,color: Colors.red,fontWeight: FontWeight.bold)),
+                      child: Text("Reviewer",style:TextStyle(fontSize:15,color: Colors.red,fontWeight: FontWeight.bold)),
                     )),
               ),
               SizedBox(width:5),

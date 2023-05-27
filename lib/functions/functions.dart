@@ -73,7 +73,13 @@ showAlertDialog(BuildContext context) {
 alertDialog(BuildContext context,String title,String content) {
 
   AlertDialog alert = AlertDialog(
-    title:  Text(title),
+    title:  Column(
+      children: [
+        Center(child: Image.asset("assets/letterblacknewcolor.png",height: 40,)),
+        SizedBox(height:10),
+        Text(title),
+      ],
+    ),
     content:  Text(content),
     actions: [
       TextButton(

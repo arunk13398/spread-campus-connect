@@ -358,8 +358,8 @@ class _NotificationListState extends State<NotificationList> {
       }
     });
   }
-  loadNotification() {
 
+  loadNotification() {
     mRootReference.child("Notification").child("GECWayanad").child(_categoryDpValue).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       notificationList.clear();
@@ -373,14 +373,6 @@ class _NotificationListState extends State<NotificationList> {
           subject: value['Subject'],
           ProfileImg: value['UserProfileImage'],
 
-          // rAdmNumber: value['AdmissionNo'],
-          // rClgNo: value['RegisterNo'],
-          // rCmptText: value['Complaint'],
-          // rDate: value['Date'],
-          // rMobNumber: value['MobileNumber'],
-          // rName: value['Name'],
-          // rSubject: value['Subject'],
-          // rTo: value['To'],
         ));
       });
       setState(() {});

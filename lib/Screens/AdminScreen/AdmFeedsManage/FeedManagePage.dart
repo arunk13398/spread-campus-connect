@@ -213,14 +213,14 @@ class _FeedManagePageState extends State<FeedManagePage> {
                       width: width/2.10,
                       imageUrl: list[index].imageUrl,
                       placeholder: (context, url) =>
-                          getShimmerLoading(),
+                          getShimmerAllFeedsLoading(),
                       imageBuilder: (context, image) => ClipRRect(borderRadius: BorderRadius.circular(10),
                         child: CachedNetworkImage(
                           height: height/6,
                           width: width/2,
                           fit: BoxFit.cover,
                           imageUrl: list[index].imageUrl,
-                          placeholder: (context, url) => getShimmerLoading(),),
+                          placeholder: (context, url) => getShimmerAllFeedsLoading(),),
                       ),
                     ),
                   ),

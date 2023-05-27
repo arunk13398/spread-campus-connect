@@ -11,6 +11,10 @@ import '../../../Model/feed_model.dart';
 import '../../../Model/gallery_model.dart';
 import '../../../Theme/theme.dart';
 import '../../../functions/functions.dart';
+import '../AdditionalScreens/about_screen.dart';
+import '../AdditionalScreens/help.dart';
+import '../AdditionalScreens/privacy_policy.dart';
+import '../AdditionalScreens/verification_process.dart';
 import '../LoginScreen/splash_screen.dart';
 import 'edit_profile.dart';
 import 'gallery.dart';
@@ -278,7 +282,10 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
             children: [
               InkWell(
                 onTap: (){
-
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PrivacyPolicy()));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -288,7 +295,10 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
               SizedBox(height: 5,),
               InkWell(
                 onTap: (){
-
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AboutScreen()));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -298,7 +308,10 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
               SizedBox(height: 5,),
               InkWell(
                 onTap: (){
-
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HelpScreen()));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -306,6 +319,19 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                 ),
               ),
               SizedBox(height: 5,),
+              // InkWell(
+              //   onTap: (){
+              //     Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => VerificationProcess()));
+              //   },
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: Text("verification",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+              //   ),
+              // ),
+              // SizedBox(height: 5,),
               InkWell(onTap: (){
                 setBool(UserPreferences.IS_LOGIN,false);
                 setString(UserPreferences.ACCESS_CODE,"");

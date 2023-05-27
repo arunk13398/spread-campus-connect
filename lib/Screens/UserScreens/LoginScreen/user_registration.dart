@@ -54,109 +54,6 @@ class _UserRegistrationState extends State<UserRegistration> {
       backgroundColor: Colors.white,
       body:SafeArea(
         child:
-
-        // Column(
-        //   children: [
-        //     Expanded(
-        //       child: Column(
-        //         children: [
-        //           Padding(
-        //               padding: EdgeInsets.only(top: 16.0,bottom: 00),
-        //               child: Image(
-        //                 image: AssetImage('assets/r5.png'),
-        //                 height: 250.0,
-        //               )),
-        //           Padding(
-        //             padding: const EdgeInsets.all(8.0),
-        //             child: TextFormField(
-        //               controller: name,
-        //               inputFormatters: [
-        //                 // FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-        //               ],
-        //               // controller: value.contactPerson,
-        //               textInputAction: TextInputAction.next,
-        //               keyboardType: TextInputType.name,
-        //               decoration: const InputDecoration(
-        //                 border: OutlineInputBorder(),
-        //                 labelText: 'Name',
-        //                 hintText: 'Name',
-        //                 filled: true,
-        //                 fillColor: Colors.white,
-        //               ),
-        //               autofocus: false,
-        //             ),
-        //           ),
-        //           Padding(
-        //             padding: const EdgeInsets.all(8.0),
-        //             child: TextFormField(
-        //               enabled: false,
-        //               controller: number,
-        //               inputFormatters: [
-        //                 FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-        //               ],
-        //               // controller: value.contactPerson,
-        //               textInputAction: TextInputAction.next,
-        //               keyboardType: TextInputType.phone,
-        //               decoration: const InputDecoration(
-        //                 border: OutlineInputBorder(),
-        //                 labelText: 'Contact Number',
-        //                 hintText: 'Enter Contact Number',
-        //                 filled: true,
-        //                 fillColor: Colors.white,
-        //               ),
-        //               autofocus: false,
-        //             ),
-        //           ),
-        //           Padding(
-        //             padding: const EdgeInsets.all(8.0),
-        //             child: TextFormField(
-        //               controller: college,
-        //               inputFormatters: [
-        //                 // FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-        //               ],
-        //               // controller: value.contactPerson,
-        //               textInputAction: TextInputAction.next,
-        //               keyboardType: TextInputType.name,
-        //               decoration: const InputDecoration(
-        //                 border: OutlineInputBorder(),
-        //                 labelText: 'College',
-        //                 hintText: 'College',
-        //                 filled: true,
-        //                 fillColor: Colors.white,
-        //               ),
-        //               autofocus: false,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //     Padding(
-        //       padding: const EdgeInsets.only(left:15.0,right: 15,top: 20,bottom: 20),
-        //       child: Container(
-        //         height: 50,
-        //         child: MaterialButton(
-        //           color: Colors.blue,
-        //           minWidth: double.infinity,
-        //           shape: RoundedRectangleBorder(
-        //               borderRadius: BorderRadius.circular(10.0)),
-        //           onPressed: () async {
-        //             await addCustomer().then((value) {
-        //               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        //                 backgroundColor: Colors.white,
-        //                 content: Text(
-        //                   "Successful",
-        //                   style: TextStyle(color: Colors.black),
-        //                 ),
-        //               ));
-        //               finish(context);
-        //             });
-        //           },
-        //           child: const Text("Register",style: TextStyle(color: Colors.white,fontSize: 20)),
-        //         ),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         Column(
           children: [
             Expanded(
@@ -164,11 +61,12 @@ class _UserRegistrationState extends State<UserRegistration> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    Image.asset("assets/letterblacknewcolor.png",height: 50,),
                     Align(alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Text("Registration Form",
-                            style: TextStyle(fontSize: 18,color:Colors.blue,fontWeight: FontWeight.bold),),
+                            style: TextStyle(fontSize: 18,color:MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
                         )),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -212,26 +110,7 @@ class _UserRegistrationState extends State<UserRegistration> {
                         autofocus: false,
                       ),
                     ),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(8.0),
-                    //   child: TextFormField(
-                    //     // controller: college,
-                    //     inputFormatters: [
-                    //       // FilteringTextInputFormatter.allow(RegExp('[0-9]'))
-                    //     ],
-                    //     // controller: value.contactPerson,
-                    //     textInputAction: TextInputAction.next,
-                    //     keyboardType: TextInputType.name,
-                    //     decoration: const InputDecoration(
-                    //       border: OutlineInputBorder(),
-                    //       labelText: 'College',
-                    //       hintText: 'College',
-                    //       filled: true,
-                    //       fillColor: Colors.white,
-                    //     ),
-                    //     autofocus: false,
-                    //   ),
-                    // ),
+
 
                     Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -529,14 +408,14 @@ class _UserRegistrationState extends State<UserRegistration> {
                           listOfChipNames: _suggestion,
                           supportsMultiSelect: true,
                           activeBgColorList: const [MyColors.Colorgreen3],
-                          inactiveBgColorList:  [Colors.blue.shade50],
+                          inactiveBgColorList:  [Colors.white],
                           activeTextColorList: const [
                             // Colors.pink,
                             // Colors.yellow,
                             // Colors.green,
                             Colors.white
                           ],
-                          inactiveTextColorList: [Theme.of(context).primaryColor],
+                          inactiveTextColorList: [MyColors.Colorgreen3],
                           listOfChipIndicesCurrentlySeclected: [6],
                           inactiveBorderColorList: [MyColors.Colorgreen3],
                           activeBorderColorList: const [
@@ -639,7 +518,8 @@ class _UserRegistrationState extends State<UserRegistration> {
       data["AcademicYear"] =_academicDpValue;
       data["Course"] =_courseDpValue;
       data["Department"] =_departmentDpValue;
-    }else if(_designationDpValue==_alumniValue){
+    }
+    else if(_designationDpValue==_alumniValue){
       data["Designation"] =_designationDpValue;
       data["yearOfPassOut"] =yearOfPassOut.text;
     }else{

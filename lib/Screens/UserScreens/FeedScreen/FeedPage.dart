@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
+// import 'package:like_button/like_button.dart';
 import 'package:miniq/Contraints/user_preference.dart';
 import 'package:miniq/Model/feed_model.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/comment_view.dart';
@@ -20,6 +21,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 
 import '../../../Model/access_model.dart';
+import '../../../Model/listdata_model.dart';
+import '../../../functions/functions.dart';
 
 
 
@@ -34,6 +37,7 @@ class FeedPage extends StatefulWidget {
 class _FeedPageState extends State<FeedPage> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<FeedModel> list = [];
+  List<ListDataModel> datalist=[];
   // List<LikeModel> likelist=[];
   String numberId = '';
   String UserName = '';
@@ -208,7 +212,7 @@ class _FeedPageState extends State<FeedPage> {
                           primary: false,
                           shrinkWrap: true,
                           itemCount: list.length,
-                          itemBuilder: (BuildContext context, int index)=> AdaptorNew(index)
+                          itemBuilder: (BuildContext context, int index)=> AdaptorNew(index,getLiked(list[index].id))
                       )
 
                   )
@@ -238,10 +242,11 @@ class _FeedPageState extends State<FeedPage> {
         Designation = data["Designation"];
         Phone =data['Phone'];
         ProfimageUrl=data['ImageUrl'];
-        setState(() {});
+       if(mounted){
+         setState(() {});
+       }
       }
     });
-
   }
 
 
@@ -269,34 +274,39 @@ class _FeedPageState extends State<FeedPage> {
     mRootReference.child("Feeds").child(_menuItems[_currentIndex]).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
-      data.forEach((key, value) {
+      data.forEach((key, value) {int count=0;
+        bool isLiked=false;
+        if(value['Likes'] !=null){
+          Map<dynamic, dynamic>? like = value['Likes'] as Map;
+          count=like.length;
+          isLiked=like[numberId]!=null;}
         list.add(FeedModel(
-          id: key,
-          userName: value['UserName'],
-          desigUser: value['Designation'],
-          description: value['Description'],
-          imageUrl: value['ImageUrl'],
-          UpdatedTime: value['ImageUrlTime'],
-          profImg: value['ProfileImage'],
-          toPublish: value['ToPublish'],
-          RegisterLink: value['RegisterLink']
+            id: key,
+            userName: value['UserName'],
+            desigUser: value['Designation'],
+            description: value['Description'],
+            imageUrl: value['ImageUrl'],
+            UpdatedTime: value['ImageUrlTime'],
+            profImg: value['ProfileImage'],
+            toPublish: value['ToPublish'],
+            RegisterLink: value['RegisterLink'],
+            likedCount: count,
+            isLiked:isLiked
           // ToPublish: value['ToPublish'],
-        ));
-      });
+        ));});
       setState(() {});
     });
   }
 
 
   @override
-  Widget AdaptorNew(int index){
+  Widget AdaptorNew(int index,bool? isLiked){
     return Container(
       child:ExpandableNotifier(
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(
               children: <Widget>[
-
                 ScrollOnExpand(
                   scrollOnExpand: true,
                   scrollOnCollapse: true,
@@ -452,6 +462,10 @@ class _FeedPageState extends State<FeedPage> {
                             child: Row(
                               children: [
                                 LikeButton(
+                                  isLiked: list[index].isLiked,
+                                  onTap: (isLiked) async{
+                                    return !isLiked;
+                                  },
                                   size: 25,
                                   circleColor:CircleColor(start:Color(0xFF79D71E),end: Color(0xFFCEF894)),
                                   bubblesColor: BubblesColor(
@@ -465,16 +479,10 @@ class _FeedPageState extends State<FeedPage> {
                                       size:25,
                                     );
                                   },
-                                  likeCount: 10,
+                                  likeCount: list[index].likedCount,
                                   countBuilder: (count,bool isLiked, String text){
                                     var color = isLiked?Colors.indigo:Colors.orange;
                                     Widget result;
-
-                                    if (count ==0 ){
-                                      result = Text("love",
-                                        style: TextStyle(color: color),);
-                                    }
-                                    else
                                       result = Text(text,style: TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),);
                                       print("tutututu ${result}");
                                     return result;
@@ -531,7 +539,7 @@ class _FeedPageState extends State<FeedPage> {
                                   Icon(Icons.chat_bubble_outline),
                                   SizedBox(width: 2,),
                                   Text(
-                                    "12",
+                                    "0",
                                     style:
                                     TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
                                   ),
@@ -853,6 +861,27 @@ class _FeedPageState extends State<FeedPage> {
     );
   }
 
+  int? getLikedCount(String id){
+    int? isLiked=0;
+    mRootReference.child('Likes').child(id).once().then((value) {
+
+      if(value.snapshot.exists) {
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        isLiked=data.length;
+      }
+
+    });
+   return isLiked;
+  }
+  bool? getLiked(String id) {
+    bool? isLiked=false;
+    mRootReference.child('Likes').child(id).child(numberId).once().then((value) {
+      isLiked=value.snapshot.exists;
+    });
+   return isLiked;
+  }
+
+
   newLike(){
     if(isLiked==true){
       HashMap<String, dynamic> data = HashMap<String, dynamic>();
@@ -868,18 +897,8 @@ class _FeedPageState extends State<FeedPage> {
       data["UserName"] = UserName;
       mRootReference.child('Likes').child(id3).remove();
     }
+  }}
 
-  }
-}
-
-// _launchUrl(int index) async {
-//   const url = 'https://www.google.com';
-//   final uri = Uri.parse(url);
-//   if(await canLaunchUrl(uri))
-//     await launchUrl(uri);
-//   else
-//     throw "empty url";
-// }
 
 Future openBrowserUrl({
   required String url,
