@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../../../Contraints/user_preference.dart';
 import '../../../Model/user_list_modal.dart';
 import '../../../Theme/theme.dart';
+import '../../../functions/functions.dart';
 import 'friends_profile.dart';
 
 class FriendsListPage extends StatefulWidget {
@@ -18,9 +20,15 @@ class _FriendsListPageState extends State<FriendsListPage> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<UserListModel> userlist = [];
   String imageUrl='';
+  String College='';
+  String Designation='';
+  String UserType='';
+  String Status='';
+
   @override
   void initState() {
     load();
+    getDataAccess();
     // TODO: implement initState
     super.initState();
   }
@@ -37,6 +45,8 @@ class _FriendsListPageState extends State<FriendsListPage> {
           Phone: value['Phone'],
           College: value['College'],
           AccessName: value['AcessName'],
+          imageUrl: value['imageUrl'],
+          Status: value['Status']
         ));
       });
       setState(() {});
@@ -93,34 +103,38 @@ class _FriendsListPageState extends State<FriendsListPage> {
             children: [
               InkWell(
                 onTap: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => FriendsProfile( userListModel: userlist[index])));
-                },
+                  if(Status=="blocked"){
+                    showAlertDialogBloked(context);
+                  }else{
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                FriendsProfile( userListModel: userlist[index])));
+
+                  }
+                  },
                 child: Row(
                   children: [
-                    imageUrl!=""?
-                    CachedNetworkImage(
-                      imageUrl: imageUrl,
+                    userlist[index].imageUrl!=""?CachedNetworkImage(
+                      imageUrl:  userlist[index].imageUrl,
                       placeholder: (context, url) => const CircleAvatar(
                         backgroundColor: Colors.amber,
-                        radius: 22,
+                        radius: 25,
                       ),
                       imageBuilder: (context, image) => CircleAvatar(
                         backgroundImage: image,
-                        radius: 22,
+                        radius: 25,
                       ),
-                    ):
-                    CachedNetworkImage(
+                    ):CachedNetworkImage(
                       imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
                       placeholder: (context, url) => const CircleAvatar(
                         backgroundColor: Colors.amber,
-                        radius: 22,
+                        radius: 25,
                       ),
                       imageBuilder: (context, image) => CircleAvatar(
                         backgroundImage: image,
-                        radius: 22,
+                        radius: 25,
                       ),
                     ),
                     SizedBox(width:15),
@@ -138,22 +152,36 @@ class _FriendsListPageState extends State<FriendsListPage> {
                   ],
                 ),
               ),
-
-
-
               Spacer(),
-              Container(
-                width:90,
-                decoration: BoxDecoration(
-                    color:Colors.green.shade50,
+
+              MaterialButton(
+                onPressed: () {
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) =>
+                  //             ComplaintDetails(complaintModel: ComplaintList[index],))
+                  // );
+                },
+                color: MyColors.ColorGreen1,
+                shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)
                 ),
-                child:Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text("Connect",style:TextStyle(fontSize:18,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold)),
-                    )),
+                child: Text("Connect !",style: TextStyle(color: Colors.black),),
               ),
+
+              // Container(
+              //   width:90,
+              //   decoration: BoxDecoration(
+              //       color:Colors.green.shade50,
+              //       borderRadius: BorderRadius.circular(10)
+              //   ),
+              //   child:Center(
+              //       child: Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Text("Connect",style:TextStyle(fontSize:18,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold)),
+              //       )),
+              // ),
               SizedBox(width:10),
             ],
           ),
@@ -161,4 +189,50 @@ class _FriendsListPageState extends State<FriendsListPage> {
       ],
     );
   }
+
+  getDataAccess() async {
+    College = (await getString(UserPreferences.COLLEGE));
+    Designation = (await getString(UserPreferences.DESIGNATION));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("fffffff ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserType = data["AcessName"];
+        Status = data["Status"];
+        setState(() {});
+      }
+    });
+  }
+
+
+//       IconButton(
+//       onPressed: () {
+// if(isLiked==true){
+// HashMap<String, dynamic> data = HashMap<String, dynamic>();
+// String id= numberId;
+// data["UserName"] = UserName;
+// data["Id"] = numberId;
+// mRootReference.child('Likes').child(id).remove();
+// }else{
+// HashMap<String, dynamic> data = HashMap<String, dynamic>();
+// String id= numberId;
+// data["UserName"] = UserName;
+// data["LikeId"] = numberId;
+// mRootReference.child('Likes').child(id).update(data);
+//   }
+// setState(() {
+//   isLiked=!isLiked;
+//    });
+// },
+//   icon: isLiked?Container(height: 20,
+//       child: Icon(Icons.favorite)):
+//   Container(height: 20,
+//       child: Icon(Icons.favorite_border)),)
+
 }

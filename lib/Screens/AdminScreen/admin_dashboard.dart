@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../Contraints/user_preference.dart';
 import '../../Model/feed_model.dart';
+import '../../Model/listdata_model.dart';
 import '../../functions/functions.dart';
 import '../../functions/widgets.dart';
 import 'AdmAccessList/access_request_page.dart';
@@ -22,18 +23,35 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<FeedModel> list = [];
+  List<ListDataModel> datalist=[];
+
+  int isColorSelected=0;
  String username='';
  String access = "";
   @override
   void initState() {
-    load();
+    load(hashCode);
     getdata();
+    loadNotification();
     super.initState();
   }
 
   getdata() async {
     username= await getString(UserPreferences.USER_Name);
     access=   await getString(UserPreferences.ACCESS_CODE);
+  }
+
+  loadNotification() {
+    mRootReference.child("AccessManagement").child("ViewCategoryList").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
   }
 
   @override
@@ -63,21 +81,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                        ],
                      ),
                       Spacer(),
-                      InkWell(
-                        onTap: (){
-                          print("mruuuuuuuuuu${access }");
-                          // showAlertDialog(context);
-                        },
-                        child: CachedNetworkImage(
-                          imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
-                          placeholder: (context, url) =>  CircleAvatar(
-                            backgroundColor: Colors.blue.shade300,
-                            radius: 22,
-                          ),
-                          imageBuilder: (context, image) => CircleAvatar(
-                            backgroundImage: image,
-                            radius: 22,
-                          ),
+                      CachedNetworkImage(
+                        imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                        placeholder: (context, url) =>  CircleAvatar(
+                          backgroundColor: Colors.blue.shade300,
+                          radius: 22,
+                        ),
+                        imageBuilder: (context, image) => CircleAvatar(
+                          backgroundImage: image,
+                          radius: 22,
                         ),
                       ),
                     ],
@@ -90,24 +102,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   Container(
                     height: 50,
                     width: 400,
-                    child: ListView(scrollDirection: Axis.horizontal,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("new",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-                        ),
-                        SizedBox(width: 20,),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("public",style: TextStyle(fontSize: 20),),
-                        ),
-                        SizedBox(width: 20,),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("Connections",style: TextStyle(fontSize: 20),),
-                        ),
-                      ],
-                    ),
+                    child: ListView.builder(
+                      itemCount: datalist.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder:(context, index) => FeedListChange(index),)
                   ),
                   SizedBox(
                     width:380,
@@ -263,50 +261,76 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget AdminHomeFeed(int index){
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Stack(
-        children: [
-          Container(
-
-            child:CachedNetworkImage(
-              height: 380,
-              width: 250,
-              imageUrl: list[index].imageUrl,
-              placeholder: (context, url) =>
-                  getShimmerLoading(),
-              imageBuilder: (context, image) => ClipRRect(borderRadius: BorderRadius.circular(10),
-                child: CachedNetworkImage(
-                  height: 380,
-                  width: 250,
-                  fit: BoxFit.cover,
-                  imageUrl: list[index].imageUrl,
-                  placeholder: (context, url) => getShimmerLoading(),),
-              ),
-            ),
-          ),
-         Positioned(
-           bottom: 5,
-           child: Container(
-             color: Colors.black26,
-             // height: 380,
-               width: 250,
-               child: Padding(
-                 padding: const EdgeInsets.all(8.0),
-                 child: Text(list[index].description,style: TextStyle(color: Colors.white),
-                     maxLines: 15,
-                     overflow: TextOverflow.ellipsis),
-               ),),
-         ),
-        ],
+  Widget FeedListChange(int index){
+    return Container(
+      child:InkWell(
+        onTap: (){
+          load(index);
+        },
+        child: Padding(
+          padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
+          child:  Text(datalist[index].id,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+        ),
       ),
     );
   }
 
+  Widget AdminHomeFeed(int index){
+    return InkWell(
+      onTap: (){
+      setState(() {
+        isColorSelected=index;
+      });
+    },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Stack(
+          children: [
+            Container(
 
-  load() async {
-    mRootReference.child("Feeds").child("Public").onValue.listen((event) {
+              child:CachedNetworkImage(
+                height: 380,
+                width: 250,
+                imageUrl: list[index].imageUrl,
+                placeholder: (context, url) =>
+                    getShimmerLoading(),
+                imageBuilder: (context, image) => ClipRRect(borderRadius: BorderRadius.circular(10),
+                  child: CachedNetworkImage(
+                    height: 380,
+                    width: 250,
+                    fit: BoxFit.cover,
+                    imageUrl: list[index].imageUrl,
+                    placeholder: (context, url) => getShimmerLoading(),),
+                ),
+              ),
+            ),
+           Positioned(
+             bottom: 5,
+             child: Container(
+               color: Colors.black26,
+               // height: 380,
+                 width: 250,
+                 child: Padding(
+                   padding: const EdgeInsets.all(8.0),
+                   child: Text(list[index].description,style: TextStyle(color: Colors.white),
+                       maxLines: 15,
+                       overflow: TextOverflow.ellipsis),
+                 ),),
+           ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  load(int index) async {
+    String NewItem="All";
+    if(isColorSelected==0){
+      NewItem="All";
+    }else{
+      NewItem=datalist[index].id;
+    }
+    mRootReference.child("Feeds").child(NewItem).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
       data.forEach((key, value) {
@@ -319,7 +343,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
           UpdatedTime: value['ImageUrlTime'],
           profImg: value['ProfileImage'],
           toPublish: value['ToPublish'],
-          RegisterLink: value['RegisterLink']
+          RegisterLink: value['RegisterLink'],
+          Phone: value['Phone'],
+          College: value['College']
           // ToPublish:  value['ToPublish'],
         ));
       });

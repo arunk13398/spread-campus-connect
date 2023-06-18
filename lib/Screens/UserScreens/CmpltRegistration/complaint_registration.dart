@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:miniq/Theme/theme.dart';
 
 import '../../../Contraints/user_preference.dart';
+import '../../../Model/listdata_model.dart';
 import '../../../functions/functions.dart';
 import '../../bottom_navigation.dart';
 import 'complaint_list.dart';
@@ -23,6 +24,8 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
   var _college = ['Office', 'Hod','Principal','Admin',];
   String numberId = '';
   String UserName = '';
+  String Department = '';
+  String Designation = '';
 
   final RegName = TextEditingController();
   final RegMobNumber = TextEditingController();
@@ -31,20 +34,27 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
   TextEditingController RegTo = TextEditingController();
   TextEditingController RegSubject = TextEditingController();
   TextEditingController RegCmptText = TextEditingController();
-
+  List<ListDataModel> datalist=[];
+  ListDataModel?selectedItem;
 
   @override void initState() {
-    // load();
+    loadItem();
     getData();
     super.initState();
-    // _scrollController =  ScrollController();
-    // _scrollController.addListener(() {
-    //   setState(() {
-    //
-    //   });
-    // });
   }
-  // var size,height,width;
+  loadItem() async {
+    mRootReference.child("AccessManagement").child("Complaint").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // size = MediaQuery.of(context).size;
@@ -135,7 +145,63 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                   ),
                 ),
 
-
+                Designation=="Student"?
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            controller: RegClgNo,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: 'College register number',
+                              hintText: 'College register number',
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color:MyColors.Colorgreen3),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(
+                                    color: Colors.black, width: 1.2),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(
+                                    color: Colors.grey, width: 1.6),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            controller: RegAdmNumber,
+                            style: TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              border: const OutlineInputBorder(),
+                              labelText: 'College admission number',
+                              hintText: 'College admission number',
+                              filled: true,
+                              fillColor: Colors.white,
+                              labelStyle: TextStyle(color: Colors.black),
+                              hintStyle: TextStyle(color:MyColors.Colorgreen3),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(
+                                    color: Colors.grey, width: 1.2),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                borderSide: BorderSide(
+                                    color: Colors.grey, width: 1.6),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ):
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
@@ -143,8 +209,8 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      labelText: 'College register number',
-                      hintText: 'College register number',
+                      labelText: 'College Id proof no',
+                      hintText: 'College Id proof no',
                       filled: true,
                       fillColor: Colors.white,
                       labelStyle: TextStyle(color: Colors.black),
@@ -162,58 +228,6 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: RegAdmNumber,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
-                      labelText: 'College admission number',
-                      hintText: 'College admission number',
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelStyle: TextStyle(color: Colors.black),
-                      hintStyle: TextStyle(color:MyColors.Colorgreen3),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(
-                            color: Colors.grey, width: 1.2),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        borderSide: BorderSide(
-                            color: Colors.grey, width: 1.6),
-                      ),
-                    ),
-                  ),
-                ),
-                // Padding(
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: TextFormField(
-                //     controller: RegTo,
-                //     style: TextStyle(color: Colors.black),
-                //     decoration: InputDecoration(
-                //       border: const OutlineInputBorder(),
-                //       labelText: 'To',
-                //       hintText: 'To',
-                //       filled: true,
-                //       fillColor: Colors.white,
-                //       labelStyle: TextStyle(color: Colors.black),
-                //       hintStyle: TextStyle(color:MyColors.Colorgreen3),
-                //       enabledBorder: OutlineInputBorder(
-                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //         borderSide: BorderSide(
-                //             color: Colors.grey, width: 1.2),
-                //       ),
-                //       focusedBorder: OutlineInputBorder(
-                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //         borderSide: BorderSide(
-                //             color: Colors.grey, width: 1.6),
-                //       ),
-                //     ),
-                //   ),
-                // ),
 
                 Row(
                   children: [
@@ -237,30 +251,30 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
                             )
                         ),
                         child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                            // Initial Value
-                            value: _collegeDpValue,
-                            iconEnabledColor: Colors.black,
-                            borderRadius: BorderRadius.circular(10),
-                            // Down Arrow Icon
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            // Array list of items
-                            items: _college.map((String items) {
-                              return DropdownMenuItem(
-                                value: items,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left:10.0,right:10),
-                                  child: Text(items),
-                                ),
-                              );
-                            }).toList(),
-                            // After selecting the desired option,it will
-                            // change button value to selected value
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _collegeDpValue = newValue!;
-                              });
-                            },
+                          child: Padding(
+                            padding: const EdgeInsets.only(left:20.0,right:20),
+                            child: DropdownButton<ListDataModel>(
+                              value : selectedItem,
+                              iconEnabledColor: Colors.black,
+                              borderRadius: BorderRadius.circular(30),
+                              icon: const Icon(Icons.swap_vert),
+                              onChanged:(ListDataModel? newValue){
+                                setState((){
+                                  selectedItem = newValue;
+                                  // loadNotification();
+                                });
+
+                              },
+                              items: datalist.map<DropdownMenuItem<ListDataModel>>((ListDataModel value){
+                                return DropdownMenuItem<ListDataModel>(
+                                    value: value,
+                                    child:Padding(
+                                      padding: const EdgeInsets.only(left:10.0,right:10),
+                                      child: Text(value.id),
+                                    )
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
                       ),
@@ -391,6 +405,7 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
         print("ajfbsgdbfdv ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
         RegName.text = data["Name"];
+        Designation=data["Designation"];
         setState(() {});
       }
     });
@@ -407,8 +422,6 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
 
   }
 
-
-
   Future<void> AddComplaint() async {
     HashMap<String, dynamic> data = HashMap<String, dynamic>();
 
@@ -418,9 +431,18 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
     data["Id"] = RegMobNumber.text;
     data["Name"] = RegName.text;
     data["MobileNumber"] = RegMobNumber.text;
-    data["RegisterNo"] = RegClgNo.text;
-    data["AdmissionNo"] = RegAdmNumber.text;
-    data["To"] = _collegeDpValue;
+
+    if(Designation=="Student"){
+      data["RegisterNo"] = RegClgNo.text;
+      data["AdmissionNo"] = RegAdmNumber.text;
+      data["IdProof"] = "0000";
+    }else{
+      data["IdProof"] = RegClgNo.text;
+      data["RegisterNo"] = "NA0000";
+      data["AdmissionNo"] = "NA0000";
+    }
+
+    data["To"] = selectedItem!.id;
     data["Subject"] = RegSubject.text;
     data["Complaint"] = RegCmptText.text;
     data["Status"] = "Processing";
@@ -430,15 +452,8 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
     data["Time"] = DateTime.now().millisecondsSinceEpoch.toString();
 
     await mRootReference.child("Complaints").child(id).child(id1).update(data);
-    await mRootReference.child("Complaints").child("AdminAccess").child(id1).update(data);
+    await mRootReference.child("Complaints").child("AdminAccess").child(selectedItem!.id).child(id1).update(data);
 
-    Future.delayed(const Duration(seconds: 1), () {
-      finishAccountCreation( BottomNavigation(), context);
-    });
-
-    // await
-    // referenceRoot.child("Test")
-    //     .child("Images").push().update(data);
   }
 }
 

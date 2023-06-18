@@ -9,6 +9,8 @@ class FeedModel {
   String profImg;
   String toPublish;
   String RegisterLink;
+  String Phone;
+  String College;
   int? likedCount;
   bool? isLiked;
 
@@ -22,6 +24,8 @@ class FeedModel {
     required this.profImg,
     required this.toPublish,
     required this.RegisterLink,
+    required this.Phone,
+    required this.College,
     this.likedCount=0,
     this.isLiked=true,
   });

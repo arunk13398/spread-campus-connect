@@ -144,11 +144,11 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                               child: Row(
                                 children: [
                                   Spacer(),
-                                  Text("0 followers",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Text("followers",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),
                                   Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),
-                                  Text("0 post",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Text(Glist.length.toString()+" post",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),
                                   Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),

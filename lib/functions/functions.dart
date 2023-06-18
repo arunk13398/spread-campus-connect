@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -225,6 +226,71 @@ void showLoaderDialog(BuildContext context){
     ),
   );
 }
+
+showAlertDialogBloked(BuildContext context) {
+
+  AlertDialog alert = AlertDialog(
+    title:  Image.asset("assets/letterblacknewcolor.png",height: 50,),
+    content: Container(
+      height:100,
+      width: 80,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Security Reasons",style: TextStyle(fontSize: 16,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
+            SizedBox(height: 10),
+            Text("You are currently blocked to this account for inpropper behaviour and other illegal activities, sorry for your inconvienience ")
+          ],
+        ),
+      ),
+    ),
+    actions: [
+      TextButton(
+        child: Container(
+            decoration: BoxDecoration(
+                color:MyColors.Colorgreen3,
+                borderRadius: BorderRadius.all(
+                    Radius.circular(30)
+                )
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
+              child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
+            )),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+// getDataAccess(mRootReference,String College,String Designation,String UserType,String numberId,) async {
+//   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+//   mRootReference
+//       .child("AccessControl")
+//       .child(await getString(UserPreferences.USER_NUMBER))
+//       .once()
+//       .then((value) {
+//     if (value.snapshot.exists) {
+//       print("fffffff ${value.snapshot.value}");
+//       Map<dynamic, dynamic> data = value.snapshot.value as Map;
+//       College = data["College"];
+//       Designation = data["Designation"];
+//       UserType = data["AcessName"];
+//       numberId =data["Phone"];
+//     }
+//   });
+// }
 
 
 // getDataF1() async {

@@ -1,3 +1,4 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:miniq/Contraints/user_preference.dart';
@@ -18,8 +19,17 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  String College='';
+  String Designation='';
+  String UserType='';
+  String numberId ='';
+
+
+
   @override
   initState() {
+    getDataAccess();
     super.initState();
   }
 
@@ -33,6 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children:  [
+
             Container(
               child:Image(
                 image: AssetImage('assets/letterblacknewcolor.png'),
@@ -47,6 +58,27 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 
+
+  getDataAccess() async {
+    mRootReference.child('AccessControl').child(await getString(UserPreferences.USER_NUMBER)).once().then(( dataSnapshot){
+      if(dataSnapshot.snapshot.exists){
+        Map<dynamic, dynamic>setData = dataSnapshot.snapshot.value as Map;
+        if(setData["AcessCode"].toString()=="1"){
+          setBool(UserPreferences.IS_LOGIN,true);
+          setString(UserPreferences.ACCESS_CODE,setData["AcessCode"].toString());
+          setString(UserPreferences.COLLEGE,setData["College"].toString());
+          setString(UserPreferences.DESIGNATION,setData["Designation"].toString());
+          setString(UserPreferences.USER_NUMBER,dataSnapshot.snapshot.key.toString());
+          setString(UserPreferences.USER_Name,setData["Name"].toString());
+          setString(UserPreferences.ACCESSTYPE,setData["AcessName"].toString());
+        }
+  }});
+    UserType = (await getString(UserPreferences.ACCESSTYPE));
+    print("testing usertype${UserType}");
+  }
+
+
+
   checkLogin(BuildContext context)async{
     if(await getBool(UserPreferences.IS_LOGIN)??false){
       if(await getString(UserPreferences.ACCESS_CODE)=="1"){
@@ -56,6 +88,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
       else if(await getString(UserPreferences.ACCESS_CODE)=="2"){
         Future.delayed(const Duration(milliseconds: 3000), () {
+
           callTo( AdminBottomNavigation(), context);
         });
       }

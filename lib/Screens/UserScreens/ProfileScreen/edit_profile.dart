@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:miniq/Theme/theme.dart';
 
 import '../../../Contraints/user_preference.dart';
+import '../../../Model/listdata_model.dart';
 import '../../../functions/functions.dart';
 import '../../bottom_navigation.dart';
 
@@ -22,7 +23,9 @@ class EditProfile extends StatefulWidget {
 class _EditProfileState extends State<EditProfile> {
 
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  List<ListDataModel> datalist=[];
   GlobalKey key = GlobalKey();
+  ListDataModel?selectedItem;
 
   XFile? file;
   String imageUrl = '';
@@ -33,6 +36,8 @@ class _EditProfileState extends State<EditProfile> {
   String AccessName='';
   String Phone='';
   String access='';
+  String UserType='';
+  String Status='';
 
   bool _isChecked = false;
   bool _isChecked1 = false;
@@ -49,7 +54,29 @@ class _EditProfileState extends State<EditProfile> {
   void initState() {
     getDataF1();
     getdata();
+    loadItem();
+    getDataAccess();
     super.initState();
+  }
+
+  getDataAccess() async {
+    College = (await getString(UserPreferences.COLLEGE));
+    Designation = (await getString(UserPreferences.DESIGNATION));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("fffffff ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserType = data["AcessName"];
+        Status = data["Status"];
+        setState(() {});
+      }
+    });
   }
 
   getDataF1() async {
@@ -73,6 +100,19 @@ class _EditProfileState extends State<EditProfile> {
     });
   }
 
+  loadItem() async {
+    mRootReference.child("AccessManagement").child("Designation").child(await getString(UserPreferences.DESIGNATION)).child("Access").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -90,31 +130,35 @@ class _EditProfileState extends State<EditProfile> {
                 InkWell(
                   onTap: () async {
 
-                    ImagePicker imagePicker = ImagePicker();
-                    file = await imagePicker.pickImage(
-                        source: ImageSource.gallery);
-                    print("Testing${file?.path}");
-                    if (file == null) return;
+                    if(Status=="blocked"){
+                      showAlertDialogBloked(context);
+                    }else{
+                      ImagePicker imagePicker = ImagePicker();
+                      file = await imagePicker.pickImage(
+                          source: ImageSource.gallery);
+                      print("Testing${file?.path}");
+                      if (file == null) return;
 
-                    String uniqueFileName =
-                    DateTime.now().millisecondsSinceEpoch.toString();
+                      String uniqueFileName =
+                      DateTime.now().millisecondsSinceEpoch.toString();
 
-                    Reference mRootReference =
-                    FirebaseStorage.instance.ref();
-                    Reference referenceDirImages =
-                    mRootReference.child('images').child('ProfileImage');
+                      Reference mRootReference =
+                      FirebaseStorage.instance.ref();
+                      Reference referenceDirImages =
+                      mRootReference.child('images').child('ProfileImage');
 
-                    Reference referenceImageToUpload =
-                    referenceDirImages.child(uniqueFileName);
-                    try {
-                      await referenceImageToUpload
-                          .putFile(File(file!.path));
-                      imageUrl =
-                          await referenceImageToUpload.getDownloadURL();
-                    } catch (error) {}
-
+                      Reference referenceImageToUpload =
+                      referenceDirImages.child(uniqueFileName);
+                      try {
+                        await referenceImageToUpload
+                            .putFile(File(file!.path));
+                        imageUrl =
+                        await referenceImageToUpload.getDownloadURL();
+                      } catch (error) {}
+                    }
                   },
-                  child: imageUrl!=""?CachedNetworkImage(
+                  child:
+                  imageUrl!=""?CachedNetworkImage(
                     imageUrl: imageUrl,
                     placeholder: (context, url) => const CircleAvatar(
                       backgroundColor: Colors.amber,
@@ -124,7 +168,8 @@ class _EditProfileState extends State<EditProfile> {
                       backgroundImage: image,
                       radius: 100,
                     ),
-                  ):CachedNetworkImage(
+                  ):
+                  CachedNetworkImage(
                     imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
                     placeholder: (context, url) => const CircleAvatar(
                       backgroundColor: Colors.amber,
@@ -145,6 +190,7 @@ class _EditProfileState extends State<EditProfile> {
                               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey,fontSize: 17))),
                     ),
                     Spacer(),
+                    Status=="blocked"?Container():
                     Container(
                       width:120,height:50,
                       child: CheckboxListTile(
@@ -284,7 +330,7 @@ class _EditProfileState extends State<EditProfile> {
                       padding: const EdgeInsets.only(left:15.0,right: 5,),
                       child: CheckboxListTile(
                         activeColor: Colors.blue,
-                        title: Text("Change to the page?",style: TextStyle( color: Colors.grey,fontSize: 14),),
+                        title: Text("Change to the Account access?",style: TextStyle( color: Colors.grey,fontSize: 14),),
                         value: _isChecked,
                         onChanged: (val) {
                           setState(() {
@@ -299,27 +345,97 @@ class _EditProfileState extends State<EditProfile> {
                           style: TextStyle( color: Colors.grey,fontSize: 16),textAlign: TextAlign.center),
                     ),
 
-                    _isChecked==true?Padding(
-                      padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 20, right: 20),
-                      child: SizedBox(
-                        width: 150,
-                        height: 35.0,
-                        child: MaterialButton(
-                            onPressed: () {
-                              PageRequest();
-                              print("gguuggugu${UserCollegeController.text}");
-                            },
-                            textColor: Colors.white,
-                            color: MyColors.Colorgreen3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0)),
-                            child: Center(
-                              child: const Text(
-                                "Requst to admin",
-                                style: TextStyle(fontSize: 15,color: Colors.white,),
+                    _isChecked==true?Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Row(
+                            children: [
+                              Spacer(),
+                              Text("Select your appropriate option"),
+                              Spacer(),
+                              Container(
+                                width: 150,
+                                height: 40,
+                                decoration:BoxDecoration(
+                                    color:Colors.white,
+                                    borderRadius: BorderRadius.circular(30),
+                                    border: Border.all(
+                                        color: Colors.grey.shade50,
+                                        width: 1
+                                    )
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left:20.0,right:20),
+                                    child: DropdownButton<ListDataModel>(
+                                      value : selectedItem,
+                                      iconEnabledColor: Colors.black,
+                                      borderRadius: BorderRadius.circular(30),
+                                      icon: const Icon(Icons.swap_vert),
+                                      onChanged:(ListDataModel? newValue){
+                                        setState((){
+                                          selectedItem = newValue;
+                                          // CategoryloadNotification();
+                                          // getDataF1(hashCode);
+                                        });
+
+                                      },
+                                      items: datalist.map<DropdownMenuItem<ListDataModel>>((ListDataModel value){
+                                        return DropdownMenuItem<ListDataModel>(
+                                            value: value,
+                                            child:Padding(
+                                              padding: const EdgeInsets.only(left:10.0,right:10),
+                                              child: Text(value.id),
+                                            )
+                                        );
+                                      }).toList(),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            )),
-                      ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 20, right: 20),
+                          child: SizedBox(
+                            width: 150,
+                            height: 35.0,
+                            child: MaterialButton(
+                                onPressed: () async {
+                                  await  PageRequest().then((value) {
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                      backgroundColor: Colors.greenAccent,
+                                      content: Center(
+                                        child: Text(
+                                          "Successful",
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                      ),
+                                    ));
+                                    // newListController.clear();
+                                    // description.clear();
+
+                                  });
+                                },
+                                // onPressed: () {
+                                //   PageRequest();
+                                //   print("gguuggugu${UserCollegeController.text}");
+                                // },
+                                textColor: Colors.white,
+                                color: MyColors.Colorgreen3,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0)),
+                                child: Center(
+                                  child: const Text(
+                                    "Requst to admin",
+                                    style: TextStyle(fontSize: 15,color: Colors.white,),
+                                  ),
+                                )),
+                          ),
+                        ),
+                      ],
                     ):SizedBox(),
                   ],
                 ),
@@ -349,6 +465,9 @@ class _EditProfileState extends State<EditProfile> {
     updateAcsessControl["Phone"] = UserNumberController.text;
     updateAcsessControl["College"] =UserCollegeController.text;
     updateAcsessControl["Designation"] =UserDesignationController.text;
+    updateAcsessControl["ImageUrl"] = imageUrl;
+
+
     await mRootReference.child("UsersList").child(id2).child(id).child(id1).update(updateData);
     await mRootReference.child("AccessControl").child(id).update(updateAcsessControl);
 
@@ -374,14 +493,11 @@ class _EditProfileState extends State<EditProfile> {
     updateData["Phone"] = UserNumberController.text;
     updateData["College"] =UserCollegeController.text;
     updateData["Designation"] =UserDesignationController.text;
+    updateData["RequestTo"] =selectedItem!.id;
     updateData["ImageUrl"] = imageUrl;
     await mRootReference.child("PageRequest").child(id)
         // .child(id).child(id1)
         .update(updateData);
-
-    Future.delayed(const Duration(seconds: 1), () {
-      finishAccountCreation( BottomNavigation(), context);
-    });
   }
   getdata() async {
     AccessName= await getString(UserPreferences.USER_Name);

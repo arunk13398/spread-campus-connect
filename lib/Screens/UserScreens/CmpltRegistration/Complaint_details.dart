@@ -23,6 +23,7 @@ class ComplaintDetails extends StatefulWidget {
 class _ComplaintDetailsState extends State<ComplaintDetails> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
 
+
   var size,height,width;
   bool _isChecked=false;
   bool _isVerified=false;
@@ -33,6 +34,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
   String Designation='';
   String imageUrl='';
   String access='';
+  String UserType='';
 
   String ReviewMobileNumberData='';
   String ReviewDesignationData='';
@@ -43,6 +45,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
 
   String _ReviewDpValue = 'Processing';
   var _ReviewList = ['Processing','Verified', 'Rejected','Waiting','Forwarded',];
+  List<ComplaintModel> ComplaintList = [];
 
   List<Step> stepList() => [
     Step(
@@ -52,21 +55,8 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
       label: Container(child:Text("hello")),
       content: Center(child: Text(''),),
     ),
-    Step(
-      isActive: _currentStep==1,
-      title: Text('Step2'),
-      subtitle: Text('Processing'),
-      label: ColoredBox(color: Colors.tealAccent),
-      content: Center(child: Text('bbbbb'),),
-    ),
-    Step(
-      isActive: _currentStep==2,
-      title: Text('Step3'),
-      subtitle: Text('Processing'),
-      label: Container(child:Text("kooo")),
-      content: Center(child: Text('ccccc'),),
-    ),
   ];
+
   TextEditingController ReviewComplaintText = TextEditingController();
   int _currentStep=0;
 
@@ -74,6 +64,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
   void initState() {
     getDataF1();
     getReviewDetails();
+    getDataAccess();
     super.initState();
   }
 
@@ -129,7 +120,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                           ),
 
                           SizedBox(
-                            width: width / 2,
+                            width: width / 2.5,
                             child: Column(
                               mainAxisAlignment:
                               MainAxisAlignment.start,
@@ -159,16 +150,32 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                             ),
                           ),
                           Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 10.0, right: 5),
-                            child: Text(
-                              "1 mint ago",
-                              // list[index].username
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black),
-                            ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 10.0, right: 5),
+                                child: Text("From : "+widget.complaintModel.rName,
+                                  // list[index].username
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 10.0, right: 5),
+                                child: Text(
+                                  "1 mint ago",
+                                  // list[index].username
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -183,27 +190,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                     ),
                     SizedBox(height: 20,),
 
-                    Row(
-                      children: [
-                        Icon(Icons.attachment_sharp,color: Colors.blue,),
-                        SizedBox(width: 5,),
-                        Text("https//TestLinkForSpreadapplication"),
-                      ],
-                    ),
-                    SizedBox(height: 6,),
-                    Row(
-                      children: [
-                        Icon(Icons.attachment_sharp,color: Colors.blue,),
-                        SizedBox(width: 5,),
-                        Text("https// TestLinkForSpreadapplication"),
-                      ],
-                    ),
-                    SizedBox(height: 10,),
-                    // Progress section
-
-
-                    Designation=='Admin'||Designation=='Teacher'?
-
+                    UserType==widget.complaintModel.rTo?
                     Container():
                     Column(
                       children: [
@@ -243,8 +230,6 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                         ):Container(),
                       ],
                     ),
-
-
 
                     //Review section
 
@@ -367,7 +352,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
 
                     Text(ComplaintReviewData,style: TextStyle(fontSize: 17)),
 
-                    Designation=='Admin'||Designation=='Teacher'?
+                    UserType==widget.complaintModel.rTo?
                     Row(
                       children: [
                         Padding(
@@ -431,7 +416,9 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
                           ),
                         ):Container(),
                       ],
-                    ):Container(),
+                    ):
+                    Container(),
+
                     _isVerified==true?Column(
                       children: [
                         Padding(
@@ -533,20 +520,22 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
     HashMap<String, dynamic> dataReview = HashMap<String, dynamic>();
     dataReview["Status"] = _ReviewDpValue;
 
-    await mRootReference.child("Complaints").child(id2).child(id).child("Review").update(data);
+    await mRootReference.child("Complaints").child(id2).child(id).child("Review").child(id1).update(data);
     await mRootReference.child("Complaints").child(widget.complaintModel.rMobNumber).child(widget.complaintModel.id).update(dataReview);
-    await mRootReference.child("Complaints").child("AdminAccess").child(widget.complaintModel.id).update(dataReview);
+    await mRootReference.child("Complaints").child("AdminAccess").child(widget.complaintModel.rTo).child(widget.complaintModel.id).update(dataReview);
 
     Future.delayed(const Duration(seconds: 1), () {
       finishAccountCreation(Designation=='Admin'?AdminBottomNavigation():BottomNavigation(), context);
     });
-
     // await
     // referenceRoot.child("Test")
     //     .child("Images").push().update(data);
   }
+
+
   getDataF1() async {
     numberId = (await getString(UserPreferences.USER_NUMBER));
+    UserType = (await getString(UserPreferences.ACCESSTYPE));
     UserName = (await getString(UserPreferences.USER_Name));
     College = (await getString(UserPreferences.COLLEGE));
     Designation = (await getString(UserPreferences.COLLEGE));
@@ -566,6 +555,7 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
     });
   }
 
+
   getReviewDetails() async {
     mRootReference
         .child("Complaints")
@@ -583,6 +573,50 @@ class _ComplaintDetailsState extends State<ComplaintDetails> {
         print("popopopopo-------------------- ${ReviewStatusData}");
         setState(() {});
       }
+    });
+  }
+
+  getDataAccess() async {
+    College = (await getString(UserPreferences.COLLEGE));
+    Designation = (await getString(UserPreferences.DESIGNATION));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("fffffff ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserType = data["AcessName"];
+        numberId =data["Phone"];
+        setState(() {});
+      }
+    });
+  }
+
+  loadComplaint1() async {
+    Designation = await getString(UserPreferences.DESIGNATION);
+    numberId = await getString(UserPreferences.USER_NUMBER);
+    mRootReference.child("Complaints").child(numberId).child("Review").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      ComplaintList.clear();
+      data.forEach((key, value) {
+        ComplaintList.add(ComplaintModel(
+          id: key,
+          rAdmNumber: value['AdmissionNo'],
+          rClgNo: value['RegisterNo'],
+          rCmptText: value['Complaint'],
+          rDate: value['Date'],
+          rMobNumber: value['MobileNumber'],
+          rName: value['Name'],
+          rSubject: value['Subject'],
+          rTo: value['To'],
+          rStatus: value['Status'],
+        ));
+      });
+      setState(() {});
     });
   }
 

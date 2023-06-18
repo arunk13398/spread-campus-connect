@@ -37,6 +37,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
   String UidName = '';
   String ProfimageUrl = '';
   String access="";
+  String imageUrl="";
+  String UserType="";
 
 
   int _currentIndex=0;
@@ -51,6 +53,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   void initState() {
     getDataF1();
+    getDataAccess();
     super.initState();
   }
   @override
@@ -116,6 +119,27 @@ class _BottomNavigationState extends State<BottomNavigation> {
       ),
     );
   }
+
+  getDataAccess() async {
+    College = (await getString(UserPreferences.COLLEGE));
+    Designation = (await getString(UserPreferences.DESIGNATION));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("fffffff ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserType = data["AcessName"];
+        numberId =data["Phone"];
+        setState(() {});
+      }
+    });
+  }
+
   getDataF1() async {
     access = (await getString(UserPreferences.ACCESS_CODE));
     numberId = (await getString(UserPreferences.USER_NUMBER));

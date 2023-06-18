@@ -224,6 +224,8 @@ class _ProfilePageState extends State<ProfilePage> {
           profImg: value['ProfileImage'],
           toPublish: value['ToPublish'],
           RegisterLink: value['RegisterLink'],
+            Phone: value['Phone'],
+            College: value['College']
           // ToPublish:  value['ToPublish'],
         ));
       });

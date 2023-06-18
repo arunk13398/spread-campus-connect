@@ -23,6 +23,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../Model/access_model.dart';
 import '../../../Model/listdata_model.dart';
 import '../../../functions/functions.dart';
+import '../AdditionalScreens/about_screen.dart';
+import '../AdditionalScreens/help.dart';
 
 
 
@@ -38,6 +40,7 @@ class _FeedPageState extends State<FeedPage> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<FeedModel> list = [];
   List<ListDataModel> datalist=[];
+
   // List<LikeModel> likelist=[];
   String numberId = '';
   String UserName = '';
@@ -48,20 +51,13 @@ class _FeedPageState extends State<FeedPage> {
   String UidLike = '';
   String UidName = '';
   String ProfimageUrl = '';
-
+  String UserType = '';
+  String Status = '';
 
   bool isLiked = false;
+  int isColorSelected=0;
   bool isConnected = false;
   var size, height, width;
-
-
-  final List<String> _menuItems = [
-    'Public',
-    'Connections',
-    'Club',
-    'Event',
-    'Other',
-  ];
 
   int _currentIndex = 0;
 
@@ -70,9 +66,11 @@ class _FeedPageState extends State<FeedPage> {
   late ScrollController _scrollController;
 
   @override void initState() {
-    load();
+    load(hashCode);
     getDataF1();
     getData();
+    getDataAccess();
+    loadNotification();
     checkRealtimeConnection();
     super.initState();
     _scrollController =  ScrollController();
@@ -97,7 +95,7 @@ class _FeedPageState extends State<FeedPage> {
                 slivers: [
                   SliverAppBar(backgroundColor: Colors.white,
                       pinned: true,
-                      expandedHeight: 200,
+                      expandedHeight: 190,
                       flexibleSpace: LayoutBuilder(builder: (ctx,cons){
                         top=cons.biggest.height;
                         return FlexibleSpaceBar(
@@ -120,13 +118,16 @@ class _FeedPageState extends State<FeedPage> {
                                 Spacer(),
                                 InkWell(
                                   onTap: (){
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                            // showmodelBottomsheet()
-                                            Camera()
-                                        ));
+                                    if(Status=="blocked"){
+                                      showAlertDialogBloked(context);
+                                    }else{
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Camera()
+                                          ));
+                                    }
                                   },
                                   child: Container(
                                       height: 40,
@@ -180,24 +181,33 @@ class _FeedPageState extends State<FeedPage> {
                                               fontSize: 40,
                                               color: Colors.black)),
                                     ),
-                                    SizedBox(height: 30,),
+                                    SizedBox(height: 15,),
                                     // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
-                                    ChipList(
-                                      padding: EdgeInsets.all(10),
-                                      listOfChipNames: _menuItems,
-                                      activeBgColorList: [MyColors.Colorgreen2],
-                                      inactiveBgColorList: const [Colors.white],
-                                      activeTextColorList: const [Colors.white],
-                                      inactiveTextColorList: [Colors.black],
-                                      listOfChipIndicesCurrentlySeclected: [_currentIndex],
-                                      inactiveBorderColorList:  [MyColors.Colorgreen2],
-                                      extraOnToggle: (val) {
-                                        _currentIndex = val;
-                                        setState(() {
-                                          load();
-                                        });
-                                      },
-                                    ),
+
+                                    // ChipList(
+                                    //   padding: EdgeInsets.all(10),
+                                    //   listOfChipNames: _menuItems,
+                                    //   activeBgColorList: [MyColors.Colorgreen2],
+                                    //   inactiveBgColorList: const [Colors.white],
+                                    //   activeTextColorList: const [Colors.white],
+                                    //   inactiveTextColorList: [Colors.black],
+                                    //   listOfChipIndicesCurrentlySeclected: [_currentIndex],
+                                    //   inactiveBorderColorList:  [MyColors.Colorgreen2],
+                                    //   extraOnToggle: (val) {
+                                    //     _currentIndex = val;
+                                    //     setState(() {
+                                    //       load();
+                                    //     });
+                                    //   },
+                                    // ),
+
+                                    SizedBox(
+                                      height:50,width:width/1,
+                                      child: ListView.builder(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: datalist.length,
+                                        itemBuilder:(context, index) => AdaptoItemList(index),),
+                                    )
 
                                   ],
                                 ),
@@ -269,9 +279,15 @@ class _FeedPageState extends State<FeedPage> {
       }
     });
   }
-
-  load() async {
-    mRootReference.child("Feeds").child(_menuItems[_currentIndex]).onValue.listen((event) {
+  load(int index) async {
+    String NewItem="";
+   if(isColorSelected==0){
+     NewItem="All";
+   }else{
+     NewItem=datalist[index].id;
+   }
+    print("ggffgffgfgfgfgf${NewItem}");
+    mRootReference.child("Feeds").child(NewItem).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
       data.forEach((key, value) {int count=0;
@@ -291,7 +307,10 @@ class _FeedPageState extends State<FeedPage> {
             toPublish: value['ToPublish'],
             RegisterLink: value['RegisterLink'],
             likedCount: count,
-            isLiked:isLiked
+            isLiked:isLiked,
+            Phone: value['Phone'],
+            College: value['College'],
+
           // ToPublish: value['ToPublish'],
         ));});
       setState(() {});
@@ -465,7 +484,7 @@ class _FeedPageState extends State<FeedPage> {
                                   isLiked: list[index].isLiked,
                                   onTap: (isLiked) async{
                                     return !isLiked;
-                                  },
+                                     },
                                   size: 25,
                                   circleColor:CircleColor(start:Color(0xFF79D71E),end: Color(0xFFCEF894)),
                                   bubblesColor: BubblesColor(
@@ -520,12 +539,16 @@ class _FeedPageState extends State<FeedPage> {
                       SizedBox(width:10),
                       InkWell(
                         onTap: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      CommentViewScreen(
+                          if(Status=="blocked"){
+                            showAlertDialogBloked(context);
+                          }else{
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        CommentViewScreen(
                                           feedModel: list[index],)));
+                          }
                         },
                         child: Container(
                             decoration: BoxDecoration(
@@ -588,7 +611,6 @@ class _FeedPageState extends State<FeedPage> {
                             ),
                           ),
                         )):Container(),
-
                     ],
                   ),
                 ),
@@ -600,8 +622,8 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   Widget _buildfab(){
-    final double defaultMargin=200;
-    final double defaultStart=180;
+    final double defaultMargin=190;
+    final double defaultStart=160;
     final double defaultEnd=defaultStart/2;
 
     double top =defaultMargin;
@@ -630,13 +652,17 @@ class _FeedPageState extends State<FeedPage> {
                 SizedBox(height: 40,
                     child: InkWell(
                       onTap: (){
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    // showmodelBottomsheet()
-                                    Camera()
-                            ));
+                        if(Status=="blocked"){
+                          showAlertDialogBloked(context);
+                        }else{
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                  // showmodelBottomsheet()
+                                  Camera()
+                              ));
+                        }
                       },
                       child: Container(
                           height: 40,
@@ -789,7 +815,7 @@ class _FeedPageState extends State<FeedPage> {
   showAlertDialogMore(BuildContext context) {
 
     AlertDialog alert = AlertDialog(
-      title: const Text("More options",style: TextStyle(fontSize: 16,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
+      title: Image.asset("assets/letterblacknewcolor.png",height: 50,),
       content: Container(
         height:100,
         width: 80,
@@ -797,19 +823,14 @@ class _FeedPageState extends State<FeedPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              InkWell(
-                onTap: () async {
-
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Report",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                ),
-              ),
-              SizedBox(height: 5,),
+             Text("More options",style: TextStyle(fontSize: 18,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
+              SizedBox(height:10),
               InkWell(
                 onTap: (){
-
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AboutScreen()));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -819,7 +840,10 @@ class _FeedPageState extends State<FeedPage> {
               SizedBox(height: 5,),
               InkWell(
                 onTap: (){
-
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => HelpScreen()));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -864,15 +888,14 @@ class _FeedPageState extends State<FeedPage> {
   int? getLikedCount(String id){
     int? isLiked=0;
     mRootReference.child('Likes').child(id).once().then((value) {
-
       if(value.snapshot.exists) {
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
         isLiked=data.length;
       }
-
     });
    return isLiked;
   }
+
   bool? getLiked(String id) {
     bool? isLiked=false;
     mRootReference.child('Likes').child(id).child(numberId).once().then((value) {
@@ -886,8 +909,7 @@ class _FeedPageState extends State<FeedPage> {
     if(isLiked==true){
       HashMap<String, dynamic> data = HashMap<String, dynamic>();
       String id3= numberId;
-      print("tutututu ${UserName}");
-      data["UserName"] = UserName;
+      data[numberId] = numberId;
       mRootReference.child('Likes').child(id3).update(data);
     }
     else{
@@ -897,7 +919,75 @@ class _FeedPageState extends State<FeedPage> {
       data["UserName"] = UserName;
       mRootReference.child('Likes').child(id3).remove();
     }
-  }}
+  }
+
+  Widget AdaptoItemList(int index){
+    return Container(
+      child: Center(
+        child:Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: InkWell(
+            onTap: (){
+              load(index);
+             setState(() {
+               isColorSelected=index;
+             });
+
+            },
+            child: Container(
+              height: 50,
+                decoration: BoxDecoration(
+                    color: isColorSelected==index?MyColors.Colorgreen2:Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                  color: MyColors.Colorgreen2,
+                  )
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left:15.0,right:15,top:7,bottom:7),
+                  child: Center(
+                    child: Text(datalist[index].id,
+                      style: TextStyle(color:isColorSelected==index?Colors.white:Colors.black,fontSize: 16),),
+                  ),
+                )),
+          ),
+        ),),
+    );
+  }
+
+  loadNotification() {
+    mRootReference.child("AccessManagement").child("ViewCategoryList").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
+  }
+
+  getDataAccess() async {
+    College = (await getString(UserPreferences.COLLEGE));
+    Designation = (await getString(UserPreferences.DESIGNATION));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("fffffff ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserType = data["AcessName"];
+        Status = data["Status"];
+        setState(() {});
+      }
+    });
+  }
+}
 
 
 Future openBrowserUrl({

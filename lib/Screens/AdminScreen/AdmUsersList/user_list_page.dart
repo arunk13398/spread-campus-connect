@@ -1,3 +1,6 @@
+import 'dart:collection';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -37,6 +40,8 @@ class _UserListPageState extends State<UserListPage> {
           Phone: value['Phone'],
           College: value['College'],
           AccessName: value['AcessName'],
+          imageUrl: value['imageUrl'],
+          Status: value['Status']
         ));
       });
       setState(() {});
@@ -101,44 +106,49 @@ class _UserListPageState extends State<UserListPage> {
             }),
 
         // All actions are defined in the children parameter.
-        children: const [
+        children:  [
           // A SlidableAction can have an icon and/or a label.
           SlidableAction(
-            onPressed: doNothing,
             backgroundColor: Color(0xFFFE4A49),
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: 'Delete',
-          ),
-          SlidableAction(
-            onPressed: doNothing,
-            backgroundColor: Color(0xFF21B7CA),
-            foregroundColor: Colors.white,
-            icon: Icons.share,
-            label: 'Share',
+            onPressed: (context){
+              // HashMap<String, dynamic> access = HashMap<String, dynamic>();
+              // access["Status"] = "active";
+              // mRootReference.child("AccessControl").child(userlist[index].id).update(access);
+            },
           ),
         ],
       ),
 
       // The end action pane is the one at the right or the bottom side.
-      endActionPane: const ActionPane(
+      endActionPane:  ActionPane(
         motion: ScrollMotion(),
         children: [
           SlidableAction(
-            // An action can be bigger than the others.
-            flex: 2,
-            onPressed: doNothing,
-            backgroundColor: Color(0xFF7BC043),
+            backgroundColor: Colors.green,
             foregroundColor: Colors.white,
-            icon: Icons.archive,
-            label: 'Archive',
+            icon: Icons.lock_open_rounded,
+            label: 'unblock',
+            onPressed: ( context) {
+              HashMap<String, dynamic> access = HashMap<String, dynamic>();
+              access["Status"] = "active";
+              mRootReference
+                  .child("AccessControl").child(userlist[index].id).update(access);
+            },
           ),
           SlidableAction(
-            onPressed: doNothing,
-            backgroundColor: Color(0xFF0392CF),
+            backgroundColor: Colors.amber,
             foregroundColor: Colors.white,
-            icon: Icons.save,
-            label: 'Save',
+            icon: Icons.block_flipped,
+            label: 'Block',
+            onPressed: ( context) {
+              HashMap<String, dynamic> access = HashMap<String, dynamic>();
+              access["Status"] = "blocked";
+              mRootReference
+                  .child("AccessControl").child(userlist[index].id).update(access);
+            },
           ),
         ],
       ),
@@ -152,13 +162,29 @@ class _UserListPageState extends State<UserListPage> {
             padding: const EdgeInsets.all(5.0),
             child: Row(
               children: [
-                Container(
-                    height: 45,
-                    width: 45,
-                    decoration: BoxDecoration(
-                        color:Colors.blue,
-                        borderRadius: BorderRadius.circular(60)
-                    ),child:Center(child: Text("AK",style:TextStyle(fontSize:20,color: Colors.white)))),
+                userlist[index].imageUrl!=""?CachedNetworkImage(
+                  imageUrl: userlist[index].imageUrl,
+                  placeholder: (context, url) => const CircleAvatar(
+                    backgroundColor: Colors.amber,
+                    radius: 25,
+                  ),
+                  imageBuilder: (context, image) => CircleAvatar(
+                    backgroundImage: image,
+                    radius: 25,
+                  ),
+                ):
+                CachedNetworkImage(
+                  imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                  placeholder: (context, url) => const CircleAvatar(
+                    backgroundColor: Colors.amber,
+                    radius: 25,
+                  ),
+                  imageBuilder: (context, image) => CircleAvatar(
+                    backgroundImage: image,
+                    radius: 25,
+                  ),
+                ),
+
                 SizedBox(width:15),
                 SizedBox(
                   width: width/2.2,
@@ -172,58 +198,18 @@ class _UserListPageState extends State<UserListPage> {
                     ],
                   ),
                 ),
-                SizedBox(width:5),
-                // Container(
-                //   decoration: BoxDecoration(
-                //       borderRadius: BorderRadius.circular(10),
-                //       border: Border.all(
-                //         width: 0.3,
-                //       )
-                //   ),
-                //   child: DropdownButtonHideUnderline(
-                //     child: Padding(
-                //       padding: const EdgeInsets.all(8.0),
-                //       child: SizedBox(
-                //         height: 20,
-                //         child: DropdownButton(
-                //           value: _academicDpValue,
-                //           iconEnabledColor: Colors.black,
-                //           borderRadius: BorderRadius.circular(10),
-                //           icon: const Icon(Icons.keyboard_arrow_down),
-                //           items: _academicYear.map((String items) {
-                //             return DropdownMenuItem(
-                //               value: items,
-                //               child: Padding(
-                //                 padding: const EdgeInsets.only(left:10.0,right:10),
-                //                 child: Text(items),
-                //               ),
-                //             );
-                //           }).toList(),
-                //           // After selecting the desired option,it will
-                //           // change button value to selected value
-                //           onChanged: (String? newValue) {
-                //             setState(() {
-                //               _academicDpValue = newValue!;
-                //               print("asdfghjkl ${_academicDpValue}");
-                //               print("asdfghjkl ${_academicYear}");
-                //             });
-                //           },
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                SizedBox(width:5),
+                SizedBox(width:10),
                 Container(
                   width:80,
                   decoration: BoxDecoration(
-                      color:Colors.green.shade50,
+                      color:userlist[index].Status=="active"?Colors.greenAccent.shade100:Colors.amber.shade200,
                       borderRadius: BorderRadius.circular(10)
                   ),
                   child:Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text("Active",style:TextStyle(fontSize:18,color: Colors.green,fontWeight: FontWeight.bold)),
+                        child: Text(userlist[index].Status,
+                            style:TextStyle(fontSize:18,color: Colors.black,fontWeight: FontWeight.bold)),
                       )),
                 ),
                 Icon(Icons.more_vert)

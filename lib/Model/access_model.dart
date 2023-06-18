@@ -5,6 +5,7 @@ class AccessModel{
   String ImageUrl;
   String Name;
   String Phone;
+  String RequestTo;
 
   AccessModel({
     required this.id,
@@ -13,5 +14,6 @@ class AccessModel{
     required this.ImageUrl,
     required this.Name,
     required this.Phone,
+    required this.RequestTo,
 });
 }

@@ -4,6 +4,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import '../../../Contraints/user_preference.dart';
+import '../../../Model/CategoryListDataModel.dart';
+import '../../../Model/listdata_model.dart';
 import '../../../Theme/theme.dart';
 import '../../../functions/functions.dart';
 import '../../bottom_navigation.dart';
@@ -19,6 +21,13 @@ class PublishNotification extends StatefulWidget {
 class _PublishNotificationState extends State<PublishNotification> {
   @override
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  List<ListDataModel> datalist=[];
+  List<CategoryListDataModel> Categorydatalist=[];
+  ListDataModel?selectedItem;
+  CategoryListDataModel?CategoryselectedItems;
+
+
+
   String numberId = '';
   String UserName = '';
   // String UserName1 = '';
@@ -32,16 +41,6 @@ class _PublishNotificationState extends State<PublishNotification> {
   TextEditingController _subject = TextEditingController();
 
 
-  String _designationDpValue = 'Student';
-  String _academicDpValue = '1stYear';
-  String _collegeDpValue = 'GECWayanad';
-  String _studentValue ='Student';
-
-  var _usersList = ['Student', 'Teacher', 'NonTeachingStaff', 'OtherEmployees', 'Alumni', 'Others','General',];
-  var _academicYear = ['1stYear','2stYear', '3stYear', '4stYear','General',];
-  var _college = ['GECWayanad', 'GECIdukki','GECPalakkad','GECKannur','GECThrissor','GECThiruvananthapuram','Others'];
-
-
   void initState(){
 
     AwesomeNotifications().isNotificationAllowed().then((isAllowed){
@@ -50,6 +49,8 @@ class _PublishNotificationState extends State<PublishNotification> {
       }
     });
     getDataD1();
+    loadItem();
+    loadItem1();
     super.initState();
   }
 
@@ -61,6 +62,31 @@ class _PublishNotificationState extends State<PublishNotification> {
           body: _content.text,
             title: _subject.text
         ));
+  }
+
+  loadItem() async {
+    mRootReference.child("AccessManagement").child("Colleges").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
+  }
+  loadItem1() async {
+    mRootReference.child("AccessManagement").child("Designation").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      Categorydatalist.clear();
+      data.forEach((key, value) {
+        Categorydatalist.add(CategoryListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
   }
 
 
@@ -166,44 +192,17 @@ class _PublishNotificationState extends State<PublishNotification> {
                   ),
                 ),
 
-                // Padding(
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: TextFormField(
-                //     enabled: false,
-                //     initialValue: College,
-                //     style: TextStyle(color: Colors.black),
-                //     decoration: InputDecoration(
-                //       border: const OutlineInputBorder(),
-                //       labelText: 'Publisher designation',
-                //       labelStyle: TextStyle(color: Colors.black),
-                //       hintStyle: TextStyle(color: Colors.blue),
-                //       hintText: 'Publisher designation',
-                //       filled: true,
-                //       fillColor: Colors.white,
-                //       enabledBorder: OutlineInputBorder(
-                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //         borderSide: BorderSide(
-                //             color: MyColors.LightBlackcolor, width: 1.2),
-                //       ),
-                //       focusedBorder: OutlineInputBorder(
-                //         borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //         borderSide: BorderSide(
-                //             color: MyColors.LightBlackcolor, width: 1.6),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-
                 Padding(
                   padding: const EdgeInsets.only(left:10.0),
                   child: Align(alignment:Alignment.topLeft, child: Text("To",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 18,))),
                 ),
 
+
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Container(
-                    width: double.infinity,
-                    height: 60,
+                    width: width/1.1,
+                    height: 40,
                     decoration:BoxDecoration(
                         color:Colors.white,
                         borderRadius: BorderRadius.circular(5),
@@ -213,34 +212,35 @@ class _PublishNotificationState extends State<PublishNotification> {
                         )
                     ),
                     child: DropdownButtonHideUnderline(
-                      child: DropdownButton(
-                        // Initial Value
-                        value: _collegeDpValue,
-                        iconEnabledColor: Colors.black,
-                        borderRadius: BorderRadius.circular(10),
-                        // Down Arrow Icon
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        // Array list of items
-                        items: _college.map((String items) {
-                          return DropdownMenuItem(
-                            value: items,
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10),
-                              child: Text(items),
-                            ),
-                          );
-                        }).toList(),
-                        // After selecting the desired option,it will
-                        // change button value to selected value
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _collegeDpValue = newValue!;
-                          });
-                        },
+                      child: Padding(
+                        padding: const EdgeInsets.only(left:20.0,right:20),
+                        child: DropdownButton<ListDataModel>(
+                          value : selectedItem,
+                          iconEnabledColor: Colors.black,
+                          borderRadius: BorderRadius.circular(30),
+                          icon: const Icon(Icons.swap_vert),
+                          onChanged:(ListDataModel? newValue){
+                            setState((){
+                              selectedItem = newValue;
+                              // loadNotification();
+                            });
+
+                          },
+                          items: datalist.map<DropdownMenuItem<ListDataModel>>((ListDataModel value){
+                            return DropdownMenuItem<ListDataModel>(
+                                value: value,
+                                child:Padding(
+                                  padding: const EdgeInsets.only(left:10.0,right:10),
+                                  child: Text(value.id),
+                                )
+                            );
+                          }).toList(),
+                        ),
                       ),
                     ),
                   ),
                 ),
+
 
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -266,32 +266,30 @@ class _PublishNotificationState extends State<PublishNotification> {
                               )
                           ),
                           child: DropdownButtonHideUnderline(
-                            child: DropdownButton(
-                              // Initial Value
-                              value: _designationDpValue,
-                              iconEnabledColor: Colors.black,
-                              borderRadius: BorderRadius.circular(10),
-                              // Down Arrow Icon
-                              icon: const Icon(Icons.keyboard_arrow_down),
-                              // Array list of items
-                              items: _usersList.map((String items) {
-                                return DropdownMenuItem(
-                                  value: items,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left:10.0,right:10),
-                                    child: Text(items),
-                                  ),
-                                );
-                              }).toList(),
-                              // After selecting the desired option,it will
-                              // change button value to selected value
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _designationDpValue = newValue!;
-                                  print("asdfghjkl ${_designationDpValue}");
-                                  print("asdfghjkl ${_studentValue}");
-                                });
-                              },
+                            child: Padding(
+                              padding: const EdgeInsets.only(left:20.0,right:20),
+                              child: DropdownButton<CategoryListDataModel>(
+                                value : CategoryselectedItems,
+                                iconEnabledColor: Colors.black,
+                                borderRadius: BorderRadius.circular(30),
+                                icon: const Icon(Icons.swap_vert),
+                                onChanged:(CategoryListDataModel? newValue){
+                                  setState((){
+                                    CategoryselectedItems = newValue;
+                                    // loadNotification();
+                                  });
+
+                                },
+                                items: Categorydatalist.map<DropdownMenuItem<CategoryListDataModel>>((CategoryListDataModel value){
+                                  return DropdownMenuItem<CategoryListDataModel>(
+                                      value: value,
+                                      child:Padding(
+                                        padding: const EdgeInsets.only(left:10.0,right:10),
+                                        child: Text(value.id),
+                                      )
+                                  );
+                                }).toList(),
+                              ),
                             ),
                           ),
                         ),
@@ -300,68 +298,7 @@ class _PublishNotificationState extends State<PublishNotification> {
                     ),
                   ),
                 ),
-                _designationDpValue==_studentValue?
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width:width/1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            SizedBox(width:5,),
-                            SizedBox(width:width/3,
-                                child: Text("Select acadamic year ",style: TextStyle(color: Colors.black,fontSize: 16,))),
-                            Spacer(),
-                            Container(
-                              width: 200,
-                              height: 40,
-                              decoration:BoxDecoration(
-                                  color:Colors.white,
-                                  borderRadius: BorderRadius.circular(5),
-                                  border: Border.all(
-                                      color: Colors.black38,
-                                      width: 1
-                                  )
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton(
-                                  // Initial Value
-                                  value: _academicDpValue,
-                                  iconEnabledColor: Colors.black,
-                                  borderRadius: BorderRadius.circular(10),
-                                  // Down Arrow Icon
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-                                  // Array list of items
-                                  items: _academicYear.map((String items) {
-                                    return DropdownMenuItem(
-                                      value: items,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(left:10.0,right:10),
-                                        child: Text(items),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  // After selecting the desired option,it will
-                                  // change button value to selected value
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      _academicDpValue = newValue!;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 5,),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: 15,),
 
-                    ],
-                  ),
-                ):Container(),
 
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -520,27 +457,7 @@ class _PublishNotificationState extends State<PublishNotification> {
     data["Subject"] = _subject.text;
     data["NotificationContent"] = _content.text;
     data["UserProfileImage"]=imageUrl;
-
-
-
-
-    // HashMap<String, dynamic> access = HashMap<String, dynamic>();
-    // access["Name"] = name.text;
-    // access["Phone"] = id;
-    // access["AcessCode"] = '1';
-    // access["AcessName"] = 'Users';
-    // access["College"] =_collegeDpValue;
-    // access["Designation"] =_designationDpValue;
-    //
-
-    if(_designationDpValue==_studentValue){
-      await mRootReference.child("Notification").child(College).child(_designationDpValue).child(_academicDpValue).child(id1).update(data);
-    }
-    else {
-      await mRootReference.child("Notification").child(College).child(_designationDpValue).child(id1).update(data);
-    }
-
-    // await mRootReference.child("AccessControl").child(id).update(access);
+    await mRootReference.child("Notification").child(selectedItem!.id).child(CategoryselectedItems!.id).child(id1).update(data);
     Future.delayed(const Duration(seconds: 1), () {
       finishAccountCreation( NotificationList(), context);
     });

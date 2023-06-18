@@ -36,6 +36,8 @@ class _AdminBottomNavigationState extends State<AdminBottomNavigation> {
   String UidName = '';
   String ProfimageUrl = '';
   String access="";
+  String imageUrl="";
+  String UserType="";
 
 
   int _currentIndex=0;
@@ -52,6 +54,28 @@ class _AdminBottomNavigationState extends State<AdminBottomNavigation> {
     getDataF1();
     super.initState();
   }
+
+  getDataAccess() async {
+    College = (await getString(UserPreferences.COLLEGE));
+    Designation = (await getString(UserPreferences.DESIGNATION));
+    mRootReference
+        .child("AccessControl")
+        .child(await getString(UserPreferences.USER_NUMBER))
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("fffffff ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        College = data["College"];
+        Designation = data["Designation"];
+        UserType = data["AcessName"];
+        numberId =data["Phone"];
+        setState(() {});
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return

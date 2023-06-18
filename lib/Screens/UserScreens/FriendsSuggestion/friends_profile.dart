@@ -64,8 +64,8 @@ class _FriendsProfileState extends State<FriendsProfile> {
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
                           children: [
-                            imageUrl!=""?CachedNetworkImage(
-                              imageUrl: imageUrl,
+                            widget.userListModel.imageUrl!=""?CachedNetworkImage(
+                              imageUrl: widget.userListModel.imageUrl,
                               placeholder: (context, url) => const CircleAvatar(
                                 backgroundColor: Colors.amber,
                                 radius: 60,
@@ -75,7 +75,7 @@ class _FriendsProfileState extends State<FriendsProfile> {
                                 radius: 60,
                               ),
                             ):CachedNetworkImage(
-                              imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
+                              imageUrl: "https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0",
                               placeholder: (context, url) => const CircleAvatar(
                                 backgroundColor: Colors.amber,
                                 radius: 60,

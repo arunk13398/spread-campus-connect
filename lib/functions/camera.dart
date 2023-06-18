@@ -13,6 +13,7 @@ import 'package:miniq/Screens/bottom_navigation.dart';
 import 'package:miniq/Theme/theme.dart';
 import 'package:shimmer/shimmer.dart';
 
+import '../Model/listdata_model.dart';
 import '../Screens/Adminbottom_navigation.dart';
 import '../Screens/UserScreens/FeedScreen/FeedPage.dart';
 import 'functions.dart';
@@ -48,6 +49,9 @@ class _CameraState extends State<Camera> {
   late Stream<User?> _authStateChanges;
 
   bool isConnected = false;
+  List<ListDataModel> datalist=[];
+  ListDataModel?selectedItem;
+
 
   String _categoryDpValue = 'Public';
   var _category = [
@@ -58,11 +62,25 @@ class _CameraState extends State<Camera> {
   @override
   void initState() {
     super.initState();
+    loadNotification();
     //_read_onechld();
     getSharPdata();
     checkRealtimeConnection();
     getDataF1();
     // print("desig dwerx ${UserName}");
+  }
+
+  loadNotification() async {
+    mRootReference.child("AccessManagement").child("Designation").child(await getString(UserPreferences.DESIGNATION)).child("Camera").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
   }
 
   @override
@@ -136,49 +154,101 @@ class _CameraState extends State<Camera> {
                           SizedBox(width: 10),
                           Text("Feed Publish to", style: TextStyle(fontSize: 18)),
                           Spacer(),
+
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(10.0),
                             child: Container(
-                              height: 45,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
+                              width: 180,
+                              height: 40,
+                              decoration:BoxDecoration(
+                                  color:Colors.white,
                                   borderRadius: BorderRadius.circular(30),
-                                  border:
-                                      Border.all(color: Colors.black38, width: 1)),
+                                  border: Border.all(
+                                      color: Colors.black38,
+                                      width: 1
+                                  )
+                              ),
                               child: DropdownButtonHideUnderline(
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.only(left: 12.0, right: 20),
-                                  child: DropdownButton(
-                                    // Initial Value
-                                    value: _categoryDpValue,
+                                  padding: const EdgeInsets.only(left:20.0,right:20),
+                                  child: DropdownButton<ListDataModel>(
+                                    value : selectedItem,
                                     iconEnabledColor: Colors.black,
                                     borderRadius: BorderRadius.circular(30),
-                                    // Down Arrow Icon
                                     icon: const Icon(Icons.swap_vert),
-                                    // Array list of items
-                                    items: _category.map((String items) {
-                                      return DropdownMenuItem(
-                                        value: items,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10.0, right: 10),
-                                          child: Text(items),
-                                        ),
+                                    onChanged:(ListDataModel? newValue){
+                                      setState((){
+                                        selectedItem = newValue;
+                                      });
+
+                                    },
+                                    items: datalist.map<DropdownMenuItem<ListDataModel>>((ListDataModel value){
+                                      return DropdownMenuItem<ListDataModel>(
+                                          value: value,
+                                          child:Padding(
+                                            padding: const EdgeInsets.only(left:10.0,right:10),
+                                            child: Text(value.id),
+                                          )
                                       );
                                     }).toList(),
-                                    // After selecting the desired option,it will
-                                    // change button value to selected value
-                                    onChanged: (String? newValue) {
-                                      setState(() {
-                                        _categoryDpValue = newValue!;
-                                      });
-                                    },
                                   ),
                                 ),
                               ),
                             ),
                           ),
+
+
+
+                          // Padding(
+                          //   padding: const EdgeInsets.all(8.0),
+                          //   child: Container(
+                          //     height: 45,
+                          //     width: 120,
+                          //     decoration: BoxDecoration(
+                          //         color: Colors.white,
+                          //         borderRadius: BorderRadius.circular(30),
+                          //         border:
+                          //             Border.all(color: Colors.black38, width: 1)),
+                          //     child: ListView.builder(
+                          //       scrollDirection: Axis.horixontal,
+                          //       itemCount: datalist.length,
+                          //       itemBuilder: (context, index) => ListChange(index),
+                          //     )
+                          //
+                          //     // DropdownButtonHideUnderline(
+                          //     //   child: Padding(
+                          //     //     padding:
+                          //     //         const EdgeInsets.only(left: 12.0, right: 20),
+                          //     //     child: DropdownButton(
+                          //     //       // Initial Value
+                          //     //       value: _categoryDpValue,
+                          //     //       iconEnabledColor: Colors.black,
+                          //     //       borderRadius: BorderRadius.circular(30),
+                          //     //       // Down Arrow Icon
+                          //     //       icon: const Icon(Icons.swap_vert),
+                          //     //       // Array list of items
+                          //     //       items: _category.map((String items) {
+                          //     //         return DropdownMenuItem(
+                          //     //           value: items,
+                          //     //           child: Padding(
+                          //     //             padding: const EdgeInsets.only(
+                          //     //                 left: 10.0, right: 10),
+                          //     //             child: Text(items),
+                          //     //           ),
+                          //     //         );
+                          //     //       }).toList(),
+                          //     //       // After selecting the desired option,it will
+                          //     //       // change button value to selected value
+                          //     //       onChanged: (String? newValue) {
+                          //     //         setState(() {
+                          //     //           _categoryDpValue = newValue!;
+                          //     //         });
+                          //     //       },
+                          //     //     ),
+                          //     //   ),
+                          //     // ),
+                          //   ),
+                          // ),
                         ],
                       ),
                       SizedBox(height: 0,),
@@ -424,7 +494,7 @@ class _CameraState extends State<Camera> {
   Future<void> add() async {
     HashMap<String, dynamic> data = HashMap<String, dynamic>();
     String id = DateTime.now().millisecondsSinceEpoch.toString();
-    String subId = _categoryDpValue;
+    String subId = selectedItem!.id;
     print("gggggggg" + imageUrl);
     data["id"]=id;
     data["Description"] = description.text;
@@ -432,9 +502,11 @@ class _CameraState extends State<Camera> {
     data['UserName'] = UserName;
     data['Designation'] = designationU;
     data['ProfileImage'] = ProfileImage;
-    data['ToPublish'] = _categoryDpValue;
+    data['ToPublish'] = selectedItem!.id;
     data['RegisterLink'] = PostLinkUrl.text;
     data["Date"] = DateTime.now().toString();
+    data["Phone"]=await getString(UserPreferences.USER_NUMBER);
+    data["College"]=await getString(UserPreferences.COLLEGE);
     data["ImageUrlTime"] = DateTime.now().millisecondsSinceEpoch.toString();
 
     await mRootReference
@@ -446,7 +518,7 @@ class _CameraState extends State<Camera> {
     PostLink["id"]=id;
     PostLink["Description"] = description.text;
     PostLink["ImageUrl"] = imageUrl;
-    PostLink['ToPublish'] = _categoryDpValue;
+    PostLink['ToPublish'] = selectedItem!.id;
     await mRootReference
         .child("UsersList")
         .child(await getString(UserPreferences.COLLEGE))
@@ -654,6 +726,15 @@ class _CameraState extends State<Camera> {
       builder: (BuildContext context) {
         return alert;
       },
+    );
+  }
+
+  Widget ListChange(int index){
+    return Container(
+      child:Padding(
+        padding: const EdgeInsets.only(left:15.0,right:15,top:10,bottom:10),
+        child:  Text(datalist[index].id,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+      ),
     );
   }
 

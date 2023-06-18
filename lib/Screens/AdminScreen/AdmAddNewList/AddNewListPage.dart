@@ -1,5 +1,3 @@
-
-
 import 'dart:collection';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,6 +19,10 @@ class _AddNewListPageState extends State<AddNewListPage> {
   TextEditingController newListController = TextEditingController();
   TextEditingController CategoryItem = TextEditingController();
   TextEditingController SubCategoryItem = TextEditingController();
+  TextEditingController NewSubCategoryItem = TextEditingController();
+
+  final CategoryItem1 = TextEditingController();
+  final CategoryItem2 = TextEditingController();
 
 
   List<ListDataModel> datalist=[];
@@ -31,6 +33,9 @@ class _AddNewListPageState extends State<AddNewListPage> {
 
   bool isSwitchedCategoryItem = false;
   bool isSwitchedCategory = false;
+  bool isSwitchedSubCategory = false;
+
+  int isColorSelected=0;
 
   @override
   void initState() {
@@ -39,6 +44,7 @@ class _AddNewListPageState extends State<AddNewListPage> {
     // TODO: implement initState
     super.initState();
   }
+
 
   @override
   var size,height,width;
@@ -50,245 +56,349 @@ class _AddNewListPageState extends State<AddNewListPage> {
       body: SafeArea(
         child:
 
-        Column(
-          children: [
-            Align(alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text("Category Management",
-                    style: TextStyle(fontSize: 18,color:MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
-                )),
-
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Container(
-                width: width/1.1,
-                height: 40,
-                decoration:BoxDecoration(
-                    color:Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                        color: Colors.black38,
-                        width: 1
-                    )
-                ),
-                child: DropdownButtonHideUnderline(
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Align(alignment: Alignment.centerLeft,
                   child: Padding(
-                    padding: const EdgeInsets.only(left:20.0,right:20),
-                    child: DropdownButton<ListDataModel>(
-                      value : selectedItem,
-                      iconEnabledColor: Colors.black,
-                      borderRadius: BorderRadius.circular(30),
-                      icon: const Icon(Icons.swap_vert),
-                      onChanged:(ListDataModel? newValue){
-                        setState((){
-                          selectedItem = newValue;
-                          CategoryloadNotification();
-                        });
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text("Category Management",
+                      style: TextStyle(fontSize: 18,color:MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
+                  )),
 
-                      },
-                      items: datalist.map<DropdownMenuItem<ListDataModel>>((ListDataModel value){
-                        return DropdownMenuItem<ListDataModel>(
-                            value: value,
-                            child:Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10),
-                              child: Text(value.id),
-                            )
-                        );
-                      }).toList(),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                  width: width/1.1,
+                  height: 40,
+                  decoration:BoxDecoration(
+                      color:Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                          color: Colors.black38,
+                          width: 1
+                      )
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left:20.0,right:20),
+                      child: DropdownButton<ListDataModel>(
+                        value : selectedItem,
+                        iconEnabledColor: Colors.black,
+                        borderRadius: BorderRadius.circular(30),
+                        icon: const Icon(Icons.swap_vert),
+                        onChanged:(ListDataModel? newValue){
+                          setState((){
+                            selectedItem = newValue;
+                            CategoryloadNotification();
+                            getDataF1(hashCode);
+                          });
+
+                        },
+                        items: datalist.map<DropdownMenuItem<ListDataModel>>((ListDataModel value){
+                          return DropdownMenuItem<ListDataModel>(
+                              value: value,
+                              child:Padding(
+                                padding: const EdgeInsets.only(left:10.0,right:10),
+                                child: Text(value.id),
+                              )
+                          );
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
 
 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                width:double.infinity,
-                height:50,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemCount: Categorydatalist.length,
-                  itemBuilder: (context, index) => AdaptorNew(index),),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                child: Row(
-                  children: [
-                    Text("Add new sub Category Items",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                    Spacer(),
-                    Switch(
-                        value: isSwitchedCategoryItem,
-                        onChanged: (value){
-                          setState(() {
-                            isSwitchedCategoryItem = value;
-
-                          });
-                        }),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                child: Row(
-                  children: [
-                    Text("Add new Category",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                    Spacer(),
-                    Switch(
-                        value: isSwitchedCategory,
-                        onChanged: (value){
-                          setState(() {
-                            isSwitchedCategory = value;
-
-                          });
-                        }),
-                  ],
-                ),
-              ),
-            ),
-            isSwitchedCategoryItem==true?Column(
-            children: [
-              Container(
-                child: Center(
-                  child:Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text("Add item in to this category"),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: Colors.black,
-                                borderRadius: BorderRadius.circular(30)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:15.0,right:15,top:7,bottom:7),
-                              child: Text(selectedItem!.id,
-                                style: TextStyle(color:MyColors.ColorGreen1,fontSize: 16),),
-                            )),
-                      ),
-                    ],
-                  ),),
-              ),
-              Padding(
-               padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: newListController,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Year of Passout Batch',
-                  hintText: 'Examble : 2022',
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                autofocus: false,
-              ),
-         ),
-              Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: MaterialButton(
-                 height: 50,
-                 color: MyColors.Colorgreen3,
-                 minWidth: double.infinity,
-                 shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(10.0)),
-                 onPressed: () async {
-                   await AddList(hashCode).then((value) {
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                       backgroundColor: Colors.grey,
-                       content: Text(
-                         "Successful",
-                         style: TextStyle(color: Colors.black),
-                       ),
-                     ));
-                     newListController.clear();
-                     // description.clear();
-                     // finish(context);
-                   });
-                 },
-                 child: const Text("create new data list",style: TextStyle(color: Colors.white,fontSize: 20)),
-               ),
-         ),
-            ],
-          ):Container(),
-            isSwitchedCategory==true?Column(
-            children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("Add item in to this category"),
-              ),
-              Padding(
-               padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: CategoryItem,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Category name',
-                  hintText: 'Category name',
-                  filled: true,
-                  fillColor: Colors.white,
+                child: SizedBox(
+                  width:double.infinity,
+                  height:50,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: Categorydatalist.length,
+                    itemBuilder: (context, index) => AdaptorNew(index),),
                 ),
-                autofocus: false,
               ),
-         ),
               Padding(
-               padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: SubCategoryItem,
-                textInputAction: TextInputAction.next,
-                keyboardType: TextInputType.name,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Sub Category item name',
-                  hintText: 'Sub Category item name',
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
-                autofocus: false,
-              ),
-         ),
-              Padding(
-               padding: const EdgeInsets.all(8.0),
-               child: MaterialButton(
-                 height: 50,
-                 color: MyColors.Colorgreen3,
-                 minWidth: double.infinity,
-                 shape: RoundedRectangleBorder(
-                     borderRadius: BorderRadius.circular(10.0)),
-                 onPressed: () async {
-                   await AddList(hashCode).then((value) {
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                       backgroundColor: Colors.grey,
-                       content: Text(
-                         "Successful",
-                         style: TextStyle(color: Colors.black),
-                       ),
-                     ));
-                     newListController.clear();
-                     // description.clear();
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  child: Row(
+                    children: [
+                      Text("Add new Category",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                      Spacer(),
+                      Switch(
+                          value: isSwitchedCategory,
+                          onChanged: (value){
+                            setState(() {
+                              isSwitchedCategory = value;
 
-                   });
-                 },
-                 child: const Text("create new data list",style: TextStyle(color: Colors.white,fontSize: 20)),
-               ),
-         ),
+                            });
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  child: Row(
+                    children: [
+                      Text("sub Category Items",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                      Spacer(),
+                      Switch(
+                          value: isSwitchedCategoryItem,
+                          onChanged: (value){
+                            setState(() {
+                              isSwitchedCategoryItem = value;
+
+                            });
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  child: Row(
+                    children: [
+                      Text("sub Category access",style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                      Spacer(),
+                      Switch(
+                          value: isSwitchedSubCategory,
+                          onChanged: (value){
+                            setState(() {
+                              isSwitchedSubCategory = value;
+
+                            });
+                          }),
+                    ],
+                  ),
+                ),
+              ),
+              isSwitchedCategoryItem==true?Column(
+              children: [
+
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    controller: CategoryItem1,
+                    enabled: false,
+                    textInputAction: TextInputAction.next,
+                    keyboardType: TextInputType.name,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Category name',
+                      hintText: 'Category name',
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    autofocus: false,
+                  ),
+                ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: newListController,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Add new Item',
+                    hintText: 'Add new Item',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  autofocus: false,
+                ),
+           ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: MaterialButton(
+                   height: 50,
+                   color: MyColors.Colorgreen3,
+                   minWidth: double.infinity,
+                   shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(10.0)),
+                   onPressed: () async {
+                     await AddList(hashCode).then((value) {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                         backgroundColor: Colors.grey,
+                         content: Text(
+                           "Successful",
+                           style: TextStyle(color: Colors.black),
+                         ),
+                       ));
+                       newListController.clear();
+                       // description.clear();
+                       // finish(context);
+                     });
+                   },
+                   child: const Text("create new data list",style: TextStyle(color: Colors.white,fontSize: 20)),
+                 ),
+           ),
+              ],
+            ):Container(),
+              isSwitchedCategory==true?Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Add item in to this category"),
+                ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: CategoryItem,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Category name',
+                    hintText: 'Category name',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  autofocus: false,
+                ),
+           ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: SubCategoryItem,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Sub Category item name',
+                    hintText: 'Sub Category item name',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  autofocus: false,
+                ),
+           ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: MaterialButton(
+                   height: 50,
+                   color: MyColors.Colorgreen3,
+                   minWidth: double.infinity,
+                   shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(10.0)),
+                   onPressed: () async {
+                     await AddList(hashCode).then((value) {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                         backgroundColor: Colors.grey,
+                         content: Text(
+                           "Successful",
+                           style: TextStyle(color: Colors.black),
+                         ),
+                       ));
+                       newListController.clear();
+                       // description.clear();
+
+                     });
+                   },
+                   child: const Text("create new data list",style: TextStyle(color: Colors.white,fontSize: 20)),
+                 ),
+           ),
+              ],
+                 ):Container(),
+              isSwitchedSubCategory==true?Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text("Add item in to this category"),
+                ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: CategoryItem1,
+                  enabled: false,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Category name',
+                    hintText: 'Category name',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  autofocus: false,
+                ),
+           ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: CategoryItem2,
+                  enabled: false,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Sub Category item name',
+                    hintText: 'Sub Category item name',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  autofocus: false,
+                ),
+           ),
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: NewSubCategoryItem,
+                  textInputAction: TextInputAction.next,
+                  keyboardType: TextInputType.name,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'item name',
+                    hintText: ' item name',
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                  autofocus: false,
+                ),
+           ),
+
+
+
+                Padding(
+                 padding: const EdgeInsets.all(8.0),
+                 child: MaterialButton(
+                   height: 50,
+                   color: MyColors.Colorgreen3,
+                   minWidth: double.infinity,
+                   shape: RoundedRectangleBorder(
+                       borderRadius: BorderRadius.circular(10.0)),
+                   onPressed: () async {
+                     await AddList(hashCode).then((value) {
+                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                         backgroundColor: Colors.grey,
+                         content: Text(
+                           "Successful",
+                           style: TextStyle(color: Colors.black),
+                         ),
+                       ));
+                       newListController.clear();
+                       // description.clear();
+
+                     });
+                   },
+                   child: const Text("create new data list",style: TextStyle(color: Colors.white,fontSize: 20)),
+                 ),
+           ),
+              ],
+                 ):Container(),
+
             ],
-               ):Container(),
-
-          ],
+          ),
         ),
       ),
     );
@@ -314,13 +424,24 @@ class _AddNewListPageState extends State<AddNewListPage> {
       Future.delayed(const Duration(seconds: 1), () {
         // finishAccountCreation( AdminBottomNavigation(), context);
       });
+    }else if(isSwitchedSubCategory==true){
+      HashMap<String, dynamic> data = HashMap<String, dynamic>();
+      String id = CategoryItem1.text;
+      String id1 = CategoryItem2.text;
+      String id2 = NewSubCategoryItem.text;
+      data["id"] = NewSubCategoryItem.text;
+      await mRootReference.child("AccessManagement").child(id).child(id1).child(id2).update(data);
+      // await mRootReference.child("AccessManagement").child(id).child(id1).remove(data);
+      Future.delayed(const Duration(seconds: 1), () {
+        // finishAccountCreation( AdminBottomNavigation(), context);
+      });
     }
     else{}
 
   }
 
   loadNotification() {
-    mRootReference.child("ListDemo").onValue.listen((event) {
+    mRootReference.child("AccessManagement").onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       datalist.clear();
       data.forEach((key, value) {
@@ -334,7 +455,7 @@ class _AddNewListPageState extends State<AddNewListPage> {
 
   CategoryloadNotification() {
 if(selectedItem==null)return;
-    mRootReference.child("ListDemo").child(selectedItem!.id).onValue.listen((event) {
+    mRootReference.child("AccessManagement").child(selectedItem!.id).onValue.listen((event) {
       Map<dynamic, dynamic> data = event.snapshot.value as Map;
       Categorydatalist.clear();
       data.forEach((key, value) {
@@ -344,24 +465,46 @@ if(selectedItem==null)return;
     });
   }
 
+  getDataF1(int index) async {
+    CategoryItem1.text=selectedItem!.id;
+    mRootReference.child("AccessManagement").child(selectedItem!.id).child(Categorydatalist[index].id)
+        .once()
+        .then((value) {
+      if (value.snapshot.exists) {
+        print("lllllllll ${value.snapshot.value}");
+        Map<dynamic, dynamic> data = value.snapshot.value as Map;
+        CategoryItem2.text = data["id"];
+
+        setState(() {});
+      }
+    });
+  }
+
+
   Widget AdaptorNew(int index){
     return Container(
       child: Center(
         child:Padding(
           padding: const EdgeInsets.all(5.0),
           child: InkWell(
-            onTap: (){
+            onLongPress: (){
               DeleteAlert(context,index);
+            },
+            onTap: (){
+              setState(() {
+                isColorSelected=index;
+                getDataF1(index);
+              });
             },
             child: Container(
               decoration: BoxDecoration(
-                color: MyColors.ColorGreen1,
+                  color: isColorSelected==index?MyColors.Colorgreen2:Colors.white,
                 borderRadius: BorderRadius.circular(30)
               ),
                 child: Padding(
                   padding: const EdgeInsets.only(left:15.0,right:15,top:7,bottom:7),
                   child: Text(Categorydatalist[index].id,
-                    style: TextStyle(color: Colors.black,fontSize: 16),),
+                    style: TextStyle(color: isColorSelected==index?Colors.white:Colors.black,fontSize: 16),),
                 )),
           ),
         ),),

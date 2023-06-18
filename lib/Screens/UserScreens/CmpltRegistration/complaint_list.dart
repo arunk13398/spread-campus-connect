@@ -1,16 +1,16 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-
 import '../../../Contraints/user_preference.dart';
 import '../../../Model/complaint_model.dart';
+import '../../../Model/listdata_model.dart';
 import '../../../Theme/theme.dart';
+import '../../../functions/functions.dart';
 import 'Complaint_details.dart';
 import 'complaint_registration.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class ComplaintList extends StatefulWidget {
-  const ComplaintList({Key? key}) : super(key: key);
-
+   ComplaintList({Key? key,}) : super(key: key);
   @override
   State<ComplaintList> createState() => _ComplaintListState();
 }
@@ -18,6 +18,11 @@ class ComplaintList extends StatefulWidget {
 class _ComplaintListState extends State<ComplaintList> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<ComplaintModel> ComplaintList = [];
+  List<ComplaintModel> ComplaintListReview = [];
+  List<ListDataModel> datalist=[];
+  List<ListDataModel> datalistAccess=[];
+
+
   var size, height, width;
   String Uid = '';
   String username = '';
@@ -29,20 +34,34 @@ class _ComplaintListState extends State<ComplaintList> {
   String Designation='';
   String imageUrl='';
   String access='';
+  String UserType='';
+  String Status='';
+
+  String checkData='';
+
+  int isColorSelected=0;
+
 
   @override
   void initState() {
-    loadComplaint();
-    getDataF1();
-    checkRealtimeConnection();
+    getDataAccess();
+    loadItem();
+    loadItemAccess();
+    if(isColorSelected==0){
+      loadComplaint2();
+    }else{
+      loadComplaint1();
+    }
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
-    return  Scaffold(
+    return
+      Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
@@ -59,9 +78,21 @@ class _ComplaintListState extends State<ComplaintList> {
                 ),
               ),
             ),
+
+            if(UserType=="Principal"||UserType=="Hod"||UserType=="Admin"||UserType=="Hos"||UserType=="OfficeStaff"||UserType=="Reviewer")Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: SizedBox(
+                height:50,width:width/1,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: datalist.length,
+                  itemBuilder: (context, index) => AdaptorNew(index),
+                ),
+              ),
+            ),
+
             Expanded(
               child: Container(
-                // height: 120,
                 child: ListView.builder(
                   itemCount: ComplaintList.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -71,7 +102,7 @@ class _ComplaintListState extends State<ComplaintList> {
               )
 
             ),
-            Designation=='Alumni'?Container():Padding(
+            Designation=='Alumni'||Status=="blocked"?Container():Padding(
               padding: const EdgeInsets.all(8.0),
               child: MaterialButton(onPressed: () {
                 Navigator.push(
@@ -95,72 +126,60 @@ class _ComplaintListState extends State<ComplaintList> {
     );
   }
 
-
-  loadComplaint() async {
+  loadComplaint1() async {
     Designation = await getString(UserPreferences.DESIGNATION);
-
-    if(Designation=='Admin'||Designation=='Teacher'){
-      mRootReference.child("Complaints").child("AdminAccess").onValue.listen((event) {
-        Map<dynamic, dynamic> data = event.snapshot.value as Map;
-        ComplaintList.clear();
-        data.forEach((key, value) {
-          ComplaintList.add(ComplaintModel(
-            id: key,
-            rAdmNumber: value['AdmissionNo'],
-            rClgNo: value['RegisterNo'],
-            rCmptText: value['Complaint'],
-            rDate: value['Date'],
-            rMobNumber: value['MobileNumber'],
-            rName: value['Name'],
-            rSubject: value['Subject'],
-            rTo: value['To'],
-            rStatus: value['Status'],
-          ));
-        });
-        setState(() {});
+    numberId = await getString(UserPreferences.USER_NUMBER);
+    // UserType = (await getString(UserPreferences.ACCESSTYPE));
+    mRootReference.child("Complaints").child(numberId).onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      ComplaintList.clear();
+      data.forEach((key, value) {
+        ComplaintList.add(ComplaintModel(
+          id: key,
+          rAdmNumber: value['AdmissionNo'],
+          rClgNo: value['RegisterNo'],
+          rCmptText: value['Complaint'],
+          rDate: value['Date'],
+          rMobNumber: value['MobileNumber'],
+          rName: value['Name'],
+          rSubject: value['Subject'],
+          rTo: value['To'],
+          rStatus: value['Status'],
+        ));
       });
-    }else{
-      mRootReference.child("Complaints").child(await getString(UserPreferences.USER_NUMBER)).onValue.listen((event) {
-        Map<dynamic, dynamic> data = event.snapshot.value as Map;
-        ComplaintList.clear();
-        data.forEach((key, value) {
-          ComplaintList.add(ComplaintModel(
-            id: key,
-            rAdmNumber: value['AdmissionNo'],
-            rClgNo: value['RegisterNo'],
-            rCmptText: value['Complaint'],
-            rDate: value['Date'],
-            rMobNumber: value['MobileNumber'],
-            rName: value['Name'],
-            rSubject: value['Subject'],
-            rTo: value['To'],
-            rStatus: value['Status'],
-          ));
-        });
-        setState(() {});
-      });
-    }
-
-
+      setState(() {});
+    });
   }
 
 
 
-  void checkRealtimeConnection() {
-    Connectivity().onConnectivityChanged.listen((my_result) {
-      if (my_result == ConnectivityResult.mobile ||
-          my_result == ConnectivityResult.wifi) {
-        print("connected");
-        setState(() {
-          isConnected = true;
-        });
-      } else if (my_result == ConnectivityResult.none) {
-        print("not connected");
-        setState(() {
-          isConnected = false;
-        });
-      }
+  loadComplaint2() async {
+
+    Designation = await getString(UserPreferences.DESIGNATION);
+    UserType = (await getString(UserPreferences.ACCESSTYPE));
+
+    print("testing usertype****************${UserType}");
+    mRootReference.child("Complaints").child("AdminAccess").child(UserType).onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      ComplaintList.clear();
+      data.forEach((key, value) {
+        ComplaintList.add(ComplaintModel(
+          id: key,
+          rAdmNumber: value['AdmissionNo'],
+          rClgNo: value['RegisterNo'],
+          rCmptText: value['Complaint'],
+          rDate: value['Date'],
+          rMobNumber: value['MobileNumber'],
+          rName: value['Name'],
+          rSubject: value['Subject'],
+          rTo: value['To'],
+          rStatus: value['Status'],
+        ));
+      });
+      setState(() {});
     });
+
+
   }
 
   Widget ComplaintListAdaptor(int index){
@@ -241,7 +260,16 @@ class _ComplaintListState extends State<ComplaintList> {
                                   Text(ComplaintList[index].rTo,style: TextStyle(fontWeight: FontWeight.bold),),
                                 ],
                               ),
-                            )
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left:5.0,top:10),
+                              child: Row(
+                                children: [
+                                  Text("Posted from "),
+                                  Text(ComplaintList[index].rName,style: TextStyle(fontWeight: FontWeight.bold),),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -298,7 +326,8 @@ class _ComplaintListState extends State<ComplaintList> {
                       Padding(
                           padding: const EdgeInsets.only(
                               left: 10.0, right: 5),
-                          child: MaterialButton(onPressed: () {
+                          child: MaterialButton(
+                            onPressed: () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -323,24 +352,86 @@ class _ComplaintListState extends State<ComplaintList> {
     );
   }
 
-  getDataF1() async {
-    numberId = (await getString(UserPreferences.USER_NUMBER));
-    UserName = (await getString(UserPreferences.USER_Name));
+  getDataAccess() async {
     College = (await getString(UserPreferences.COLLEGE));
-    Designation = (await getString(UserPreferences.COLLEGE));
+    // UserType = (await getString(UserPreferences.ACCESSTYPE));
+    Designation = (await getString(UserPreferences.DESIGNATION));
     mRootReference
-        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
+        .child("AccessControl")
         .child(await getString(UserPreferences.USER_NUMBER))
-        .child(await getString(UserPreferences.DESIGNATION))
         .once()
         .then((value) {
       if (value.snapshot.exists) {
-        print("lllllllll ${value.snapshot.value}");
+        print("fffffff ${value.snapshot.value}");
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        imageUrl=data['ImageUrl'];
-        Designation= data['Designation'];
+        College = data["College"];
+        Designation = data["Designation"];
+        UserType = data["AcessName"];
+        Status = data["Status"];
+        numberId =data["Phone"];
         setState(() {});
       }
     });
   }
+
+
+  loadItem() async {
+    mRootReference.child("AccessManagement").child("ComplaintAccess").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalist.clear();
+      data.forEach((key, value) {
+        datalist.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
+  }
+
+  loadItemAccess() async {
+    mRootReference.child("AccessManagement").child("Complaint").onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      datalistAccess.clear();
+      data.forEach((key, value) {
+        datalistAccess.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
+  }
+
+  Widget AdaptorNew(int index){
+    return InkWell(
+      onTap: (){
+        setState(() {
+         if( datalist[index].id=="ToReview"){
+           loadComplaint2();
+         }else{
+           loadComplaint1();
+
+         }
+          isColorSelected=index;
+        });
+      },
+
+      child: Container(
+        child: Center(
+          child:Padding(
+            padding: const EdgeInsets.all(5.0),
+            child: Container(
+                decoration: BoxDecoration(
+                    color: isColorSelected==index?MyColors.Colorgreen2:Colors.white,
+                    borderRadius: BorderRadius.circular(30)
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left:15.0,right:15,top:7,bottom:7),
+                  child: Text(datalist[index].id,
+                    style: TextStyle(color: isColorSelected==index?Colors.white:Colors.black,fontSize: 16),),
+                )),
+          ),),
+      ),
+    );
+  }
+
 }

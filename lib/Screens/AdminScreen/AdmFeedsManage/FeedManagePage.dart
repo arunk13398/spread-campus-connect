@@ -26,8 +26,8 @@ class _FeedManagePageState extends State<FeedManagePage> {
   List<FeedModel> list = [];
   String access="Teacher";
   String College = '';
-  String _categoryDpValue = 'Public';
-  var _category = ['Public', 'Connections', 'Club', 'Event', 'Other',];
+  String _categoryDpValue = 'All';
+  var _category = ['All', 'Connections', 'Club', 'Event', 'Other',];
 
 
   void initState() {
@@ -135,39 +135,6 @@ class _FeedManagePageState extends State<FeedManagePage> {
                 // ),)
               ),
 
-
-
-              // Align(
-              //   alignment: Alignment.bottomRight,
-              //   child: Padding(
-              //     padding: const EdgeInsets.only(bottom:20.0,right:10),
-              //     child: SizedBox(
-              //       width: 145,
-              //       child: MaterialButton(
-              //         height:45,
-              //         minWidth: 145,
-              //         color:MyColors.Colorgreen2,
-              //         splashColor: Colors.green,
-              //         shape:RoundedRectangleBorder(
-              //             borderRadius: BorderRadius.circular(30)
-              //         ),
-              //         onPressed: (){
-              //           Navigator.push(context,
-              //               MaterialPageRoute(
-              //                   builder: (context) => Camera()));
-              //           // Navigator.of(context).deactivate();
-              //         },
-              //
-              //         child: Row(
-              //           children: [
-              //             Icon(Icons.camera_alt_outlined,color: Colors.white,), SizedBox(width: 6,),
-              //             Text("Post Image",style:TextStyle(fontSize: 17,color:Colors.white,fontWeight: FontWeight.bold)),
-              //           ],
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // )
             ],
           ),
         ));
@@ -200,7 +167,12 @@ class _FeedManagePageState extends State<FeedManagePage> {
                       icon: Icons.delete,
                       label: 'Delete',
                       onPressed: ( context) {
-                        showAlertDialog(context,index);
+                        mRootReference
+                            .child("Feeds").child(_categoryDpValue)
+                            .child(list[index].id).remove();
+
+                        mRootReference.child('UsersList').child(list[index].College).child(list[index].Phone).child(list[index].desigUser).child('Post').child(list[index].id).remove();
+                        list.removeAt(index);
                       },
                     ),
                   ],
@@ -335,6 +307,8 @@ class _FeedManagePageState extends State<FeedManagePage> {
           profImg: value['ProfileImage'],
           toPublish: value['ToPublish'],
           RegisterLink: value['RegisterLink'],
+          Phone: value['Phone'],
+          College: value['College']
         ));
       });
       setState(() {});
@@ -344,38 +318,3 @@ class _FeedManagePageState extends State<FeedManagePage> {
 void doNothing(BuildContext context) {}
 
 
-showAlertDialog(BuildContext context,int index) {
-  AlertDialog alert = AlertDialog(
-    title: const Text("Confirm delete"),
-    content: const Text("Do you want to delete this post from entire Feeds"),
-    actions: [
-      TextButton(
-        child: const Text("No"),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-      TextButton(
-        child:  Text("Yes"),
-        onPressed: () async {
-          // mRootReference
-          //     .child("UsersList").child(await getString(UserPreferences.COLLEGE))
-          //     .child(await getString(UserPreferences.USER_NUMBER))
-          //     .child(await getString(UserPreferences.DESIGNATION)).child("Post").child(Glist[index].id).remove();
-          //
-          // mRootReference.child('Feeds').child(Glist[index].ToPublish).child(Glist[index].id).remove();
-          // Glist.removeAt(index);
-        },
-      ),
-
-    ],
-  );
-
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}

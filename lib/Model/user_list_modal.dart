@@ -6,6 +6,8 @@ class UserListModel {
   String College;
   String Phone;
   String AccessName;
+  String imageUrl;
+  String Status;
 
   UserListModel({
     required this.id,
@@ -15,6 +17,8 @@ class UserListModel {
     required this.College,
     required this.Phone,
     required this.AccessName,
+    required this.imageUrl,
+    required this.Status,
 
   });
 

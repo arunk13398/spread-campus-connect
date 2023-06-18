@@ -539,6 +539,7 @@ class _UserRegistrationState extends State<UserRegistration> {
     access["AcessName"] = 'Users';
     access["College"] =_collegeDpValue;
     access["Designation"] =_designationDpValue;
+    access["Status"] ="active";
     await mRootReference.child("UsersList").child(id1).child(id).child(id2).update(data);
 
     await mRootReference.child("AccessControl").child(id).update(access);

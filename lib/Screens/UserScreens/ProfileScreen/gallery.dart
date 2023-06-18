@@ -87,6 +87,8 @@ class _GalleryState extends State<Gallery> {
           profImg: value['ProfileImage'],
           toPublish: value['ToPublish'],
           RegisterLink: value['RegisterLink'],
+            Phone: value['Phone'],
+            College: value['College']
           // ToPublish: value['ToPublish'],
         ));
       });
