@@ -9,6 +9,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../Contraints/user_preference.dart';
 import '../../../Model/feed_model.dart';
 import '../../../Model/gallery_model.dart';
+import '../../../Model/listdata_model.dart';
 import '../../../Theme/theme.dart';
 import '../../../functions/functions.dart';
 import '../AdditionalScreens/about_screen.dart';
@@ -30,6 +31,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
 
   List<GalleryModel> Glist = [];
+  List<ListDataModel> userlistdata = [];
 
   String numberId='';
   String UserName='';
@@ -45,6 +47,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
     getDataF1();
     getDataF2();
     load();
+    loadItem();
 
   }
   var size,height,width;
@@ -144,7 +147,7 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
                               child: Row(
                                 children: [
                                   Spacer(),
-                                  Text("followers",style: TextStyle(fontWeight: FontWeight.bold),),
+                                  Text(userlistdata.length.toString() +" followers",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),
                                   Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
                                   Spacer(),
@@ -396,6 +399,21 @@ class _ProfileDashboardState extends State<ProfileDashboard> {
         ),
       ),
     );
+  }
+
+
+  loadItem() async {
+    mRootReference.child("UsersList").child(await getString(UserPreferences.COLLEGE))
+        .child(await getString(UserPreferences.USER_NUMBER)).child('Friends').onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      userlistdata.clear();
+      data.forEach((key, value) {
+        userlistdata.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
+    });
   }
 
 showAlertDialogMoreGallery(BuildContext context,int index) {

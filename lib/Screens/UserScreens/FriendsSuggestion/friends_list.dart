@@ -1,8 +1,11 @@
+import 'dart:collection';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Contraints/user_preference.dart';
+import '../../../Model/listdata_model.dart';
 import '../../../Model/user_list_modal.dart';
 import '../../../Theme/theme.dart';
 import '../../../functions/functions.dart';
@@ -19,16 +22,20 @@ class _FriendsListPageState extends State<FriendsListPage> {
 
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<UserListModel> userlist = [];
+  List<ListDataModel> userlistdata = [];
+
   String imageUrl='';
   String College='';
   String Designation='';
   String UserType='';
   String Status='';
+  String numberId='';
 
   @override
   void initState() {
     load();
     getDataAccess();
+    loadItem();
     // TODO: implement initState
     super.initState();
   }
@@ -155,33 +162,41 @@ class _FriendsListPageState extends State<FriendsListPage> {
               Spacer(),
 
               MaterialButton(
-                onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>
-                  //             ComplaintDetails(complaintModel: ComplaintList[index],))
-                  // );
+                onPressed: () async {
+                  if(userlistdata.length==0){
+                    HashMap<String, dynamic> data = HashMap<String, dynamic>();
+                    String id= userlist[index].Phone;
+                    data["Id"] = userlist[index].Phone;
+                    mRootReference.child("UsersList").child(await getString(UserPreferences.COLLEGE))
+                        .child(await getString(UserPreferences.USER_NUMBER)).child('Friends').child(id).update(data);
+
+                  }else{
+                    if(userlistdata[index].id==userlist[index].Phone){
+                      HashMap<String, dynamic> data = HashMap<String, dynamic>();
+                      String id= userlist[index].Phone;
+                      data["Id"] = userlist[index].Phone;
+                      mRootReference.child("UsersList").child(await getString(UserPreferences.COLLEGE))
+                          .child(await getString(UserPreferences.USER_NUMBER)).child('Friends').child(id).remove();
+                    }
+                    else{
+                      HashMap<String, dynamic> data = HashMap<String, dynamic>();
+                      String id= userlist[index].Phone;
+                      data["Id"] = userlist[index].Phone;
+                      mRootReference.child("UsersList").child(await getString(UserPreferences.COLLEGE))
+                          .child(await getString(UserPreferences.USER_NUMBER)).child('Friends').child(id).update(data);
+                    }
+                  }
+
                 },
                 color: MyColors.ColorGreen1,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10)
                 ),
-                child: Text("Connect !",style: TextStyle(color: Colors.black),),
+                child:
+                userlistdata.length==0?Text("Connect",style: TextStyle(color: Colors.black)):
+                Text(userlistdata[index].id==userlist[index].Phone?"DisConnect !":"Connect",style: TextStyle(color: Colors.black),)
               ),
 
-              // Container(
-              //   width:90,
-              //   decoration: BoxDecoration(
-              //       color:Colors.green.shade50,
-              //       borderRadius: BorderRadius.circular(10)
-              //   ),
-              //   child:Center(
-              //       child: Padding(
-              //         padding: const EdgeInsets.all(8.0),
-              //         child: Text("Connect",style:TextStyle(fontSize:18,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold)),
-              //       )),
-              // ),
               SizedBox(width:10),
             ],
           ),
@@ -204,9 +219,24 @@ class _FriendsListPageState extends State<FriendsListPage> {
         College = data["College"];
         Designation = data["Designation"];
         UserType = data["AcessName"];
+        numberId = data["Phone"];
         Status = data["Status"];
         setState(() {});
       }
+    });
+  }
+
+  loadItem() async {
+    mRootReference.child("UsersList").child(await getString(UserPreferences.COLLEGE))
+        .child(await getString(UserPreferences.USER_NUMBER)).child('Friends').onValue.listen((event) {
+      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+      userlistdata.clear();
+      data.forEach((key, value) {
+        userlistdata.add(ListDataModel(
+          id: key,
+        ));
+      });
+      setState(() {});
     });
   }
 
