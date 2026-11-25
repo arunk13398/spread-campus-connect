@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class adminpage extends StatefulWidget {
   const adminpage({super.key});
@@ -71,8 +70,7 @@ class _adminpageState extends State<adminpage> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.blue,
-                    onPrimary: Colors.white,
+                    foregroundColor: Colors.white, backgroundColor: Colors.blue,
                     padding: EdgeInsets.all(8.0)),
                 child: Text(
                   buttonText(index),

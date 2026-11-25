@@ -50,11 +50,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDKK0xTxrGW0z2wIVKDrNFx6zvV6p31an0',
-    appId: '1:805615150793:android:8b6134da98d9f9679b0f18',
-    messagingSenderId: '805615150793',
-    projectId: 'miniq-42131',
-    storageBucket: 'miniq-42131.appspot.com',
+    apiKey: 'AIzaSyAqZt16W7ff2Pw2edLQ-TH0PfIavzN1Spg',
+    appId: '1:8317183196:android:5603e8b93cff9bd74cc019',
+    messagingSenderId: '8317183196',
+    projectId: 'minqlite',
+    databaseURL: 'https://minqlite-default-rtdb.firebaseio.com',
+    storageBucket: 'minqlite.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(

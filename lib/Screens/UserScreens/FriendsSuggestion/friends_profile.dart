@@ -1,398 +1,492 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 
 import '../../../Contraints/user_preference.dart';
-import '../../../Model/feed_model.dart';
 import '../../../Model/gallery_model.dart';
 import '../../../Model/user_list_modal.dart';
 import '../../../Theme/theme.dart';
 import '../../../functions/functions.dart';
-import '../../AdminScreen/TestPagesAkshy/splash_screen.dart';
+import '../../../functions/widgets.dart';
 
 class FriendsProfile extends StatefulWidget {
   final UserListModel userListModel;
-   FriendsProfile({Key? key, required this.userListModel,}) : super(key: key);
+  const FriendsProfile({Key? key, required this.userListModel})
+      : super(key: key);
 
   @override
   State<FriendsProfile> createState() => _FriendsProfileState();
 }
 
 class _FriendsProfileState extends State<FriendsProfile> {
-
-  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  final DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
 
   List<GalleryModel> Glist = [];
-
-  String numberId='';
-  String UserName='';
-  String College='';
-  String Designation='';
-  String imageUrl='';
-  String access='';
-
+  int _followersCount = 0;
+  bool _isConnected = false;
+  bool _isSelf = false;
+  String _department = '';
+  String _interest = '';
+  String _liveImageUrl = '';
 
   @override
   void initState() {
     super.initState();
+    _liveImageUrl = widget.userListModel.imageUrl;
     load();
-
+    _loadFriendProfileMeta();
+    _listenConnectionState();
   }
-  var size,height,width;
+
+  Future<void> _listenConnectionState() async {
+    final college = await getString(UserPreferences.COLLEGE);
+    final number = await getString(UserPreferences.USER_NUMBER);
+    if (college == null || number == null) return;
+    if (number == widget.userListModel.Phone) {
+      if (mounted) {
+        setState(() {
+          _isSelf = true;
+        });
+      }
+      return;
+    }
+    mRootReference
+        .child("UsersList")
+        .child(college)
+        .child(number)
+        .child('Friends')
+        .child(widget.userListModel.Phone)
+        .onValue
+        .listen((event) {
+      if (!mounted) return;
+      setState(() {
+        _isConnected = event.snapshot.exists;
+      });
+    });
+  }
+
+  Future<void> _loadFriendProfileMeta() async {
+    final u = widget.userListModel;
+    if (u.College.isEmpty || u.Phone.isEmpty) return;
+    mRootReference
+        .child("UsersList")
+        .child(u.College)
+        .child(u.Phone)
+        .child('Friends')
+        .onValue
+        .listen((event) {
+      final raw = event.snapshot.value;
+      if (!mounted) return;
+      setState(() {
+        _followersCount = raw is Map ? raw.length : 0;
+      });
+    });
+
+    if (u.desigUser.isNotEmpty) {
+      mRootReference
+          .child("UsersList")
+          .child(u.College)
+          .child(u.Phone)
+          .child(u.desigUser)
+          .onValue
+          .listen((event) {
+        if (event.snapshot.exists && event.snapshot.value is Map) {
+          final data = event.snapshot.value as Map;
+          if (!mounted) return;
+          setState(() {
+            final img = (data['ImageUrl'] ?? '').toString();
+            if (img.isNotEmpty) _liveImageUrl = img;
+            _department = (data['Department'] ?? '').toString();
+            _interest = (data['Interest'] ?? '').toString();
+          });
+        }
+      });
+    }
+  }
+
+  Future<void> _toggleConnect() async {
+    final college = await getString(UserPreferences.COLLEGE);
+    final number = await getString(UserPreferences.USER_NUMBER);
+    if (college == null || number == null) return;
+    final ref = mRootReference
+        .child("UsersList")
+        .child(college)
+        .child(number)
+        .child('Friends')
+        .child(widget.userListModel.Phone);
+    if (_isConnected) {
+      await ref.remove();
+    } else {
+      await ref.update({"Id": widget.userListModel.Phone});
+    }
+  }
+
+  void _openFullScreenAvatar() {
+    final url = UserAvatarCache.instance.resolve(
+          phone: widget.userListModel.Phone,
+          name: widget.userListModel.userName,
+          college: widget.userListModel.College,
+          designation: widget.userListModel.desigUser,
+        ) ??
+        _liveImageUrl;
+    if (url.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FullScreenImagePage(
+          imageUrl: url,
+          heroTag: 'friend-avatar-${widget.userListModel.Phone}',
+          title: widget.userListModel.userName,
+          subtitle: widget.userListModel.College,
+        ),
+      ),
+    );
+  }
+
+  void _openFullScreenPost(GalleryModel item) {
+    if (item.gImageUrl.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FullScreenImagePage(
+          imageUrl: item.gImageUrl,
+          heroTag: 'friend-post-${item.id}',
+          title: widget.userListModel.userName,
+          subtitle: item.Description,
+        ),
+      ),
+    );
+  }
+
+  Widget _statColumn(String value, String label) {
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value.isEmpty ? '-' : value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context,) {
-    size = MediaQuery.of(context).size;
-    height = size.height;
-    width = size.width;
-    return  Scaffold(
+  Widget build(BuildContext context) {
+    final u = widget.userListModel;
+    final subtitleParts = [
+      if (u.desigUser.isNotEmpty) u.desigUser,
+      if (_department.isNotEmpty) _department,
+      if (u.College.isNotEmpty) u.College,
+    ];
+
+    return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child:
-          Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.5,
+        title: Text(
+          u.userName,
+          style: const TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
+                      GestureDetector(
+                        onTap: _openFullScreenAvatar,
+                        child: Container(
+                          padding: const EdgeInsets.all(2.5),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: LinearGradient(
+                              colors: [
+                                MyColors.Colorgreen3,
+                                MyColors.Colorgreen2,
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Hero(
+                              tag: 'friend-avatar-${u.Phone}',
+                              child: liveProfileAvatar(
+                                fallbackUrl: _liveImageUrl,
+                                phone: u.Phone,
+                                college: u.College,
+                                designation: u.desigUser,
+                                name: u.userName,
+                                radius: 40,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
                         child: Row(
                           children: [
-                            widget.userListModel.imageUrl!=""?CachedNetworkImage(
-                              imageUrl: widget.userListModel.imageUrl,
-                              placeholder: (context, url) => const CircleAvatar(
-                                backgroundColor: Colors.amber,
-                                radius: 60,
-                              ),
-                              imageBuilder: (context, image) => CircleAvatar(
-                                backgroundImage: image,
-                                radius: 60,
-                              ),
-                            ):CachedNetworkImage(
-                              imageUrl: "https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0",
-                              placeholder: (context, url) => const CircleAvatar(
-                                backgroundColor: Colors.amber,
-                                radius: 60,
-                              ),
-                              imageBuilder: (context, image) => CircleAvatar(
-                                backgroundImage: image,
-                                radius: 60,
-                              ),
-                            ),
-
-                            SizedBox(width: 20,),
-                            SizedBox(
-                              width:width/2.5,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(widget.userListModel.userName,style: TextStyle(fontSize: 22,fontWeight: FontWeight.bold),),
-                                  Text(widget.userListModel.College,style: TextStyle(fontSize: 16,color: Colors.grey),),
-                                  SizedBox(height: 5,),
-                                  MaterialButton(onPressed: () {
-                                    // print("sshashj${imageUrl}");
-                                    // Navigator.push(
-                                    //     context,
-                                    //     MaterialPageRoute(
-                                    //         builder: (context) => EditProfile()));
-                                  },
-                                    color: MyColors.Colorgreen3,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20)
-                                    ),
-                                    child: Text("Connect with you",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
-                                  )
-                                ],
-                              ),
-                            ),
+                            _statColumn('${Glist.length}', 'Posts'),
+                            _statColumn('$_followersCount', 'Followers'),
+                            _statColumn(u.desigUser, 'Role'),
                           ],
                         ),
                       ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                            width: width/1,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border:Border.all(color: Colors.grey.shade300,width: 1,)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10,top:15,bottom:15),
-                              child: Row(
-                                children: [
-                                  Spacer(),
-                                  Text("0 followers",style: TextStyle(fontWeight: FontWeight.bold),),
-                                  Spacer(),
-                                  Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
-                                  Spacer(),
-                                  Text("0 post",style: TextStyle(fontWeight: FontWeight.bold),),
-                                  Spacer(),
-                                  Text("|",style: TextStyle(fontWeight: FontWeight.bold),),
-                                  Spacer(),
-                                  Text(widget.userListModel.desigUser,style: TextStyle(fontWeight: FontWeight.bold),),
-                                  Spacer(),],
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    u.userName,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  if (subtitleParts.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitleParts.join(' • '),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                  if (_interest.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      _interest.split(',').map((e) => '#${e.trim()}').join(' '),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: MyColors.Colorgreen3,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                  if (!_isSelf) ...[
+                    const SizedBox(height: 14),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 38,
+                      child: _isConnected
+                          ? OutlinedButton.icon(
+                              onPressed: _toggleConnect,
+                              icon: const Icon(Icons.check_rounded, size: 17),
+                              label: const Text(
+                                'Connected',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13.5,
+                                ),
                               ),
-                            )),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.black87,
+                                backgroundColor: const Color(0xFFF5F6F8),
+                                side: BorderSide(color: Colors.grey.shade300),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            )
+                          : ElevatedButton.icon(
+                              onPressed: _toggleConnect,
+                              icon: const Icon(Icons.person_add_outlined,
+                                  size: 17),
+                              label: const Text(
+                                'Connect',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13.5,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: MyColors.Colorgreen3,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                Divider(height: 1, color: Colors.grey.shade200),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.grid_on_rounded,
+                          size: 19, color: Colors.black87),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Posts (${Glist.length})',
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
                       ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Container(
-                          // color:Colors.red,
-                            height: height / 1.3,
-                            child: Glist.length==0?Column(
-                              children: [
-                                Image.asset("assets/wrong.jpg",height:height/3,),
-                                Text("- No Posts -")
-                              ],
-                            ):
-                            SizedBox(
-                              child: GridView.builder(
-                                  itemCount: Glist.length,
-                                  gridDelegate:
-                                  SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 150,
-                                    mainAxisSpacing: 10.0,
-                                    crossAxisSpacing: 10,
-                                    childAspectRatio: 1,
-                                  ),
-                                  itemBuilder: (BuildContext context, int index) =>
-                                      galleryAdaptor(index)),
-                            )),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 1.5,
+                  color: Colors.black87,
+                  width: double.infinity,
+                ),
+              ],
+            ),
+          ),
+          if (Glist.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.photo_library_outlined,
+                          size: 48, color: Colors.grey.shade400),
+                      const SizedBox(height: 10),
+                      Text(
+                        'No posts yet',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
-
-
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 2, bottom: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 2,
+                  crossAxisSpacing: 2,
+                  childAspectRatio: 1,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => galleryAdaptor(index),
+                  childCount: Glist.length,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  load() async {
-    mRootReference.
-    child("UsersList").
-    child(widget.userListModel.College).
-    child(widget.userListModel.Phone).
-    child(widget.userListModel.desigUser).
-    child('Post').onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+  Future<void> load() async {
+    mRootReference
+        .child("UsersList")
+        .child(widget.userListModel.College)
+        .child(widget.userListModel.Phone)
+        .child(widget.userListModel.desigUser)
+        .child('Post')
+        .onValue
+        .listen((event) {
       Glist.clear();
-      data.forEach((key, value) {
-        Glist.add(GalleryModel(
-          id: key,
-          Description: value["Description"],
-          gImageUrl: value["ImageUrl"],
-          ToPublish: value["ToPublish"],
-
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          if (value is Map<dynamic, dynamic>) {
+            Glist.add(GalleryModel(
+              id: key.toString(),
+              Description: (value["Description"] ?? '').toString(),
+              gImageUrl: (value["ImageUrl"] ?? '').toString(),
+              ToPublish: (value["ToPublish"] ?? '').toString(),
+            ));
+          }
+        });
+        Glist.sort((a, b) {
+          final bt = int.tryParse(b.id) ?? 0;
+          final at = int.tryParse(a.id) ?? 0;
+          return bt.compareTo(at);
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
   Widget galleryAdaptor(int index) {
+    final item = Glist[index];
     return InkWell(
-      onLongPress: (){
-        print("abcd ${Glist[index].id}");
-        showAlertDialogMoreGallery(context,index);
-      },
-      onTap: (){
-        showAlertDialogMoreGalleryView(context,index);
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(5),
-        child: CachedNetworkImage(
-          width: double.infinity,
-          fit: BoxFit.fill,
-          imageUrl: Glist[index].gImageUrl,
-          placeholder: (context, url) => Center(
-              child: CircularProgressIndicator(
-                color: Colors.red,
-              )),
-        ),
-      ),
-    );
-  }
-
-  showAlertDialogMore(BuildContext context) {
-
-    AlertDialog alert = AlertDialog(
-      title: const Text("More options",style: TextStyle(fontSize: 16,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
-      content: Container(
-        height:140,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              InkWell(
-                onTap: (){
-
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Privacy policy",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                ),
-              ),
-              SizedBox(height: 5,),
-              InkWell(
-                onTap: (){
-
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("About",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                ),
-              ),
-              SizedBox(height: 5,),
-              InkWell(
-                onTap: (){
-
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("help",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                ),
-              ),
-              SizedBox(height: 5,),
-              InkWell(onTap: (){
-                setBool(UserPreferences.IS_LOGIN,false);
-                setString(UserPreferences.ACCESS_CODE,"");
-                setString(UserPreferences.USER_NUMBER,"");
-                setString(UserPreferences.USER_Name,"");
-                setString(UserPreferences.USER_TYPE,"");
-                finishAccountCreation( SplashScreen(), context);
-                // showAlertDialog(context);
-              },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("Logout",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color:Colors.red),),
-                ),
-              ),
-            ],
+      onTap: () => _openFullScreenPost(item),
+      child: Hero(
+        tag: 'friend-post-${item.id}',
+        child: Container(
+          color: Colors.grey.shade200,
+          child: CachedNetworkImage(
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            imageUrl: item.gImageUrl,
+            placeholder: (context, url) => Container(
+              color: Colors.grey.shade200,
+            ),
+            errorWidget: (context, url, error) => const Icon(
+              Icons.broken_image_outlined,
+              color: Colors.grey,
+            ),
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          child: Container(
-              decoration: BoxDecoration(
-                  color:MyColors.Colorgreen3,
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(30)
-                  )
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
-                child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
-              )),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
-  Shimmer getShimmerLoading1(){
-    return Shimmer.fromColors(
-      baseColor: Colors.grey.shade300,
-      highlightColor: Colors.grey.shade500,
-      // enabled: _enabled,
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child:  Container(
-          width: 120.0,
-          height: 120.0,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(60),
-          ),
-        ),
-      ),
-    );
-  }
-
-  showAlertDialogMoreGallery(BuildContext context,int index) {
-
-    AlertDialog alert = AlertDialog(
-      title: const Text("confirm"),
-      content: const Text("Are you sure to delete"),
-      actions: [
-        TextButton(
-          child: const Text("No"),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        TextButton(
-          child: const Text("Yes"),
-          onPressed: () async {
-            mRootReference
-                .child("UsersList").child(await getString(UserPreferences.COLLEGE))
-                .child(await getString(UserPreferences.USER_NUMBER))
-                .child(await getString(UserPreferences.DESIGNATION)).child("Post").child(Glist[index].id).remove();
-
-            mRootReference.child('Feeds').child(Glist[index].ToPublish).child(Glist[index].id).remove();
-            Glist.removeAt(index);
-            load();
-            Navigator.of(context).pop();
-          },
-        ),
-
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
-  showAlertDialogMoreGalleryView(BuildContext context,int index) {
-
-    AlertDialog alert = AlertDialog(
-      backgroundColor: Colors.transparent,
-      content: CachedNetworkImage(
-        width: 400,
-        fit: BoxFit.fitWidth,
-        imageUrl: Glist[index].gImageUrl,
-        placeholder: (context, url) => Center(
-            child: CircularProgressIndicator(
-              color: MyColors.Colorgreen3,
-            )),
-      ),
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
     );
   }
 }

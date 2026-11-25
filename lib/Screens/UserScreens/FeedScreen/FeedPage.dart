@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chip_list/chip_list.dart';
@@ -9,13 +10,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:like_button/like_button.dart';
-// import 'package:like_button/like_button.dart';
 import 'package:miniq/Contraints/user_preference.dart';
 import 'package:miniq/Model/feed_model.dart';
 import 'package:miniq/Screens/UserScreens/FeedScreen/comment_view.dart';
 import 'package:miniq/Theme/theme.dart';
 import 'package:miniq/functions/camera.dart';
+import 'package:miniq/functions/widgets.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -57,6 +57,7 @@ class _FeedPageState extends State<FeedPage> {
   bool isLiked = false;
   int isColorSelected=0;
   bool isConnected = false;
+  final Set<String> _expandedPosts = {};
   var size, height, width;
 
   int _currentIndex = 0;
@@ -73,11 +74,70 @@ class _FeedPageState extends State<FeedPage> {
     loadNotification();
     checkRealtimeConnection();
     super.initState();
-    _scrollController =  ScrollController();
-    _scrollController.addListener(() {
-      setState(() {
-      });
-    });
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _openCreatePost() {
+    if (Status == "blocked") {
+      showAlertDialogBloked(context);
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Camera()),
+      );
+    }
+  }
+
+  Widget _createPostButton() {
+    return Material(
+      color: MyColors.Colorgreen3,
+      shape: const CircleBorder(),
+      elevation: 2,
+      child: InkWell(
+        customBorder: const CircleBorder(),
+        onTap: _openCreatePost,
+        child: const SizedBox(
+          height: 38,
+          width: 38,
+          child: Icon(Icons.add_rounded, color: Colors.white, size: 22),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _setLike(FeedModel post, bool like) async {
+    if (numberId.isEmpty) return;
+    final targetBucket = post.toPublish.isNotEmpty ? post.toPublish : 'All';
+    final likeRef = mRootReference
+        .child('Feeds')
+        .child(targetBucket)
+        .child(post.id)
+        .child('Likes')
+        .child(numberId);
+    if (like) {
+      await likeRef.set(UserName);
+    } else {
+      await likeRef.remove();
+    }
+  }
+
+  void _openDetailPage(FeedModel post) {
+    if (Status == "blocked") {
+      showAlertDialogBloked(context);
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CommentViewScreen(feedModel: post),
+      ),
+    );
   }
 
   @override
@@ -85,176 +145,197 @@ class _FeedPageState extends State<FeedPage> {
     size = MediaQuery.of(context).size;
     height = size.height;
     width = size.width;
+    final double expandedHeight = datalist.isEmpty ? 102 : 148;
     return Scaffold(
-      backgroundColor: Colors.white,
-        body:  Stack(
-          children: [
-            SafeArea(
-              child: CustomScrollView(
-                controller: _scrollController,
-                slivers: [
-                  SliverAppBar(backgroundColor: Colors.white,
-                      pinned: true,
-                      expandedHeight: 190,
-                      flexibleSpace: LayoutBuilder(builder: (ctx,cons){
-                        top=cons.biggest.height;
-                        return FlexibleSpaceBar(
-                          centerTitle: true,
-
-                          title: AnimatedOpacity(
-                            opacity: top <=100?1.0:0.0,
-                            duration: Duration(milliseconds: 300),
-                            child: Padding(
-                              padding: const EdgeInsets.only(top:0.0),
-                              child: Row(children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left:15.0),
-                                  child: Text("Trending Feeds",
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 30,
-                                          color: Colors.black)),
-                                ),
-                                Spacer(),
-                                InkWell(
-                                  onTap: (){
-                                    if(Status=="blocked"){
-                                      showAlertDialogBloked(context);
-                                    }else{
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  Camera()
-                                          ));
-                                    }
-                                  },
-                                  child: Container(
-                                      height: 40,
-                                      width: 40,
-                                      decoration: BoxDecoration(
-                                        color:MyColors.Colorgreen3,
-                                        borderRadius: BorderRadius.circular(60),
-                                      ),
-                                      child:Icon(Icons.add,color: Colors.white,)
-                                  ),
-                                ),
-                                SizedBox(width: 10,),
-                              ],),
-                            ),
-                          ),
-
-                          background: Container(
-                            color: Colors.transparent,
-                            child: Container(
-                              color:Colors.white,
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 20.0, left: 10, right: 10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(left: 10.0),
-                                          child:
-                                          Column(
-                                            // mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [Text(UserName, style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.bold),
-                                            ),
-                                              Text(College, style: TextStyle(color: Colors.grey, fontSize: 14),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 10, bottom: 5, top: 20),
-                                      child: Text("Trending Feeds",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 40,
-                                              color: Colors.black)),
-                                    ),
-                                    SizedBox(height: 15,),
-                                    // Text('Using extraOnToggle: ${_menuItems[_currentIndex]}'),
-
-                                    // ChipList(
-                                    //   padding: EdgeInsets.all(10),
-                                    //   listOfChipNames: _menuItems,
-                                    //   activeBgColorList: [MyColors.Colorgreen2],
-                                    //   inactiveBgColorList: const [Colors.white],
-                                    //   activeTextColorList: const [Colors.white],
-                                    //   inactiveTextColorList: [Colors.black],
-                                    //   listOfChipIndicesCurrentlySeclected: [_currentIndex],
-                                    //   inactiveBorderColorList:  [MyColors.Colorgreen2],
-                                    //   extraOnToggle: (val) {
-                                    //     _currentIndex = val;
-                                    //     setState(() {
-                                    //       load();
-                                    //     });
-                                    //   },
-                                    // ),
-
-                                    SizedBox(
-                                      height:50,width:width/1,
-                                      child: ListView.builder(
-                                        scrollDirection: Axis.horizontal,
-                                        itemCount: datalist.length,
-                                        itemBuilder:(context, index) => AdaptoItemList(index),),
-                                    )
-
-                                  ],
-                                ),
+      backgroundColor: const Color(0xFFF2F4F7),
+      body: SafeArea(
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverAppBar(
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              elevation: 0,
+              pinned: true,
+              expandedHeight: expandedHeight,
+              flexibleSpace: LayoutBuilder(
+                builder: (ctx, cons) {
+                  top = cons.biggest.height;
+                  final collapsed = top <= kToolbarHeight + 24;
+                  return FlexibleSpaceBar(
+                    titlePadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 8),
+                    centerTitle: false,
+                    title: IgnorePointer(
+                      ignoring: !collapsed,
+                      child: AnimatedOpacity(
+                        opacity: collapsed ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 160),
+                        child: Row(
+                          children: [
+                            const Text(
+                              "Trending Feeds",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 19,
+                                color: Colors.black,
                               ),
                             ),
-                          ),
-                        );
-                      },)
-                  ),
-                  SliverToBoxAdapter(
-                      child:ListView.builder(
-                          primary: false,
-                          shrinkWrap: true,
-                          itemCount: list.length,
-                          itemBuilder: (BuildContext context, int index)=> AdaptorNew(index,getLiked(list[index].id))
-                      )
-
-                  )
-                ],
+                            const Spacer(),
+                            _createPostButton(),
+                          ],
+                        ),
+                      ),
+                    ),
+                    background: Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.fromLTRB(14, 8, 14, 4),
+                      child: AnimatedOpacity(
+                        opacity: collapsed ? 0.0 : 1.0,
+                        duration: const Duration(milliseconds: 160),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        UserName.isEmpty ? 'Welcome' : UserName,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      if (College.isNotEmpty)
+                                        Text(
+                                          College,
+                                          style: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                                _createPostButton(),
+                                const SizedBox(width: 8),
+                                profileAvatar(ProfimageUrl, radius: 18),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              "Trending Feeds",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 23,
+                                letterSpacing: -0.4,
+                                color: Colors.black,
+                              ),
+                            ),
+                            if (datalist.isNotEmpty) ...[
+                              const SizedBox(height: 6),
+                              SizedBox(
+                                height: 38,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: datalist.length,
+                                  itemBuilder: (context, index) =>
+                                      AdaptoItemList(index),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
-            _buildfab(),
+            if (list.isEmpty)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.dynamic_feed_outlined,
+                            size: 52, color: Colors.grey.shade400),
+                        const SizedBox(height: 10),
+                        Text(
+                          "No feeds yet",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "Tap + to share the first post",
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            color: Colors.grey.shade500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.only(top: 6, bottom: 14),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) =>
+                        AdaptorNew(index, list[index].isLiked),
+                    childCount: list.length,
+                  ),
+                ),
+              ),
           ],
-        )
-
+        ),
+      ),
     );
   }
 
   getDataF1() async {
-    numberId = (await getString(UserPreferences.USER_NUMBER));
-    UserName = (await getString(UserPreferences.USER_Name));
+    numberId = (await getString(UserPreferences.USER_NUMBER)) ?? '';
+    UserName = (await getString(UserPreferences.USER_Name)) ?? '';
+    final college = await getString(UserPreferences.COLLEGE);
+    final designation = await getString(UserPreferences.DESIGNATION);
+    if (college == null || numberId.isEmpty || designation == null) return;
     mRootReference
-        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
-        .child(await getString(UserPreferences.USER_NUMBER))
-        .child(await getString(UserPreferences.DESIGNATION))
-        .once()
-        .then((value) {
-      if (value.snapshot.exists) {
-        print("lllllllll ${value.snapshot.value}");
-        Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        College = data["College"];
-        Designation = data["Designation"];
-        Phone =data['Phone'];
-        ProfimageUrl=data['ImageUrl'];
-       if(mounted){
-         setState(() {});
-       }
+        .child("UsersList")
+        .child(college)
+        .child(numberId)
+        .child(designation)
+        .onValue
+        .listen((event) {
+      if (event.snapshot.exists && event.snapshot.value is Map) {
+        Map<dynamic, dynamic> data = event.snapshot.value as Map;
+        College = (data["College"] ?? '').toString();
+        Designation = (data["Designation"] ?? '').toString();
+        Phone = (data['Phone'] ?? '').toString();
+        ProfimageUrl = (data['ImageUrl'] ?? '').toString();
+        UserAvatarCache.instance.seed(
+          phone: Phone.isNotEmpty ? Phone : numberId,
+          name: (data['Name'] ?? UserName).toString(),
+          imageUrl: ProfimageUrl,
+        );
+        if (mounted) {
+          setState(() {});
+        }
       }
     });
   }
@@ -288,430 +369,355 @@ class _FeedPageState extends State<FeedPage> {
    }
     print("ggffgffgfgfgfgf${NewItem}");
     mRootReference.child("Feeds").child(NewItem).onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
-      data.forEach((key, value) {int count=0;
-        bool isLiked=false;
-        if(value['Likes'] !=null){
-          Map<dynamic, dynamic>? like = value['Likes'] as Map;
-          count=like.length;
-          isLiked=like[numberId]!=null;}
-        list.add(FeedModel(
-            id: key,
-            userName: value['UserName'],
-            desigUser: value['Designation'],
-            description: value['Description'],
-            imageUrl: value['ImageUrl'],
-            UpdatedTime: value['ImageUrlTime'],
-            profImg: value['ProfileImage'],
-            toPublish: value['ToPublish'],
-            RegisterLink: value['RegisterLink'],
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          if (value is! Map<dynamic, dynamic>) return;
+          int count = 0;
+          bool isLiked = false;
+          if (value['Likes'] is Map) {
+            Map<dynamic, dynamic> like = value['Likes'] as Map;
+            count = like.length;
+            isLiked = numberId.isNotEmpty && like[numberId] != null;
+          }
+          final int commentCount =
+              value['Comments'] is Map ? (value['Comments'] as Map).length : 0;
+          list.add(FeedModel(
+            id: key.toString(),
+            userName: (value['UserName'] ?? '').toString(),
+            desigUser: (value['Designation'] ?? '').toString(),
+            description: (value['Description'] ?? '').toString(),
+            imageUrl: (value['ImageUrl'] ?? '').toString(),
+            UpdatedTime: (value['ImageUrlTime'] ?? '').toString(),
+            profImg: (value['ProfileImage'] ?? '').toString(),
+            toPublish: (value['ToPublish'] ?? NewItem).toString(),
+            RegisterLink: (value['RegisterLink'] ?? '').toString(),
             likedCount: count,
-            isLiked:isLiked,
-            Phone: value['Phone'],
-            College: value['College'],
-
-          // ToPublish: value['ToPublish'],
-        ));});
-      setState(() {});
+            isLiked: isLiked,
+            commentCount: commentCount,
+            Phone: (value['Phone'] ?? '').toString(),
+            College: (value['College'] ?? '').toString(),
+          ));
+        });
+        list.sort((a, b) {
+          final bt = int.tryParse(b.UpdatedTime) ?? 0;
+          final at = int.tryParse(a.UpdatedTime) ?? 0;
+          return bt.compareTo(at);
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
-
   @override
-  Widget AdaptorNew(int index,bool? isLiked){
-    return Container(
-      child:ExpandableNotifier(
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: <Widget>[
-                ScrollOnExpand(
-                  scrollOnExpand: true,
-                  scrollOnCollapse: true,
-                  child: ExpandablePanel(
-                    theme: const ExpandableThemeData(
+  Widget AdaptorNew(int index, bool? isLiked) {
+    final post = list[index];
+    final timeAgo = formatTimeAgo(post.UpdatedTime);
+    final isExpanded = _expandedPosts.contains(post.id);
+    final hasLongDescription = post.description.length > 120;
+    final hasImage = post.imageUrl.isNotEmpty;
 
-                      // expandIcon: CupertinoIcons.arrow_down_right_arrow_up_left,
-                      // iconSize: 22,
-                      // iconColor: Colors.blue,
-                      headerAlignment: ExpandablePanelHeaderAlignment.center,
-                      tapBodyToCollapse: true,
+    final actionBar = PostActionBar(
+      keyPrefix: 'feed',
+      postId: post.id,
+      isLiked: post.isLiked == true,
+      likedCount: post.likedCount ?? 0,
+      commentCount: post.commentCount,
+      isOverlay: hasImage,
+      registerLink: post.RegisterLink,
+      onToggleLike: (currentlyLiked) async {
+        await _setLike(post, !currentlyLiked);
+        return !currentlyLiked;
+      },
+      onCommentTap: () => _openDetailPage(post),
+      onApplyTap: post.RegisterLink.isNotEmpty
+          ? () => openBrowserUrl(url: post.RegisterLink, inApp: true)
+          : null,
+    );
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.black.withValues(alpha: 0.05),
+          width: 0.8,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.045),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 8, 8),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(1.8),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [
+                        MyColors.Colorgreen3,
+                        MyColors.Colorgreen2,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    header: SizedBox(
-                      width: width / 1.5,
-                      child: Row(
-                        children: [
-                          SizedBox(width:0),
-                          list[index].profImg==''?
-                          CachedNetworkImage(
-                            imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
-                            placeholder: (context, url) =>  CircleAvatar(
-                              backgroundColor: Colors.blue.shade300,
-                              radius: 22,
-                            ),
-                            imageBuilder: (context, image) => CircleAvatar(
-                              backgroundImage: image,
-                              radius: 22,
-                            ),
-                          ):
-                          CachedNetworkImage(
-                            imageUrl: list[index].profImg,
-                            placeholder: (context, url) =>  CircleAvatar(
-                              backgroundColor: Colors.blue.shade300,
-                              radius: 22,
-                            ),
-                            imageBuilder: (context, image) => CircleAvatar(
-                              backgroundImage: image,
-                              radius: 22,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(1.5),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: liveProfileAvatar(
+                      fallbackUrl: post.profImg,
+                      phone: post.Phone,
+                      college: post.College,
+                      designation: post.desigUser,
+                      name: post.userName,
+                      radius: 17,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        post.userName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.1,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 1),
+                      Text(
+                        [
+                          if (post.desigUser.isNotEmpty) post.desigUser,
+                          if (post.College.isNotEmpty) post.College,
+                          if (timeAgo.isNotEmpty) timeAgo,
+                        ].join(' • '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: () => showAlertDialogMore(context),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.more_horiz,
+                      size: 20,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (hasImage)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Stack(
+                  children: [
+                    DoubleTapPinchImage(
+                      onTap: () => _openDetailPage(post),
+                      onDoubleTapLike: () {
+                        if (post.isLiked != true) {
+                          _setLike(post, true);
+                        }
+                      },
+                      child: Hero(
+                        tag: 'feed-image-${post.id}',
+                        child: CachedNetworkImage(
+                          imageUrl: post.imageUrl,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) => getShimmerLoading(),
+                          errorWidget: (context, url, error) =>
+                              const SizedBox.shrink(),
+                          imageBuilder: (context, image) => ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 410),
+                            child: Image(
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              image: image,
                             ),
                           ),
-                          Container(
-                            // color:Colors.red,
-                            width: width / 2.1,
-                            child: Column(
-                              mainAxisAlignment:
-                              MainAxisAlignment.start,
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, right: 5),
-                                  child: Text(
-                                      list[index].userName,
-                                      style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black),
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 1,
-                                      textAlign: TextAlign.start),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10.0, right: 5),
-                                  child: Text(
-                                    list[index].desigUser,
-                                    style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.grey),
-                                  ),
-                                ),
-
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      height: 76,
+                      child: IgnorePointer(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withValues(alpha: 0.42),
                               ],
                             ),
                           ),
-                          Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 10, right: 5),
-                            child: Text(
-                              "1 min ago",
-                              // list[index].username
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: 10,
+                      right: 10,
+                      bottom: 10,
+                      child: Row(
+                        children: [
+                          actionBar,
+                          const Spacer(),
+                          ClipOval(
+                            child: BackdropFilter(
+                              filter:
+                                  ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                              child: Material(
+                                color: Colors.black.withValues(alpha: 0.44),
+                                child: InkWell(
+                                  onTap: () => _openDetailPage(post),
+                                  child: Container(
+                                    padding: const EdgeInsets.all(7.5),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white
+                                            .withValues(alpha: 0.24),
+                                        width: 0.8,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.open_in_full_rounded,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    collapsed: Padding(
-                      padding: const EdgeInsets.only(top:8.0),
-                      child: Text(list[index].description,
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                          textAlign: TextAlign.justify,
-                          softWrap: false,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis),
-                    ),
-                    expanded: Padding(
-                      padding: const EdgeInsets.only(top:8.0),
-                      child: Text(list[index].description,
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                          textAlign: TextAlign.justify,
-                          softWrap: false,
-                          maxLines: 50,
-                          overflow: TextOverflow.ellipsis),
-                    ),
-
-                    builder: (_, collapsed, expanded) {
-                      return Padding(
-                        padding:
-                        EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                        child: Expandable(
-                          collapsed: collapsed,
-                          expanded: expanded,
-                          theme: const ExpandableThemeData(crossFadePoint: 0),
-                        ),
-                      );
-                    },
-                  ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child:
-                  list[index].imageUrl!=""?CachedNetworkImage(
-                    imageUrl: list[index].imageUrl,
-                    placeholder: (context, url) =>
-                        getShimmerLoading(),
-                    imageBuilder: (context, image) => ClipRRect(borderRadius: BorderRadius.circular(10),
-                      child: CachedNetworkImage(
-                        // height: 250,
-                        width: double.infinity,
-                        fit: BoxFit.fill,
-                        imageUrl: list[index].imageUrl,
-                        placeholder: (context, url) => getShimmerLoading(),),
-                    ),
-                  ):getShimmerLoading(),
-                ),
-                Padding(
-                  padding:  EdgeInsets.only(left: 0.0,top:10,bottom: 10),
-                  child: Row(
-                    children: [
-                      SizedBox(width:0),
-                      Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              border:Border.all(color: Colors.grey.shade300,width: 1,)
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                            child: Row(
-                              children: [
-                                LikeButton(
-                                  isLiked: list[index].isLiked,
-                                  onTap: (isLiked) async{
-                                    return !isLiked;
-                                     },
-                                  size: 25,
-                                  circleColor:CircleColor(start:Color(0xFF79D71E),end: Color(0xFFCEF894)),
-                                  bubblesColor: BubblesColor(
-                                      dotPrimaryColor: Color(0xFF79D71E),
-                                      dotSecondaryColor: Color(0xFFCEF894),
-                                  ),
-                                  likeBuilder: (bool isLiked){
-                                    return Icon(
-                                      isLiked ?Icons.favorite:Icons.favorite_border,
-                                      color:isLiked ? Colors.black:Colors.grey,
-                                      size:25,
-                                    );
-                                  },
-                                  likeCount: list[index].likedCount,
-                                  countBuilder: (count,bool isLiked, String text){
-                                    var color = isLiked?Colors.indigo:Colors.orange;
-                                    Widget result;
-                                      result = Text(text,style: TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),);
-                                      print("tutututu ${result}");
-                                    return result;
-                                  },
-                                ),
-
-                          //       IconButton(
-                          //       onPressed: () {
-                          // if(isLiked==true){
-                          // HashMap<String, dynamic> data = HashMap<String, dynamic>();
-                          // String id= numberId;
-                          // data["UserName"] = UserName;
-                          // data["Id"] = numberId;
-                          // mRootReference.child('Likes').child(id).remove();
-                          // }else{
-                          // HashMap<String, dynamic> data = HashMap<String, dynamic>();
-                          // String id= numberId;
-                          // data["UserName"] = UserName;
-                          // data["LikeId"] = numberId;
-                          // mRootReference.child('Likes').child(id).update(data);
-                          //   }
-                          // setState(() {
-                          //   isLiked=!isLiked;
-                          //    });
-                          // },
-                          //   icon: isLiked?Container(height: 20,
-                          //       child: Icon(Icons.favorite)):
-                          //   Container(height: 20,
-                          //       child: Icon(Icons.favorite_border)),)
-
-
-                              ],
-                            ),
-                          )),
-                      SizedBox(width:10),
-                      InkWell(
-                        onTap: (){
-                          if(Status=="blocked"){
-                            showAlertDialogBloked(context);
-                          }else{
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        CommentViewScreen(
-                                          feedModel: list[index],)));
-                          }
-                        },
-                        child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                border:Border.all(color: Colors.grey.shade300,width: 1,)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.chat_bubble_outline),
-                                  SizedBox(width: 2,),
-                                  Text(
-                                    "0",
-                                    style:
-                                    TextStyle(color: Colors.black, fontSize: 16,fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            )),
-                      ),
-                      SizedBox(width:10),
-                      InkWell(
-                        onTap: (){
-                          showAlertDialogMore(context,);
-                        },
-                        child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                border:Border.all(color: Colors.grey.shade300,width: 1,)
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.only(left:10.0,right:10,top:3,bottom:3),
-                              child: Icon(Icons.more_horiz),
-                            )),
-                      ),
-                      SizedBox(width:10),
-                      list[index].RegisterLink!=""?
-                    Container(
-                      width: width/2.7,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            border:Border.all(color: Colors.grey.shade300,width: 1,)
-                        ),
-                        child: InkWell(
-                          onTap: ()  {
-                            final url = list[index].RegisterLink;
-                            openBrowserUrl(url: url,inApp: true);
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(left:10.0,right:10,top:5,bottom:5),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.ads_click,size: 20,),
-                                SizedBox(width:15),
-                                Text("Apply",style: TextStyle(color:Colors.blue,fontWeight: FontWeight.bold),)
-                              ],
-                            ),
-                          ),
-                        )):Container(),
-                    ],
-                  ),
-                ),
-
-              ],
+              ),
             ),
-          )),
-    );
-  }
-
-  Widget _buildfab(){
-    final double defaultMargin=190;
-    final double defaultStart=160;
-    final double defaultEnd=defaultStart/2;
-
-    double top =defaultMargin;
-    double scale = 1.0;
-
-    if(_scrollController.hasClients){
-      double offset = _scrollController.offset;
-      top-=offset;
-      if(offset<defaultMargin-defaultStart){
-        scale =1.0;
-      }else if(offset<defaultStart-defaultEnd){
-        scale =(defaultMargin-defaultEnd-offset)/defaultEnd;
-      }else{
-        scale=0.0;
-      }
-    }
-
-    return Positioned(
-        top: 41,
-        right: 10,
-        child: Transform(
-            alignment: Alignment.center,
-            transform: Matrix4.identity()..scale(scale),
-            child: Row(
-              children: [
-                SizedBox(height: 40,
-                    child: InkWell(
-                      onTap: (){
-                        if(Status=="blocked"){
-                          showAlertDialogBloked(context);
-                        }else{
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                  // showmodelBottomsheet()
-                                  Camera()
-                              ));
-                        }
-                      },
-                      child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color:MyColors.Colorgreen3,
-                            borderRadius: BorderRadius.circular(60),
-                          ),
-                          child:Icon(Icons.add,color: Colors.white,)
+          if (post.description.trim().isNotEmpty)
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                14,
+                hasImage ? 10 : 2,
+                14,
+                hasImage ? 12 : 6,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    maxLines: isExpanded ? null : 3,
+                    overflow: isExpanded
+                        ? TextOverflow.visible
+                        : TextOverflow.ellipsis,
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.4,
+                        color: Color(0xFF1E293B),
                       ),
-                    ),),
-                SizedBox(width: 10,),
-
-                ProfimageUrl==''?
-                CachedNetworkImage(
-                  imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
-                  placeholder: (context, url) =>  CircleAvatar(
-                    backgroundColor: Colors.blue.shade300,
-                    radius: 22,
+                      children: [
+                        TextSpan(
+                          text: '${post.userName}  ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
+                        TextSpan(text: post.description),
+                      ],
+                    ),
                   ),
-                  imageBuilder: (context, image) => CircleAvatar(
-                    backgroundImage: image,
-                    radius: 22,
-                  ),
-                ):CachedNetworkImage(
-                  imageUrl: ProfimageUrl,
-                  placeholder: (context, url) =>  CircleAvatar(
-                    backgroundColor: Colors.blue.shade300,
-                    radius: 22,
-                  ),
-                  imageBuilder: (context, image) => CircleAvatar(
-                    backgroundImage: image,
-                    radius: 22,
-                  ),
-                ),
-              ],
-            )));
-
+                  if (hasLongDescription)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (isExpanded) {
+                            _expandedPosts.remove(post.id);
+                          } else {
+                            _expandedPosts.add(post.id);
+                          }
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          isExpanded ? "Show less" : "Read more",
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w600,
+                            color: MyColors.Colorgreen3,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            )
+          else if (hasImage)
+            const SizedBox(height: 8),
+          if (!hasImage)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 2, 12, 12),
+              child: actionBar,
+            ),
+        ],
+      ),
+    );
   }
 
   void checkRealtimeConnection() {
     Connectivity().onConnectivityChanged.listen((my_result) {
-      if (my_result == ConnectivityResult.mobile ||
-          my_result == ConnectivityResult.wifi) {
+      if (my_result.contains(ConnectivityResult.mobile) ||
+          my_result.contains(ConnectivityResult.wifi)) {
         print("connected");
         setState(() {
           isConnected = true;
         });
-      } else if (my_result == ConnectivityResult.none) {
+      } else if (my_result.contains(ConnectivityResult.none) ||
+          my_result.isEmpty) {
         print("not connected");
         setState(() {
           isConnected = false;
@@ -812,75 +818,80 @@ class _FeedPageState extends State<FeedPage> {
     //
   }
 
-  showAlertDialogMore(BuildContext context) {
-
-    AlertDialog alert = AlertDialog(
-      title: Image.asset("assets/letterblacknewcolor.png",height: 50,),
-      content: Container(
-        height:100,
-        width: 80,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-             Text("More options",style: TextStyle(fontSize: 18,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
-              SizedBox(height:10),
-              InkWell(
-                onTap: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AboutScreen()));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("About",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                ),
-              ),
-              SizedBox(height: 5,),
-              InkWell(
-                onTap: (){
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HelpScreen()));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text("help",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                ),
-              ),
-              SizedBox(height: 5,),
-
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          child: Container(
-              decoration: BoxDecoration(
-                  color:MyColors.Colorgreen3,
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(30)
-                  )
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
-                child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
-              )),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-    );
-
-    // show the dialog
+  void showAlertDialogMore(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return alert;
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset("assets/letterblacknewcolor.png", height: 34),
+                const SizedBox(height: 8),
+                Text(
+                  "More options",
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: MyColors.Colorgreen3,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                dialogOptionRow(
+                  icon: Icons.info_outline_rounded,
+                  title: "About",
+                  subtitle: "App info & community details",
+                  onTap: () {
+                    Navigator.of(dialogContext).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AboutScreen()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                dialogOptionRow(
+                  icon: Icons.help_outline_rounded,
+                  title: "Help",
+                  subtitle: "Support & FAQs",
+                  onTap: () {
+                    Navigator.of(dialogContext).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => HelpScreen()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.black87,
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      "Close",
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
@@ -957,14 +968,18 @@ class _FeedPageState extends State<FeedPage> {
 
   loadNotification() {
     mRootReference.child("AccessManagement").child("ViewCategoryList").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
       datalist.clear();
-      data.forEach((key, value) {
-        datalist.add(ListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          datalist.add(ListDataModel(
+            id: key,
+          ));
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

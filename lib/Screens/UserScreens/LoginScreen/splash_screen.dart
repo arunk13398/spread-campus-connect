@@ -29,13 +29,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   initState() {
-    getDataAccess();
     super.initState();
+    getDataAccess();
+    checkLogin(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    checkLogin(context);
     return Scaffold(
       // backgroundColor: MyColors.main1,
       backgroundColor: Colors.white,
@@ -60,20 +60,26 @@ class _SplashScreenState extends State<SplashScreen> {
 
 
   getDataAccess() async {
-    mRootReference.child('AccessControl').child(await getString(UserPreferences.USER_NUMBER)).once().then(( dataSnapshot){
-      if(dataSnapshot.snapshot.exists){
-        Map<dynamic, dynamic>setData = dataSnapshot.snapshot.value as Map;
-        if(setData["AcessCode"].toString()=="1"){
-          setBool(UserPreferences.IS_LOGIN,true);
-          setString(UserPreferences.ACCESS_CODE,setData["AcessCode"].toString());
-          setString(UserPreferences.COLLEGE,setData["College"].toString());
-          setString(UserPreferences.DESIGNATION,setData["Designation"].toString());
-          setString(UserPreferences.USER_NUMBER,dataSnapshot.snapshot.key.toString());
-          setString(UserPreferences.USER_Name,setData["Name"].toString());
-          setString(UserPreferences.ACCESSTYPE,setData["AcessName"].toString());
+    final userNumber = await getString(UserPreferences.USER_NUMBER);
+    if (userNumber != null && userNumber.toString().isNotEmpty) {
+      final dataSnapshot =
+          await mRootReference.child('AccessControl').child(userNumber).once();
+      if (dataSnapshot.snapshot.exists) {
+        Map<dynamic, dynamic> setData = dataSnapshot.snapshot.value as Map;
+        if (setData["AcessCode"].toString() == "1") {
+          setBool(UserPreferences.IS_LOGIN, true);
+          setString(UserPreferences.ACCESS_CODE, setData["AcessCode"].toString());
+          setString(UserPreferences.COLLEGE, setData["College"].toString());
+          setString(
+              UserPreferences.DESIGNATION, setData["Designation"].toString());
+          setString(
+              UserPreferences.USER_NUMBER, dataSnapshot.snapshot.key.toString());
+          setString(UserPreferences.USER_Name, setData["Name"].toString());
+          setString(UserPreferences.ACCESSTYPE, setData["AcessName"].toString());
         }
-  }});
-    UserType = (await getString(UserPreferences.ACCESSTYPE));
+      }
+    }
+    UserType = (await getString(UserPreferences.ACCESSTYPE)) ?? '';
     print("testing usertype${UserType}");
   }
 
@@ -83,12 +89,13 @@ class _SplashScreenState extends State<SplashScreen> {
     if(await getBool(UserPreferences.IS_LOGIN)??false){
       if(await getString(UserPreferences.ACCESS_CODE)=="1"){
         Future.delayed(const Duration(milliseconds: 3000), () {
+          if (!mounted) return;
           callTo( BottomNavigation(), context);
         });
       }
       else if(await getString(UserPreferences.ACCESS_CODE)=="2"){
         Future.delayed(const Duration(milliseconds: 3000), () {
-
+          if (!mounted) return;
           callTo( AdminBottomNavigation(), context);
         });
       }
@@ -97,6 +104,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     }else{
       Future.delayed(const Duration(milliseconds: 3000), () {
+        if (!mounted) return;
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const LoginScreen()));
       });

@@ -4,6 +4,7 @@ class CommentModel{
   String description;
   String Time;
   String UserProfImg;
+  String userNumber;
 
   CommentModel({
     required this.id,
@@ -11,5 +12,6 @@ class CommentModel{
     required this.description,
     required this.Time,
     required this.UserProfImg,
+    this.userNumber = '',
 });
 }

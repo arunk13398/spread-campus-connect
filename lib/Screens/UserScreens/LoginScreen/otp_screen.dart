@@ -23,13 +23,22 @@ class _OTPScreenState extends State<OTPScreen> {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   TextEditingController currController = TextEditingController();
+  final FocusNode _pinFocusNode = FocusNode();
   String verificationId="";
   bool isLoading=true;
+  bool _isVerifying = false;
   @override
   initState() {
     super.initState();
     getOtp(context);
 
+  }
+
+  @override
+  void dispose() {
+    _pinFocusNode.dispose();
+    currController.dispose();
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
@@ -81,17 +90,16 @@ class _OTPScreenState extends State<OTPScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: PinFieldAutoFill(
                 codeLength: 6,
-                focusNode: FocusNode(),
+                focusNode: _pinFocusNode,
                 keyboardType: TextInputType.number,
                 autoFocus: true,
                 controller: currController,
-                currentCode: "",
                 decoration:  BoxLooseDecoration(
                     textStyle: TextStyle(color: Colors.black),
                     radius: Radius.circular(5),
                     strokeColorBuilder: FixedColorBuilder(MyColors.Colorgreen2)),
                 onCodeChanged: (pin) {
-                  if (pin!.length == 6) {
+                  if (pin != null && pin.length == 6 && !_isVerifying) {
                     matchOtp(context);
                   }
                 },
@@ -114,21 +122,23 @@ class _OTPScreenState extends State<OTPScreen> {
     signInWithPhoneAuthCredential(phoneAuthCredential,context);
   }
   Future<void> listenOtp() async {
-    SmsAutoFill().listenForCode;
+    await SmsAutoFill().listenForCode();
   }
   void getOtp(BuildContext context) async{
     listenOtp();
 
     await firebaseAuth.verifyPhoneNumber(
-      timeout: const Duration(seconds: 5),
+      timeout: const Duration(seconds: 60),
       phoneNumber: "+91${widget.number}",
       verificationCompleted: (phoneAuthCredential) async {
       },
       verificationFailed: (verificationFailed) async {
+        if (!mounted) return;
         alertDialog(context, "Verification Failed", verificationFailed.message.toString());
       },
       codeSent: (id, resendingToken) async {
         verificationId = id;
+        if (!mounted) return;
         setState(() {
           isLoading=false;
           print("code sent");
@@ -144,51 +154,84 @@ class _OTPScreenState extends State<OTPScreen> {
 
   void signInWithPhoneAuthCredential(PhoneAuthCredential phoneAuthCredential,
       BuildContext context) async {
+    if (_isVerifying) return;
+    _isVerifying = true;
+    setState(() {
+      isLoading = true;
+    });
     try {
       final authCredential = await firebaseAuth.signInWithCredential(phoneAuthCredential);
       if (authCredential.user != null) {
-        isLoading=true;
         String loginPh="+91${widget.number}";
-        mRootReference.child('AccessControl').child(loginPh).once().then(( dataSnapshot){
-          if(dataSnapshot.snapshot.exists){
-            Map<dynamic, dynamic>loginData = dataSnapshot.snapshot.value as Map;
-            if(loginData["AcessCode"].toString()=="1"){
-              setBool(UserPreferences.IS_LOGIN,true);
-              setString(UserPreferences.ACCESS_CODE,loginData["AcessCode"].toString());
-              setString(UserPreferences.COLLEGE,loginData["College"].toString());
-              setString(UserPreferences.DESIGNATION,loginData["Designation"].toString());
-              setString(UserPreferences.USER_NUMBER,dataSnapshot.snapshot.key.toString());
-              setString(UserPreferences.USER_Name,loginData["Name"].toString());
-              setString(UserPreferences.USER_TYPE,loginData["AcessName"].toString());
-              alertDialog(context,"Welcome ${loginData["Name"]}","You are successfully logged in");
+        final dataSnapshot = await mRootReference
+            .child('AccessControl')
+            .child(loginPh)
+            .once()
+            .timeout(const Duration(seconds: 15));
+        if (!mounted) return;
+        if (dataSnapshot.snapshot.exists &&
+            dataSnapshot.snapshot.value is Map) {
+          Map<dynamic, dynamic> loginData =
+              dataSnapshot.snapshot.value as Map;
+          if (loginData["AcessCode"]?.toString() == "1") {
+            setBool(UserPreferences.IS_LOGIN, true);
+            setString(
+                UserPreferences.ACCESS_CODE, loginData["AcessCode"].toString());
+            setString(
+                UserPreferences.COLLEGE, loginData["College"].toString());
+            setString(UserPreferences.DESIGNATION,
+                loginData["Designation"].toString());
+            setString(UserPreferences.USER_NUMBER,
+                dataSnapshot.snapshot.key.toString());
+            setString(UserPreferences.USER_Name, loginData["Name"].toString());
+            setString(
+                UserPreferences.USER_TYPE, loginData["AcessName"].toString());
+            alertDialog(context, "Welcome ${loginData["Name"]}",
+                "You are successfully logged in");
 
-              Future.delayed(const Duration(milliseconds: 1000), () {
-                finishAccountCreation( BottomNavigation(), context);
-              });
-            }
-            else if(loginData["AcessCode"].toString()=="2"){
-              setBool(UserPreferences.IS_LOGIN,true);
-              setString(UserPreferences.ACCESS_CODE,loginData["AcessCode"].toString());
-              setString(UserPreferences.USER_NUMBER,dataSnapshot.snapshot.key.toString());
-              setString(UserPreferences.COLLEGE,loginData["College"].toString());
-              setString(UserPreferences.DESIGNATION,loginData["Designation"].toString());
-              setString(UserPreferences.USER_Name,loginData["Name"].toString());
-              setString(UserPreferences.USER_TYPE,loginData["AcessName"].toString());
-              alertDialog(context,"Welcome ${loginData["Name"]}","You are successfully logged in");
-
-              Future.delayed(const Duration(milliseconds: 1000), () {
-                finishAccountCreation( AdminBottomNavigation(), context);
-              });
-            }
-          }else{
             Future.delayed(const Duration(milliseconds: 1000), () {
-              callNextReplacement(  UserRegistration(number: loginPh), context);
+              if (!mounted) return;
+              finishAccountCreation(BottomNavigation(), context);
+            });
+          } else if (loginData["AcessCode"]?.toString() == "2") {
+            setBool(UserPreferences.IS_LOGIN, true);
+            setString(
+                UserPreferences.ACCESS_CODE, loginData["AcessCode"].toString());
+            setString(UserPreferences.USER_NUMBER,
+                dataSnapshot.snapshot.key.toString());
+            setString(
+                UserPreferences.COLLEGE, loginData["College"].toString());
+            setString(UserPreferences.DESIGNATION,
+                loginData["Designation"].toString());
+            setString(UserPreferences.USER_Name, loginData["Name"].toString());
+            setString(
+                UserPreferences.USER_TYPE, loginData["AcessName"].toString());
+            alertDialog(context, "Welcome ${loginData["Name"]}",
+                "You are successfully logged in");
+
+            Future.delayed(const Duration(milliseconds: 1000), () {
+              if (!mounted) return;
+              finishAccountCreation(AdminBottomNavigation(), context);
+            });
+          } else {
+            Future.delayed(const Duration(milliseconds: 1000), () {
+              if (!mounted) return;
+              callNextReplacement(UserRegistration(number: loginPh), context);
             });
           }
-        });
+        } else {
+          Future.delayed(const Duration(milliseconds: 1000), () {
+            if (!mounted) return;
+            callNextReplacement(UserRegistration(number: loginPh), context);
+          });
+        }
       }
     } on FirebaseAuthException catch (e) {
-
+      _isVerifying = false;
+      if (!mounted) return;
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar( SnackBar(
         backgroundColor: Colors.white,
         content: Text(
@@ -196,6 +239,13 @@ class _OTPScreenState extends State<OTPScreen> {
           style: const TextStyle(color: Colors.black),
         ),
       ));
+    } catch (e) {
+      _isVerifying = false;
+      if (!mounted) return;
+      setState(() {
+        isLoading = false;
+      });
+      alertDialog(context, "Database Error", e.toString());
     }
   }
 }

@@ -44,14 +44,25 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
   }
   loadItem() async {
     mRootReference.child("AccessManagement").child("Complaint").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
       datalist.clear();
-      data.forEach((key, value) {
-        datalist.add(ListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          datalist.add(ListDataModel(
+            id: key.toString(),
+          ));
+        });
+      }
+      if (datalist.isEmpty) {
+        datalist = _college.map((c) => ListDataModel(id: c)).toList();
+      }
+      if (selectedItem == null ||
+          !datalist.any((item) => item.id == selectedItem!.id)) {
+        selectedItem = datalist.first;
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -393,20 +404,26 @@ class _ComplaintRegistrationState extends State<ComplaintRegistration> {
   }
 
   getData() async {
-    RegMobNumber.text = (await getString(UserPreferences.USER_NUMBER));
-    RegName.text = (await getString(UserPreferences.USER_Name));
+    RegMobNumber.text = (await getString(UserPreferences.USER_NUMBER)) ?? '';
+    RegName.text = (await getString(UserPreferences.USER_Name)) ?? '';
+    final college = await getString(UserPreferences.COLLEGE);
+    final number = await getString(UserPreferences.USER_NUMBER);
+    final designation = await getString(UserPreferences.DESIGNATION);
+    if (college == null || number == null || designation == null) return;
     mRootReference
-        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
-        .child(await getString(UserPreferences.USER_NUMBER))
-        .child(await getString(UserPreferences.DESIGNATION))
+        .child("UsersList")
+        .child(college)
+        .child(number)
+        .child(designation)
         .once()
         .then((value) {
-      if (value.snapshot.exists) {
-        print("ajfbsgdbfdv ${value.snapshot.value}");
+      if (value.snapshot.exists && value.snapshot.value is Map) {
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        RegName.text = data["Name"];
-        Designation=data["Designation"];
-        setState(() {});
+        RegName.text = (data["Name"] ?? '').toString();
+        Designation = (data["Designation"] ?? '').toString();
+        if (mounted) {
+          setState(() {});
+        }
       }
     });
   }

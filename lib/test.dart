@@ -66,13 +66,14 @@ class _TestDemoState extends State<TestDemo> {
 
   void checkRealtimeConnection() {
     Connectivity().onConnectivityChanged.listen((my_result) {
-      if (my_result == ConnectivityResult.mobile ||
-          my_result == ConnectivityResult.wifi) {
+      if (my_result.contains(ConnectivityResult.mobile) ||
+          my_result.contains(ConnectivityResult.wifi)) {
         print("connected");
         setState(() {
           isConnected = true;
         });
-      } else if (my_result == ConnectivityResult.none) {
+      } else if (my_result.contains(ConnectivityResult.none) ||
+          my_result.isEmpty) {
         print("not connected");
         setState(() {
           isConnected = false;

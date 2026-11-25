@@ -25,104 +25,302 @@ final List<TextInputFormatter> decimalValidation = [
 
 onLoading(var context) {
   showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return WillPopScope(
-            onWillPop: () async => false,
-            child: const Center(child: SizedBox(height: 50,width: 50,child: CircularProgressIndicator()),));
-      });
-}
-showAlertDialog(BuildContext context) {
-
-  AlertDialog alert = AlertDialog(
-    title: const Text("Logout"),
-    content: const Text("Are you sure to logout"),
-    actions: [
-      TextButton(
-        child: const Text("No"),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-      TextButton(
-        child: const Text("Yes"),
-        onPressed: () {
-          setBool(UserPreferences.IS_LOGIN,false);
-          setString(UserPreferences.ACCESS_CODE,"");
-          setString(UserPreferences.USER_NUMBER,"");
-          setString(UserPreferences.USER_Name,"");
-          setString(UserPreferences.USER_TYPE,"");
-          finishAccountCreation( SplashScreen(), context);
-        },
-      ),
-
-    ],
-  );
-
-  // show the dialog
-  showDialog(
     context: context,
+    barrierDismissible: false,
     builder: (BuildContext context) {
-      return alert;
+      return WillPopScope(
+        onWillPop: () async => false,
+        child: Center(
+          child: Container(
+            width: 76,
+            height: 76,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Center(
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.8,
+                  color: MyColors.Colorgreen3,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
     },
   );
 }
 
+/// Reusable modern confirmation dialog with icon badge, clear message, and
+/// balanced Cancel / Confirm actions.
+Future<void> showAppConfirmDialog({
+  required BuildContext context,
+  required String title,
+  required String message,
+  required String confirmLabel,
+  required VoidCallback onConfirm,
+  IconData icon = Icons.help_outline_rounded,
+  Color? accentColor,
+  String cancelLabel = 'Cancel',
+}) {
+  final Color color = accentColor ?? MyColors.Colorgreen3;
+  return showDialog(
+    context: context,
+    builder: (BuildContext dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 22, 20, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 28),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.4,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.black87,
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          cancelLabel,
+                          style: const TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: SizedBox(
+                      height: 44,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop();
+                          onConfirm();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: color,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text(
+                          confirmLabel,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
 
-
-alertDialog(BuildContext context,String title,String content) {
-
-  AlertDialog alert = AlertDialog(
-    title:  Column(
-      children: [
-        Center(child: Image.asset("assets/letterblacknewcolor.png",height: 40,)),
-        SizedBox(height:10),
-        Text(title),
-      ],
+/// Interactive option row for action/menu dialogs.
+Widget dialogOptionRow({
+  required IconData icon,
+  required String title,
+  String? subtitle,
+  Color? iconColor,
+  required VoidCallback onTap,
+}) {
+  final Color tint = iconColor ?? MyColors.Colorgreen3;
+  return Material(
+    color: const Color(0xFFF6F7F9),
+    borderRadius: BorderRadius.circular(14),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: tint.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Icon(icon, color: tint, size: 21),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
+                  ),
+                  if (subtitle != null && subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 1),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right_rounded,
+                color: Colors.grey.shade500, size: 20),
+          ],
+        ),
+      ),
     ),
-    content:  Text(content),
-    actions: [
-      TextButton(
-        child: const Text("Ok"),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    ],
   );
+}
 
-  // show the dialog
-  showDialog(
+showAlertDialog(BuildContext context) {
+  showAppConfirmDialog(
     context: context,
-    builder: (BuildContext context) {
-      return alert;
+    title: 'Log Out?',
+    message: 'Are you sure you want to log out of your account?',
+    confirmLabel: 'Log Out',
+    icon: Icons.logout_rounded,
+    accentColor: Colors.red.shade600,
+    onConfirm: () {
+      setBool(UserPreferences.IS_LOGIN, false);
+      setString(UserPreferences.ACCESS_CODE, "");
+      setString(UserPreferences.USER_NUMBER, "");
+      setString(UserPreferences.USER_Name, "");
+      setString(UserPreferences.USER_TYPE, "");
+      finishAccountCreation(SplashScreen(), context);
     },
   );
 }
 
-optionDialog(BuildContext context,String title,String content) {
-
-  AlertDialog alert = AlertDialog(
-    title:  Text(title),
-    content:  Text(content),
-    actions: [
-      TextButton(
-        child: const Text("Ok"),
-        onPressed: () {
-          // Navigator.of(context).pop();
-        },
-      ),
-    ],
-  );
-
-  // show the dialog
+alertDialog(BuildContext context, String title, String content) {
   showDialog(
     context: context,
-    builder: (BuildContext context) {
-      return alert;
+    builder: (BuildContext dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset("assets/letterblacknewcolor.png", height: 34),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxHeight: 220),
+                child: SingleChildScrollView(
+                  child: Text(
+                    content,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      height: 1.45,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: MyColors.Colorgreen3,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    'OK',
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     },
   );
+}
+
+optionDialog(BuildContext context, String title, String content) {
+  alertDialog(context, title, content);
 }
 
 
@@ -204,23 +402,34 @@ Stream<String> getTime() async* {
     yield time;
   }
 }
-void showLoaderDialog(BuildContext context){
-
+void showLoaderDialog(BuildContext context) {
   showDialog(
     barrierDismissible: false,
     context: context,
     builder: (context) => Center(
       child: Container(
-        width: 80.0,
-        height: 80.0,
+        width: 76,
+        height: 76,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(4.0),
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
-        child:  const Padding(
-          padding: EdgeInsets.all(12.0),
-
-          child: CupertinoActivityIndicator(),
+        child: Center(
+          child: SizedBox(
+            width: 30,
+            height: 30,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.8,
+              color: MyColors.Colorgreen3,
+            ),
+          ),
         ),
       ),
     ),
@@ -228,48 +437,73 @@ void showLoaderDialog(BuildContext context){
 }
 
 showAlertDialogBloked(BuildContext context) {
-
-  AlertDialog alert = AlertDialog(
-    title:  Image.asset("assets/letterblacknewcolor.png",height: 50,),
-    content: Container(
-      height:100,
-      width: 80,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Security Reasons",style: TextStyle(fontSize: 16,color: MyColors.Colorgreen3,fontWeight: FontWeight.bold),),
-            SizedBox(height: 10),
-            Text("You are currently blocked to this account for inpropper behaviour and other illegal activities, sorry for your inconvienience ")
-          ],
-        ),
-      ),
-    ),
-    actions: [
-      TextButton(
-        child: Container(
-            decoration: BoxDecoration(
-                color:MyColors.Colorgreen3,
-                borderRadius: BorderRadius.all(
-                    Radius.circular(30)
-                )
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
-              child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
-            )),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
-      ),
-    ],
-  );
-
-  // show the dialog
   showDialog(
     context: context,
-    builder: (BuildContext context) {
-      return alert;
+    builder: (BuildContext dialogContext) {
+      return Dialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset("assets/letterblacknewcolor.png", height: 34),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.block_rounded,
+                    color: Colors.red.shade600, size: 28),
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                "Account Restricted",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Your account is currently blocked for security reasons due to policy violations. Please contact support for assistance.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 13.5,
+                  height: 1.45,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade600,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text(
+                    "Close",
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     },
   );
 }

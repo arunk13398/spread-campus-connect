@@ -62,7 +62,7 @@ class _DemoTestState extends State<DemoTest> {
                 Colors.green
               ],
               inactiveTextColorList: [Theme.of(context).primaryColor],
-              listOfChipIndicesCurrentlySeclected: [0],
+              listOfChipIndicesCurrentlySelected: [0],
               inactiveBorderColorList: const [Colors.white],
               activeBorderColorList: const [
                 Colors.pink,
@@ -86,7 +86,7 @@ class _DemoTestState extends State<DemoTest> {
               inactiveBgColorList: const [Colors.white],
               activeTextColorList: const [Colors.white],
               inactiveTextColorList: [Theme.of(context).primaryColor],
-              listOfChipIndicesCurrentlySeclected: [0],
+              listOfChipIndicesCurrentlySelected: [0],
               inactiveBorderColorList: const [
                 Colors.pink,
                 Colors.yellow,
@@ -114,7 +114,7 @@ class _DemoTestState extends State<DemoTest> {
               inactiveBgColorList: const [Colors.white],
               activeTextColorList: const [Colors.white],
               inactiveTextColorList: [Theme.of(context).primaryColor],
-              listOfChipIndicesCurrentlySeclected: [_currentIndex],
+              listOfChipIndicesCurrentlySelected: [_currentIndex],
               inactiveBorderColorList:  [Colors.grey.shade300],
               extraOnToggle: (val) {
                 _currentIndex = val;

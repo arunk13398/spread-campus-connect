@@ -1,437 +1,471 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'dart:async';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+
 import '../../../Contraints/user_preference.dart';
 import '../../../Model/complaint_model.dart';
 import '../../../Model/listdata_model.dart';
 import '../../../Theme/theme.dart';
 import '../../../functions/functions.dart';
+import '../../../functions/widgets.dart';
 import 'Complaint_details.dart';
 import 'complaint_registration.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class ComplaintList extends StatefulWidget {
-   ComplaintList({Key? key,}) : super(key: key);
+  const ComplaintList({Key? key}) : super(key: key);
+
   @override
   State<ComplaintList> createState() => _ComplaintListState();
 }
 
 class _ComplaintListState extends State<ComplaintList> {
-  DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
+  final DatabaseReference mRootReference = FirebaseDatabase.instance.ref();
   List<ComplaintModel> ComplaintList = [];
-  List<ComplaintModel> ComplaintListReview = [];
-  List<ListDataModel> datalist=[];
-  List<ListDataModel> datalistAccess=[];
+  List<ListDataModel> datalist = [];
 
+  String numberId = '';
+  String UserName = '';
+  String College = '';
+  String Designation = '';
+  String UserType = '';
+  String Status = '';
+  int isColorSelected = 0;
 
-  var size, height, width;
-  String Uid = '';
-  String username = '';
-  bool isConnected = false;
+  StreamSubscription<DatabaseEvent>? _complaintSub;
 
-  String numberId='';
-  String UserName='';
-  String College='';
-  String Designation='';
-  String imageUrl='';
-  String access='';
-  String UserType='';
-  String Status='';
-
-  String checkData='';
-
-  int isColorSelected=0;
-
+  bool get _isReviewer =>
+      UserType == "Principal" ||
+      UserType == "Hod" ||
+      UserType == "Admin" ||
+      UserType == "Hos" ||
+      UserType == "OfficeStaff" ||
+      UserType == "Reviewer";
 
   @override
   void initState() {
+    super.initState();
     getDataAccess();
     loadItem();
-    loadItemAccess();
-    if(isColorSelected==0){
-      loadComplaint2();
-    }else{
-      loadComplaint1();
-    }
-    super.initState();
+    loadComplaint1();
+  }
+
+  @override
+  void dispose() {
+    _complaintSub?.cancel();
+    super.dispose();
+  }
+
+  void _openDetails(ComplaintModel item) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ComplaintDetails(complaintModel: item),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    size = MediaQuery.of(context).size;
-    height = size.height;
-    width = size.width;
-    return
-      Scaffold(
-      backgroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F6F8),
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left:10.0,top:15,bottom:20),
-              child: Align(alignment: Alignment.topLeft,
-                child: Text(
-                  "Registered Complaints",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.black),
-                ),
+            Container(
+              color: Colors.white,
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          "Registered Complaints",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 22,
+                            color: Colors.black,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: MyColors.Colorgreen3.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Text(
+                          '${ComplaintList.length}',
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: MyColors.Colorgreen3,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (_isReviewer && datalist.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      height: 36,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: datalist.length,
+                        itemBuilder: (context, index) => AdaptorNew(index),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-
-            if(UserType=="Principal"||UserType=="Hod"||UserType=="Admin"||UserType=="Hos"||UserType=="OfficeStaff"||UserType=="Reviewer")Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: SizedBox(
-                height:50,width:width/1,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: datalist.length,
-                  itemBuilder: (context, index) => AdaptorNew(index),
-                ),
-              ),
-            ),
-
+            Divider(height: 1, color: Colors.grey.shade200),
             Expanded(
-              child: Container(
-                child: ListView.builder(
-                  itemCount: ComplaintList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return ComplaintListAdaptor(index);
-                  },
-                ),
-              )
-
+              child: ComplaintList.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(28),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.assignment_outlined,
+                                size: 52, color: Colors.grey.shade400),
+                            const SizedBox(height: 10),
+                            Text(
+                              "No complaints yet",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "Tap below to submit a new complaint",
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                      itemCount: ComplaintList.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return ComplaintListAdaptor(index);
+                      },
+                    ),
             ),
-            Designation=='Alumni'||Status=="blocked"?Container():Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: MaterialButton(onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ComplaintRegistration()));
-              },
-                color: MyColors.Colorgreen3,
-                minWidth: double.infinity,
-                height: 50,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)
+            if (Designation != 'Alumni' && Status != "blocked")
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ComplaintRegistration(),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.add_circle_outline_rounded,
+                        size: 20),
+                    label: const Text(
+                      "Register a Complaint",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15.5,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: MyColors.Colorgreen3,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
                 ),
-                child: Text("Register any Complaint",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize: 18),),
               ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  loadComplaint1() async {
-    Designation = await getString(UserPreferences.DESIGNATION);
-    numberId = await getString(UserPreferences.USER_NUMBER);
-    // UserType = (await getString(UserPreferences.ACCESSTYPE));
-    mRootReference.child("Complaints").child(numberId).onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
-      ComplaintList.clear();
-      data.forEach((key, value) {
-        ComplaintList.add(ComplaintModel(
-          id: key,
-          rAdmNumber: value['AdmissionNo'],
-          rClgNo: value['RegisterNo'],
-          rCmptText: value['Complaint'],
-          rDate: value['Date'],
-          rMobNumber: value['MobileNumber'],
-          rName: value['Name'],
-          rSubject: value['Subject'],
-          rTo: value['To'],
-          rStatus: value['Status'],
-        ));
+  void _parseComplaintsSnapshot(Object? raw) {
+    ComplaintList.clear();
+    if (raw is Map<dynamic, dynamic>) {
+      raw.forEach((key, value) {
+        if (value is Map<dynamic, dynamic>) {
+          ComplaintList.add(ComplaintModel(
+            id: key.toString(),
+            rAdmNumber: (value['AdmissionNo'] ?? '').toString(),
+            rClgNo: (value['RegisterNo'] ?? '').toString(),
+            rCmptText: (value['Complaint'] ?? '').toString(),
+            rDate: (value['Date'] ?? '').toString(),
+            rMobNumber: (value['MobileNumber'] ?? '').toString(),
+            rName: (value['Name'] ?? '').toString(),
+            rSubject: (value['Subject'] ?? '').toString(),
+            rTo: (value['To'] ?? '').toString(),
+            rStatus: (value['Status'] ?? '').toString(),
+          ));
+        }
       });
+      ComplaintList.sort((a, b) {
+        final bt = int.tryParse(b.id) ?? 0;
+        final at = int.tryParse(a.id) ?? 0;
+        return bt.compareTo(at);
+      });
+    }
+    if (mounted) {
       setState(() {});
+    }
+  }
+
+  Future<void> loadComplaint1() async {
+    Designation = (await getString(UserPreferences.DESIGNATION)) ?? '';
+    numberId = (await getString(UserPreferences.USER_NUMBER)) ?? '';
+    if (numberId.isEmpty) return;
+    _complaintSub?.cancel();
+    _complaintSub = mRootReference
+        .child("Complaints")
+        .child(numberId)
+        .onValue
+        .listen((event) {
+      _parseComplaintsSnapshot(event.snapshot.value);
     });
   }
 
-
-
-  loadComplaint2() async {
-
-    Designation = await getString(UserPreferences.DESIGNATION);
-    UserType = (await getString(UserPreferences.ACCESSTYPE));
-
-    print("testing usertype****************${UserType}");
-    mRootReference.child("Complaints").child("AdminAccess").child(UserType).onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
-      ComplaintList.clear();
-      data.forEach((key, value) {
-        ComplaintList.add(ComplaintModel(
-          id: key,
-          rAdmNumber: value['AdmissionNo'],
-          rClgNo: value['RegisterNo'],
-          rCmptText: value['Complaint'],
-          rDate: value['Date'],
-          rMobNumber: value['MobileNumber'],
-          rName: value['Name'],
-          rSubject: value['Subject'],
-          rTo: value['To'],
-          rStatus: value['Status'],
-        ));
-      });
-      setState(() {});
+  Future<void> loadComplaint2() async {
+    Designation = (await getString(UserPreferences.DESIGNATION)) ?? '';
+    UserType = (await getString(UserPreferences.ACCESSTYPE)) ?? '';
+    if (UserType.isEmpty) return;
+    _complaintSub?.cancel();
+    _complaintSub = mRootReference
+        .child("Complaints")
+        .child("AdminAccess")
+        .child(UserType)
+        .onValue
+        .listen((event) {
+      _parseComplaintsSnapshot(event.snapshot.value);
     });
-
-
   }
 
-  Widget ComplaintListAdaptor(int index){
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        onTap: (){
-          print("testing designation${Designation}");
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border:Border.all(color: Colors.grey.shade300,width: 1,)
+  Widget ComplaintListAdaptor(int index) {
+    final item = ComplaintList[index];
+    final dateLabel = formatComplaintDateLabel(item.rDate, item.id);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-          child:Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: width / 1.1,
-                  child: Row(
-                    children: [
-                      // SizedBox(width:5),
-                      ClipRRect(
-                          borderRadius: BorderRadius.circular(60),
-                          child: Image.network(
-                            "https://www.aais.com/hs-fs/hubfs/coming_soon_placeholder-01.jpg?width=4000&name=coming_soon_placeholder-01.jpg",
-                            // list[index].imageUrl,
-                            height: 30,
-                            width: 30,
-                            fit: BoxFit.cover,
-                          )),
-                      SizedBox(
-                        width: width / 1.4,
-                        child: Column(
-                          mainAxisAlignment:
-                          MainAxisAlignment.start,
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 10.0, right: 5),
-                              child: Text(ComplaintList[index].rSubject,
-                                  // list[index].username,
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 2,
-                                  textAlign: TextAlign.start),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+        ],
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: () => _openDetails(item),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  liveProfileAvatar(
+                    fallbackUrl: '',
+                    phone: item.rMobNumber,
+                    name: item.rName,
+                    radius: 19,
                   ),
-                ),
-                SizedBox(
-                  width: width / 1,
-                  child: Row(
-                    children: [
-                      SizedBox(width:5),
-                      SizedBox(
-                        width: width / 1.4,
-                        child: Column(
-                          mainAxisAlignment:
-                          MainAxisAlignment.start,
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left:5.0,top:10),
-                              child: Row(
-                                children: [
-                                  Text("Posted to "),
-                                  Text(ComplaintList[index].rTo,style: TextStyle(fontWeight: FontWeight.bold),),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left:5.0,top:10),
-                              child: Row(
-                                children: [
-                                  Text("Posted from "),
-                                  Text(ComplaintList[index].rName,style: TextStyle(fontWeight: FontWeight.bold),),
-                                ],
-                              ),
-                            ),
-                          ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.rSubject.isEmpty ? 'Complaint' : item.rSubject,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10.0, right: 5),
-                        child: Text(
-                          "1 mint ago",
-                          // list[index].username
+                        const SizedBox(height: 2),
+                        Text(
+                          '${item.rName.isEmpty ? 'User' : item.rName}  •  To: ${item.rTo}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black),
+                            fontSize: 12.5,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: width / 1,
-                  child: Row(
-                    children: [
-                      SizedBox(width:5),
-                      SizedBox(
-                        width: width / 1.55,
-                        child: Column(
-                          mainAxisAlignment:
-                          MainAxisAlignment.start,
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left:5.0,top:10),
-                              child: Row(
-                                children: [
-                                  Text("Date"),
-                                  Text(" 12/2/2022",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.red),),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left:5.0,top:3),
-                              child: Row(
-                                children: [
-                                  Text("Status :"),
-                                  Text(ComplaintList[index].rStatus,
-                                    style: TextStyle(fontWeight: FontWeight.bold,
-                                        color: ComplaintList[index].rStatus=="Rejected"?Colors.red:Colors.black),),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.only(
-                              left: 10.0, right: 5),
-                          child: MaterialButton(
-                            onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        ComplaintDetails(complaintModel: ComplaintList[index],)));
-                          },
-                            color: MyColors.Colorgreen2,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            child: Text("Details",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
-                          )
-                      ),
-                    ],
+                  const SizedBox(width: 8),
+                  complaintStatusBadge(item.rStatus),
+                ],
+              ),
+              if (item.rCmptText.trim().isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(
+                  item.rCmptText,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    height: 1.4,
+                    color: Color(0xFF374151),
                   ),
                 ),
               ],
-            ),
+              const SizedBox(height: 10),
+              Divider(height: 1, color: Colors.grey.shade100),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.schedule_rounded,
+                      size: 14, color: Colors.grey.shade500),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      dateLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'View details',
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: MyColors.Colorgreen3,
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        size: 18,
+                        color: MyColors.Colorgreen3,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  getDataAccess() async {
-    College = (await getString(UserPreferences.COLLEGE));
-    // UserType = (await getString(UserPreferences.ACCESSTYPE));
-    Designation = (await getString(UserPreferences.DESIGNATION));
+  Future<void> getDataAccess() async {
+    College = (await getString(UserPreferences.COLLEGE)) ?? '';
+    Designation = (await getString(UserPreferences.DESIGNATION)) ?? '';
+    final phone = (await getString(UserPreferences.USER_NUMBER)) ?? '';
+    if (phone.isEmpty) return;
+    final value =
+        await mRootReference.child("AccessControl").child(phone).once();
+    if (value.snapshot.exists && value.snapshot.value is Map) {
+      final Map<dynamic, dynamic> data = value.snapshot.value as Map;
+      College = (data["College"] ?? College).toString();
+      Designation = (data["Designation"] ?? Designation).toString();
+      UserType = (data["AcessName"] ?? '').toString();
+      Status = (data["Status"] ?? '').toString();
+      numberId = (data["Phone"] ?? phone).toString();
+      if (mounted) {
+        setState(() {});
+      }
+      if (_isReviewer && isColorSelected == 0) {
+        loadComplaint2();
+      } else {
+        loadComplaint1();
+      }
+    }
+  }
+
+  Future<void> loadItem() async {
     mRootReference
-        .child("AccessControl")
-        .child(await getString(UserPreferences.USER_NUMBER))
-        .once()
-        .then((value) {
-      if (value.snapshot.exists) {
-        print("fffffff ${value.snapshot.value}");
-        Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        College = data["College"];
-        Designation = data["Designation"];
-        UserType = data["AcessName"];
-        Status = data["Status"];
-        numberId =data["Phone"];
+        .child("AccessManagement")
+        .child("ComplaintAccess")
+        .onValue
+        .listen((event) {
+      datalist.clear();
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          datalist.add(ListDataModel(
+            id: key.toString(),
+          ));
+        });
+      }
+      if (mounted) {
         setState(() {});
       }
     });
   }
 
-
-  loadItem() async {
-    mRootReference.child("AccessManagement").child("ComplaintAccess").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
-      datalist.clear();
-      data.forEach((key, value) {
-        datalist.add(ListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
-    });
-  }
-
-  loadItemAccess() async {
-    mRootReference.child("AccessManagement").child("Complaint").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
-      datalistAccess.clear();
-      data.forEach((key, value) {
-        datalistAccess.add(ListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
-    });
-  }
-
-  Widget AdaptorNew(int index){
-    return InkWell(
-      onTap: (){
+  Widget AdaptorNew(int index) {
+    final selected = isColorSelected == index;
+    return GestureDetector(
+      onTap: () {
         setState(() {
-         if( datalist[index].id=="ToReview"){
-           loadComplaint2();
-         }else{
-           loadComplaint1();
-
-         }
-          isColorSelected=index;
+          isColorSelected = index;
         });
+        if (datalist[index].id == "ToReview") {
+          loadComplaint2();
+        } else {
+          loadComplaint1();
+        }
       },
-
       child: Container(
-        child: Center(
-          child:Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: Container(
-                decoration: BoxDecoration(
-                    color: isColorSelected==index?MyColors.Colorgreen2:Colors.white,
-                    borderRadius: BorderRadius.circular(30)
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.only(left:15.0,right:15,top:7,bottom:7),
-                  child: Text(datalist[index].id,
-                    style: TextStyle(color: isColorSelected==index?Colors.white:Colors.black,fontSize: 16),),
-                )),
-          ),),
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected ? MyColors.Colorgreen3 : const Color(0xFFF3F4F6),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          datalist[index].id,
+          style: TextStyle(
+            color: selected ? Colors.white : Colors.grey.shade700,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
-
 }

@@ -92,21 +92,20 @@ class _BottomNavigationState extends State<BottomNavigation> {
           BottomNavigationBarItem(
             label: "My Account",
             icon: ProfimageUrl==''?
-            CachedNetworkImage(
-              imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
-              placeholder: (context, url) =>  CircleAvatar(
-                backgroundColor: Colors.blue.shade300,
-                radius: 15,
-              ),
-              imageBuilder: (context, image) => CircleAvatar(
-                backgroundImage: image,
-                radius: 15,
-              ),
+            CircleAvatar(
+              backgroundColor: Colors.blue.shade300,
+              radius: 15,
+              child: const Icon(Icons.person, size: 18, color: Colors.white),
             ):CachedNetworkImage(
               imageUrl: ProfimageUrl,
               placeholder: (context, url) =>  CircleAvatar(
                 backgroundColor: Colors.blue.shade300,
                 radius: 15,
+              ),
+              errorWidget: (context, url, error) => CircleAvatar(
+                backgroundColor: Colors.blue.shade300,
+                radius: 15,
+                child: const Icon(Icons.person, size: 18, color: Colors.white),
               ),
               imageBuilder: (context, image) => CircleAvatar(
                 backgroundImage: image,
@@ -141,27 +140,31 @@ class _BottomNavigationState extends State<BottomNavigation> {
   }
 
   getDataF1() async {
-    access = (await getString(UserPreferences.ACCESS_CODE));
-    numberId = (await getString(UserPreferences.USER_NUMBER));
-    UserName = (await getString(UserPreferences.USER_Name));
+    access = (await getString(UserPreferences.ACCESS_CODE)) ?? '';
+    numberId = (await getString(UserPreferences.USER_NUMBER)) ?? '';
+    UserName = (await getString(UserPreferences.USER_Name)) ?? '';
+    final college = await getString(UserPreferences.COLLEGE);
+    final designation = await getString(UserPreferences.DESIGNATION);
+    if (college == null || numberId.isEmpty || designation == null) return;
     mRootReference
-        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
-        .child(await getString(UserPreferences.USER_NUMBER))
-        .child(await getString(UserPreferences.DESIGNATION))
-        .once()
-        .then((value) {
-      if (value.snapshot.exists) {
-        print("lllllllll ${value.snapshot.value}");
-        Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        College = data["College"];
-        access = data["AcessCode"];
-        Designation = data["Designation"];
-        Phone =data['Phone'];
-        ProfimageUrl=data['ImageUrl'];
-        setState(() {});
+        .child("UsersList")
+        .child(college)
+        .child(numberId)
+        .child(designation)
+        .onValue
+        .listen((event) {
+      if (event.snapshot.exists && event.snapshot.value is Map) {
+        Map<dynamic, dynamic> data = event.snapshot.value as Map;
+        College = (data["College"] ?? '').toString();
+        access = (data["AcessCode"] ?? '').toString();
+        Designation = (data["Designation"] ?? '').toString();
+        Phone = (data['Phone'] ?? '').toString();
+        ProfimageUrl = (data['ImageUrl'] ?? '').toString();
+        if (mounted) {
+          setState(() {});
+        }
       }
     });
-
   }
 
 }

@@ -7,6 +7,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:miniq/Contraints/user_preference.dart';
 import 'package:miniq/Screens/bottom_navigation.dart';
@@ -49,6 +50,7 @@ class _CameraState extends State<Camera> {
   late Stream<User?> _authStateChanges;
 
   bool isConnected = false;
+  bool _isUploading = false;
   List<ListDataModel> datalist=[];
   ListDataModel?selectedItem;
 
@@ -71,15 +73,39 @@ class _CameraState extends State<Camera> {
   }
 
   loadNotification() async {
-    mRootReference.child("AccessManagement").child("Designation").child(await getString(UserPreferences.DESIGNATION)).child("Camera").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+    final designation = await getString(UserPreferences.DESIGNATION);
+    if (designation == null || designation.toString().isEmpty) {
+      datalist = [ListDataModel(id: 'All')];
+      selectedItem ??= datalist.first;
+      if (mounted) setState(() {});
+      return;
+    }
+    mRootReference
+        .child("AccessManagement")
+        .child("Designation")
+        .child(designation)
+        .child("Camera")
+        .onValue
+        .listen((event) {
       datalist.clear();
-      data.forEach((key, value) {
-        datalist.add(ListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          datalist.add(ListDataModel(
+            id: key.toString(),
+          ));
+        });
+      }
+      if (datalist.isEmpty) {
+        datalist.add(ListDataModel(id: 'All'));
+      }
+      if (selectedItem == null ||
+          !datalist.any((item) => item.id == selectedItem!.id)) {
+        selectedItem = datalist.first;
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
@@ -95,19 +121,55 @@ class _CameraState extends State<Camera> {
                   child: Column(
                     // crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                  imageUrl != "" ?
-                  Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: CachedNetworkImage(
-                    // height: 250,
-                    width: double.infinity,
-                    fit: BoxFit.fill,
-                    imageUrl: imageUrl,
-                    placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.grey,
-                          )),
-                  ),)
+                  (file != null || imageUrl != "")
+                      ? InkWell(
+                          onTap: () => showAlertDialogCamera(context),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                if (file != null)
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.file(
+                                      File(file!.path),
+                                      width: double.infinity,
+                                      height: 300,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                else
+                                  CachedNetworkImage(
+                                    width: double.infinity,
+                                    fit: BoxFit.fill,
+                                    imageUrl: imageUrl,
+                                    placeholder: (context, url) => const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const SizedBox(
+                                      height: 300,
+                                      child: Center(
+                                          child: Icon(Icons.broken_image)),
+                                    ),
+                                  ),
+                                if (_isUploading)
+                                  Container(
+                                    height: 300,
+                                    color: Colors.black26,
+                                    child: const Center(
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        )
                       : Center(
                     child: InkWell(
                       onTap: (){
@@ -311,11 +373,28 @@ class _CameraState extends State<Camera> {
                   ),
 
                   onPressed: () async {
+                    if (_isUploading) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Please wait for image upload to finish"),
+                      ));
+                      return;
+                    }
                     if (file == null) {
-                      // alertDialog(context, "is empty file path", "${file?.path}");
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Please select an image"),
+                      ));
+                    } else if (imageUrl.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text(
+                            "Image upload failed. Enable Firebase Storage for this project."),
+                      ));
+                    } else if (selectedItem == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Please select where to publish"),
+                      ));
                     } else {
-                      //alertDialog(context,"is not empty","is url not empty${imageUrl}");
                       add().then((value) {
+                        if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           backgroundColor: Colors.grey,
                           content: Text(
@@ -324,7 +403,6 @@ class _CameraState extends State<Camera> {
                           ),
                         ));
                         description.clear();
-                        // finish(context);
                       });
                     }
                   },
@@ -341,13 +419,14 @@ class _CameraState extends State<Camera> {
 
   void checkRealtimeConnection() {
     Connectivity().onConnectivityChanged.listen((my_result) {
-      if (my_result == ConnectivityResult.mobile ||
-          my_result == ConnectivityResult.wifi) {
+      if (my_result.contains(ConnectivityResult.mobile) ||
+          my_result.contains(ConnectivityResult.wifi)) {
         print("connected");
         setState(() {
           isConnected = true;
         });
-      } else if (my_result == ConnectivityResult.none) {
+      } else if (my_result.contains(ConnectivityResult.none) ||
+          my_result.isEmpty) {
         print("not connected");
         setState(() {
           isConnected = false;
@@ -536,20 +615,26 @@ class _CameraState extends State<Camera> {
   }
 
   getDataF1() async {
+    final college = await getString(UserPreferences.COLLEGE);
+    final number = await getString(UserPreferences.USER_NUMBER);
+    final designation = await getString(UserPreferences.DESIGNATION);
+    if (college == null || number == null || designation == null) return;
     mRootReference
-        .child("UsersList").child(await getString(UserPreferences.COLLEGE))
-        .child(await getString(UserPreferences.USER_NUMBER))
-        .child(await getString(UserPreferences.DESIGNATION))
+        .child("UsersList")
+        .child(college)
+        .child(number)
+        .child(designation)
         .once()
         .then((value) {
-      if (value.snapshot.exists) {
+      if (value.snapshot.exists && value.snapshot.value is Map) {
         Map<dynamic, dynamic> data = value.snapshot.value as Map;
-        UserName = data["Name"];
-        College = data["College"];
-        Designation = data["Designation"];
-        ProfileImage= data['ImageUrl'];
-        print("profle image ${ProfileImage}");
-        setState(() {});
+        UserName = (data["Name"] ?? '').toString();
+        College = (data["College"] ?? '').toString();
+        Designation = (data["Designation"] ?? '').toString();
+        ProfileImage = (data['ImageUrl'] ?? '').toString();
+        if (mounted) {
+          setState(() {});
+        }
       }
     });
   }
@@ -571,160 +656,129 @@ class _CameraState extends State<Camera> {
     designationU = (await getString(UserPreferences.DESIGNATION));
   }
 
-  showAlertDialogCamera(BuildContext context) {
-    AlertDialog alert = AlertDialog(
-      title: const Text("More options"),
-      content: Container(
-        height: 150,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, right: 10, top: 10, bottom: 10),
-                child: InkWell(
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    ImagePicker imagePicker = ImagePicker();
-                    file = await imagePicker.pickImage(
-                        source: ImageSource.camera);
-                    print("Testing${file?.path}");
-                    if (file == null) return;
+  Future<void> _pickAndCropImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(source: source);
+    if (picked == null) return;
 
-                    String uniqueFileName =
-                    DateTime.now().millisecondsSinceEpoch.toString();
-
-                    Reference mRootReference =
-                    FirebaseStorage.instance.ref();
-                    Reference referenceDirImages =
-                    mRootReference.child('images');
-
-                    Reference referenceImageToUpload =
-                    referenceDirImages.child(uniqueFileName);
-                    try {
-                      await referenceImageToUpload
-                          .putFile(File(file!.path));
-                      imageUrl =
-                      await referenceImageToUpload.getDownloadURL();
-                    } catch (error) {}
-                  },
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(60),
-                          color: MyColors.ColorGreen1,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Icon(
-                            Icons.camera_alt_outlined,
-                            color: Colors.black,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "Upload from camera",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      )
-                    ],
-                  ),
-
-                )),
-            Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, right: 10, top: 10, bottom: 10),
-                child: InkWell(
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    ImagePicker imagePicker = ImagePicker();
-                    file = await imagePicker.pickImage(
-                        source: ImageSource.gallery);
-                    print("Testing${file?.path}");
-                    if (file == null) return;
-
-                    String uniqueFileName =
-                    DateTime.now().millisecondsSinceEpoch.toString();
-
-                    Reference mRootReference =
-                    FirebaseStorage.instance.ref();
-                    Reference referenceDirImages =
-                    mRootReference.child('images');
-
-                    Reference referenceImageToUpload =
-                    referenceDirImages.child(uniqueFileName);
-                    try {
-                      await referenceImageToUpload
-                          .putFile(File(file!.path));
-                      imageUrl =
-                      await referenceImageToUpload.getDownloadURL();
-                    } catch (error) {}
-
-                  },
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(60),
-                          color: MyColors.ColorGreen1,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Icon(
-                            Icons.image_outlined,
-                            color: Colors.black,
-                            size: 25,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "Upload from gallery",
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                    ],
-                  ),
-                )),
-          ],
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: picked.path,
+      compressQuality: 90,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Crop Image',
+          toolbarColor: MyColors.Colorgreen3,
+          toolbarWidgetColor: Colors.white,
+          lockAspectRatio: false,
         ),
-      ),
-      actions: [
-        TextButton(
-          child: Container(
-              decoration: BoxDecoration(
-                  color:MyColors.Colorgreen3,
-                  borderRadius: BorderRadius.all(
-                      Radius.circular(30)
-                  )
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(left:15.0,right:15,top:8,bottom:8),
-                child: const Text("Close",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color:Colors.white)),
-              )),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+        IOSUiSettings(
+          title: 'Crop Image',
         ),
       ],
     );
+    if (cropped == null) return;
 
-    // show the dialog
+    if (!mounted) return;
+    setState(() {
+      file = XFile(cropped.path);
+      imageUrl = '';
+      _isUploading = true;
+    });
+
+    final uniqueFileName = DateTime.now().millisecondsSinceEpoch.toString();
+    final referenceImageToUpload =
+        FirebaseStorage.instance.ref().child('images').child(uniqueFileName);
+    try {
+      await referenceImageToUpload.putFile(File(cropped.path));
+      final url = await referenceImageToUpload.getDownloadURL();
+      if (!mounted) return;
+      setState(() {
+        imageUrl = url;
+        _isUploading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isUploading = false;
+      });
+      alertDialog(
+        context,
+        "Upload Failed",
+        "Could not upload image to Firebase Storage: $error",
+      );
+    }
+  }
+
+  void showAlertDialogCamera(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return alert;
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Add Photo",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Choose how you want to upload an image",
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+                ),
+                const SizedBox(height: 16),
+                dialogOptionRow(
+                  icon: Icons.camera_alt_outlined,
+                  title: "Take a Photo",
+                  subtitle: "Capture using device camera",
+                  onTap: () async {
+                    Navigator.of(dialogContext).pop();
+                    await _pickAndCropImage(ImageSource.camera);
+                  },
+                ),
+                const SizedBox(height: 10),
+                dialogOptionRow(
+                  icon: Icons.photo_library_outlined,
+                  title: "Choose from Gallery",
+                  subtitle: "Pick an image from your photos",
+                  onTap: () async {
+                    Navigator.of(dialogContext).pop();
+                    await _pickAndCropImage(ImageSource.gallery);
+                  },
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.black87,
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }

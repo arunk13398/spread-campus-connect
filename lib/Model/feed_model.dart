@@ -13,6 +13,7 @@ class FeedModel {
   String College;
   int? likedCount;
   bool? isLiked;
+  int commentCount;
 
   FeedModel({
     required this.id,
@@ -28,6 +29,7 @@ class FeedModel {
     required this.College,
     this.likedCount=0,
     this.isLiked=true,
+    this.commentCount=0,
   });
 
 }

@@ -416,7 +416,7 @@ class _UserRegistrationState extends State<UserRegistration> {
                             Colors.white
                           ],
                           inactiveTextColorList: [MyColors.Colorgreen3],
-                          listOfChipIndicesCurrentlySeclected: [6],
+                          listOfChipIndicesCurrentlySelected: [6],
                           inactiveBorderColorList: [MyColors.Colorgreen3],
                           activeBorderColorList: const [
                             // Colors.pink,
@@ -529,7 +529,7 @@ class _UserRegistrationState extends State<UserRegistration> {
     data["Date"] = DateTime.now().toString();
     data["AcessCode"] = '1';
     data["AcessName"] = 'Users';
-    data["ImageUrl"] = 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0';
+    data["ImageUrl"] = '';
     data["DateMillisecondsSinceEpoch"] = DateTime.now().millisecondsSinceEpoch.toString();
 
     HashMap<String, dynamic> access = HashMap<String, dynamic>();

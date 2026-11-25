@@ -74,25 +74,30 @@ class _GalleryState extends State<Gallery> {
 
   load() async {
     mRootReference.child("Feeds").child("Public").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
       list.clear();
-      data.forEach((key, value) {
-        list.add(FeedModel(
-          id: key,
-          userName: value['UserName'],
-          desigUser: value['Designation'],
-          description: value['Description'],
-          imageUrl: value['ImageUrl'],
-          UpdatedTime: value['ImageUrlTime'],
-          profImg: value['ProfileImage'],
-          toPublish: value['ToPublish'],
-          RegisterLink: value['RegisterLink'],
-            Phone: value['Phone'],
-            College: value['College']
-          // ToPublish: value['ToPublish'],
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          if (value is Map<dynamic, dynamic>) {
+            list.add(FeedModel(
+              id: key.toString(),
+              userName: (value['UserName'] ?? '').toString(),
+              desigUser: (value['Designation'] ?? '').toString(),
+              description: (value['Description'] ?? '').toString(),
+              imageUrl: (value['ImageUrl'] ?? '').toString(),
+              UpdatedTime: (value['ImageUrlTime'] ?? '').toString(),
+              profImg: (value['ProfileImage'] ?? '').toString(),
+              toPublish: (value['ToPublish'] ?? '').toString(),
+              RegisterLink: (value['RegisterLink'] ?? '').toString(),
+              Phone: (value['Phone'] ?? '').toString(),
+              College: (value['College'] ?? '').toString(),
+            ));
+          }
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

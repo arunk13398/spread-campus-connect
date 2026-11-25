@@ -1,36 +1,46 @@
 {
   "project_info": {
-    "project_number": "805615150793",
-    "project_id": "miniq-42131",
-    "storage_bucket": "miniq-42131.appspot.com"
+    "project_number": "8317183196",
+    "firebase_url": "https://minqlite-default-rtdb.firebaseio.com",
+    "project_id": "minqlite",
+    "storage_bucket": "minqlite.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:805615150793:android:8b6134da98d9f9679b0f18",
+        "mobilesdk_app_id": "1:8317183196:android:b1a15c99d93abac44cc019",
         "android_client_info": {
-          "package_name": "com.example.miniq"
+          "package_name": "com.example.demoapp"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "805615150793-9k5614po8d6pq34ij5maaug7b1krmhhs.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDKK0xTxrGW0z2wIVKDrNFx6zvV6p31an0"
+          "current_key": "AIzaSyAqZt16W7ff2Pw2edLQ-TH0PfIavzN1Spg"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "805615150793-9k5614po8d6pq34ij5maaug7b1krmhhs.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:8317183196:android:5603e8b93cff9bd74cc019",
+        "android_client_info": {
+          "package_name": "com.example.spreadminq"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqZt16W7ff2Pw2edLQ-TH0PfIavzN1Spg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }

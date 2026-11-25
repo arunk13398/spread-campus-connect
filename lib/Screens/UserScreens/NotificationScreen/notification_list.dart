@@ -10,6 +10,7 @@ import '../../../Contraints/user_preference.dart';
 import '../../../Model/listdata_model.dart';
 import '../../../Model/notification_model.dart';
 import '../../../Theme/theme.dart';
+import '../../../functions/widgets.dart';
 
 
 class NotificationList extends StatefulWidget {
@@ -167,30 +168,7 @@ class _NotificationListState extends State<NotificationList> {
                     Row(
                       children: [
                         SizedBox(width:5),
-                        notificationList[index].ProfileImg!=""?
-                        CachedNetworkImage(
-                          imageUrl: notificationList[index].ProfileImg,
-                          placeholder: (context, url) => const CircleAvatar(
-                            backgroundColor: MyColors.ColorGreen1,
-                            radius: 15,
-                          ),
-                          imageBuilder: (context, image) => CircleAvatar(
-                            backgroundImage: image,
-                            radius: 15,
-                          ),
-                        ):
-                        CachedNetworkImage(
-                          imageUrl: 'https://th.bing.com/th/id/R.24d66af25476d7cf5702be09685c8304?rik=56f5Kkp5psyp1Q&riu=http%3a%2f%2fwww.healthline.com%2fhlcmsresource%2fimages%2fmedical-reviewer%2fplaceholder-man.png&ehk=uy%2f3eWPXRQPMjijrfL3A91H0eypL%2bHRS8y3cfO77RWA%3d&risl=&pid=ImgRaw&r=0',
-                          placeholder: (context, url) => const CircleAvatar(
-                            backgroundColor: MyColors.ColorGreen1,
-                            radius: 15,
-                          ),
-                          imageBuilder: (context, image) => CircleAvatar(
-                            backgroundImage: image,
-                            radius: 15,
-                          ),
-                        )
-                        ,
+                        profileAvatar(notificationList[index].ProfileImg, radius: 15),
 
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0),
@@ -309,54 +287,83 @@ class _NotificationListState extends State<NotificationList> {
   }
 
   loadItem() async {
-
-    mRootReference.child("AccessManagement").child("Designation").child(await getString(UserPreferences.DESIGNATION)).child("Notifications").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+    final designation = await getString(UserPreferences.DESIGNATION);
+    if (designation == null || designation.toString().isEmpty) return;
+    mRootReference
+        .child("AccessManagement")
+        .child("Designation")
+        .child(designation)
+        .child("Notifications")
+        .onValue
+        .listen((event) {
       datalist.clear();
-      data.forEach((key, value) {
-        datalist.add(ListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          datalist.add(ListDataModel(
+            id: key.toString(),
+          ));
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
   loadNotification(int index) async {
-    String NewItem="Designation";
-    if(isColorSelected==0){
-      NewItem=await getString(UserPreferences.DESIGNATION);
-    }else{
-      NewItem=datalist[index].id;
+    final college = await getString(UserPreferences.COLLEGE);
+    final designation = await getString(UserPreferences.DESIGNATION);
+    if (college == null || college.toString().isEmpty) return;
+    String newItem = "Designation";
+    if (isColorSelected == 0) {
+      if (designation == null || designation.toString().isEmpty) return;
+      newItem = designation.toString();
+    } else if (index >= 0 && index < datalist.length) {
+      newItem = datalist[index].id;
+    } else {
+      return;
     }
-    mRootReference.child("Notification").child(await getString(UserPreferences.COLLEGE)).child(NewItem).onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
+    mRootReference
+        .child("Notification")
+        .child(college)
+        .child(newItem)
+        .onValue
+        .listen((event) {
       notificationList.clear();
-      data.forEach((key, value) {
-        notificationList.add(NotificationModel(
-          id: key,
-          college: value['College'],
-          designation: value['designation'],
-          name: value['Name'],
-          notificationContent: value['NotificationContent'],
-          subject: value['Subject'],
-          ProfileImg: value['UserProfileImage'],
-
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          if (value is Map<dynamic, dynamic>) {
+            notificationList.add(NotificationModel(
+              id: key.toString(),
+              college: (value['College'] ?? '').toString(),
+              designation: (value['designation'] ?? '').toString(),
+              name: (value['Name'] ?? '').toString(),
+              notificationContent:
+                  (value['NotificationContent'] ?? '').toString(),
+              subject: (value['Subject'] ?? '').toString(),
+              ProfileImg: (value['UserProfileImage'] ?? '').toString(),
+            ));
+          }
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 
   void checkRealtimeConnection() {
     Connectivity().onConnectivityChanged.listen((my_result) {
-      if (my_result == ConnectivityResult.mobile ||
-          my_result == ConnectivityResult.wifi) {
+      if (my_result.contains(ConnectivityResult.mobile) ||
+          my_result.contains(ConnectivityResult.wifi)) {
         print("connected");
         setState(() {
           isConnected = true;
         });
-      } else if (my_result == ConnectivityResult.none) {
+      } else if (my_result.contains(ConnectivityResult.none) ||
+          my_result.isEmpty) {
         print("not connected");
         setState(() {
           isConnected = false;

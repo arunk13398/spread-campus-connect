@@ -66,26 +66,34 @@ class _PublishNotificationState extends State<PublishNotification> {
 
   loadItem() async {
     mRootReference.child("AccessManagement").child("Colleges").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
       datalist.clear();
-      data.forEach((key, value) {
-        datalist.add(ListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          datalist.add(ListDataModel(
+            id: key.toString(),
+          ));
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
   loadItem1() async {
     mRootReference.child("AccessManagement").child("Designation").onValue.listen((event) {
-      Map<dynamic, dynamic> data = event.snapshot.value as Map;
       Categorydatalist.clear();
-      data.forEach((key, value) {
-        Categorydatalist.add(CategoryListDataModel(
-          id: key,
-        ));
-      });
-      setState(() {});
+      final raw = event.snapshot.value;
+      if (raw is Map<dynamic, dynamic>) {
+        raw.forEach((key, value) {
+          Categorydatalist.add(CategoryListDataModel(
+            id: key.toString(),
+          ));
+        });
+      }
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

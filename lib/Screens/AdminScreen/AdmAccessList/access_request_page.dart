@@ -4,13 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-
 import '../../../Contraints/user_preference.dart';
 import '../../../Model/access_model.dart';
 import '../../../Model/listdata_model.dart';
 import '../../../Model/user_list_modal.dart';
-import '../../../functions/functions.dart';
 
 class AccessRequestPage extends StatefulWidget {
   const AccessRequestPage({Key? key}) : super(key: key);
@@ -219,8 +216,6 @@ class _AccessRequestPageState extends State<AccessRequestPage> {
                       ),
                     ),
                   ),
-
-
                 ],
               ),
               Spacer(),
