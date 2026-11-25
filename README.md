@@ -92,6 +92,45 @@ The backend is serverless, powered by **Firebase** (project ID `minqlite`):
 
 ---
 
+## Admin Panel Instructions
+
+### 1. Granting Admin Access
+Admin routing is controlled in **Firebase Realtime Database** under `AccessControl/<phone>`:
+1. Register or sign in normally with the target phone number (`+91XXXXXXXXXX`).
+2. Open **Firebase Console → Realtime Database → `AccessControl/<phone>`**.
+3. Set:
+   - `AcessCode`: `"2"` (`"1"` is standard user; `"2"` routes to the Admin Panel)
+   - `AcessName`: `"Admin"` (or an authority role such as `"Principal"`, `"Hod"`, `"Hos"`, `"OfficeStaff"`, `"Reviewer"` for complaint review access)
+   - `Status`: `"active"`
+4. Sign out and log back in via OTP — `OtpScreen` will automatically redirect to `AdminBottomNavigation`.
+
+### 2. Admin Navigation Tabs (`AdminBottomNavigation`)
+| Tab | Screen | Purpose |
+| --- | --- | --- |
+| **Home** | `AdminDashboard` | Category feed preview (`Discover`) + quick-access management tiles (`Explore more`) |
+| **Notification** | `NotificationList` | View and manage campus notifications |
+| **RegReview** | `ComplaintList` | Switch to `ToReview` to inspect and respond to submitted complaints |
+| **My Account** | `ProfileDashboard` | Admin profile, posts grid, and account settings |
+
+### 3. Admin Management Modules (`Explore more`)
+- **All feeds (`FeedManagePage`)**:
+  - Filter posts by category (`All`, `Connections`, `Club`, `Event`, `Other`).
+  - Tap the floating camera button to publish a new campus feed post (`Camera`).
+  - Swipe left on any feed card (`Slidable` → **Delete**) to remove it from both `Feeds/<category>` and the author's `UsersList/.../Post/` node.
+- **User list (`UserListPage`)**:
+  - Lists registered users loaded from `AccessControl`.
+  - Swipe left on a user row (`Slidable`) to **Block** (`Status: "blocked"`, restricting feed posting, connections, and profile edits) or **Unblock** (`Status: "active"`).
+- **Access list (`AccessRequestPage`)**:
+  - Displays pending role-elevation requests submitted by users from **Edit Profile → Request Account Access** (`PageRequest/`).
+  - Select the target access level from the dropdown (`AccessManagement/AccessList`) and tap the action button to grant access.
+- **Item List (`AddNewListPage`)**:
+  - Manage dynamic campus lists, categories, and subcategories stored under `AccessManagement/` (feed categories, designations, and access roles).
+- **Complaint Review (`RegReview` → `ComplaintDetails`)**:
+  - Open any complaint assigned to your role (`To` field matching `UserType`).
+  - Tap **Review Complaint**, choose a status (`Processing`, `Verified`, `Rejected`, `Waiting`, `Forwarded`), write an official reply, and tap **Submit Review**.
+
+---
+
 ## Project Structure
 
 ```text
